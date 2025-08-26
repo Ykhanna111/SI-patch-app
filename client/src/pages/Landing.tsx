@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Header from "@/components/Header";
 import { Gamepad2, Trophy, Clock, Target } from "lucide-react";
 import { Link } from "wouter";
-import logoImage from "@assets/ChatGPT_Image_Aug_26__2025__08_08_54_PM-removebg-preview_1756219381419.png";
+import logoImage from "@assets/ChatGPT Image Aug 26, 2025, 08_08_54 PM-Photoroom_1756219770081.png";
 
 export default function Landing() {
 
@@ -13,15 +13,20 @@ export default function Landing() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-8">
             <img 
               src={logoImage} 
               alt="Sudoku Infinity Logo" 
-              className="w-48 h-48 md:w-64 md:h-64 object-contain"
+              className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain"
             />
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl md:text-6xl font-bold mb-4" style={{
+            background: 'linear-gradient(135deg, hsl(35 100% 60%), hsl(50 100% 65%), hsl(320 85% 65%))',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
             Welcome to Sudoku Infinity
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">

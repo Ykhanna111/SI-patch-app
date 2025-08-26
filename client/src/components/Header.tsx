@@ -8,7 +8,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation, Link } from "wouter";
 import HowToPlayDialog from "./HowToPlayDialog";
-import logoImage from "@assets/ChatGPT_Image_Aug_26__2025__08_08_54_PM-removebg-preview_1756219381419.png";
+import logoImage from "@assets/ChatGPT Image Aug 26, 2025, 08_08_54 PM-Photoroom_1756219770081.png";
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
@@ -65,15 +65,20 @@ export default function Header() {
   return (
     <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <img 
                 src={logoImage} 
                 alt="Sudoku Infinity Logo" 
-                className="w-12 h-12 object-contain"
+                className="w-16 h-16 object-contain"
               />
-              <h1 className="text-xl font-bold text-gray-900">Sudoku Infinity</h1>
+              <h1 className="text-xl font-bold" style={{
+                background: 'linear-gradient(135deg, hsl(35 100% 60%), hsl(50 100% 65%), hsl(320 85% 65%))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>Sudoku Infinity</h1>
             </div>
           </div>
           
