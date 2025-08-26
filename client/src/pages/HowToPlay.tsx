@@ -11,9 +11,9 @@ export default function HowToPlay() {
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-6">
-          <Link href="/" className="inline-flex items-center text-sudoku-primary hover:text-indigo-700 transition-colors" data-testid="link-back-home">
+          <Link href="/game" className="inline-flex items-center text-sudoku-primary hover:text-indigo-700 transition-colors" data-testid="link-back-challenge">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Home
+            Back to Choose Your Challenge
           </Link>
         </div>
 
@@ -122,29 +122,6 @@ export default function HowToPlay() {
           </CardContent>
         </Card>
 
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready to Play?</h2>
-          <p className="text-gray-600 mb-6">Put your Sudoku skills to the test!</p>
-          <div className="space-x-4">
-            <Link href="/guest">
-              <Button 
-                className="bg-sudoku-secondary text-white hover:bg-emerald-700"
-                data-testid="button-play-guest"
-              >
-                Play as Guest
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button 
-                variant="outline"
-                className="border-sudoku-primary text-sudoku-primary hover:bg-sudoku-primary hover:text-white"
-                data-testid="button-login"
-              >
-                Login to Save Progress
-              </Button>
-            </Link>
-          </div>
-        </div>
       </div>
     </div>
   );
