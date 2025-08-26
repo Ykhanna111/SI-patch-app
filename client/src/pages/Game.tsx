@@ -420,8 +420,8 @@ export default function GamePage() {
     setShowGameFailed(false);
   };
 
-  const backToDashboard = () => {
-    window.location.href = '/';
+  const backToSudokuAdventure = () => {
+    setLocation('/select-game');
   };
 
   const togglePause = () => {
@@ -462,12 +462,12 @@ export default function GamePage() {
               <div className="mt-4">
                 <Button
                   variant="outline"
-                  onClick={backToDashboard}
+                  onClick={backToSudokuAdventure}
                   className="flex items-center gap-2 mx-auto"
-                  data-testid="button-back-dashboard-challenge"
+                  data-testid="button-back-adventure-challenge"
                 >
                   <Home className="h-4 w-4" />
-                  Back to Dashboard
+                  Back to Sudoku Adventure
                 </Button>
               </div>
             )}
