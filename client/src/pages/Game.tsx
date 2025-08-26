@@ -210,13 +210,10 @@ export default function GamePage() {
     setIsPaused(false);
   };
 
-  // Initialize with active game or start new game
+  // Initialize with active game only, don't auto-start new games
   useEffect(() => {
     if (isAuthenticated && activeGame && activeGame.id) {
       initializeGame(activeGame);
-    } else if (!isAuthenticated && !currentGame) {
-      // Start a new medium game by default for guests
-      createGameMutation.mutate('medium');
     }
   }, [activeGame, isAuthenticated]);
 
@@ -365,10 +362,46 @@ export default function GamePage() {
 
   if (!currentGame) {
     return (
-      <div className="min-h-screen bg-sudoku-bg flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-sudoku-primary mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading game...</p>
+      <div className="min-h-screen bg-sudoku-bg">
+        <Header />
+        
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Choose Your Challenge</h1>
+            <p className="text-lg text-gray-600">Select a difficulty level to start playing</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { level: 'easy', title: 'Easy', description: 'Perfect for beginners', color: 'bg-green-500' },
+              { level: 'medium', title: 'Medium', description: 'A balanced challenge', color: 'bg-yellow-500' },
+              { level: 'hard', title: 'Hard', description: 'For experienced players', color: 'bg-orange-500' },
+              { level: 'expert', title: 'Expert', description: 'Ultimate challenge', color: 'bg-red-500' }
+            ].map((difficulty) => (
+              <div
+                key={difficulty.level}
+                className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
+                onClick={() => createGameMutation.mutate(difficulty.level)}
+              >
+                <div className={`h-2 ${difficulty.color}`}></div>
+                <div className="p-6 text-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{difficulty.title}</h3>
+                  <p className="text-gray-600 mb-4">{difficulty.description}</p>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      createGameMutation.mutate(difficulty.level);
+                    }}
+                    disabled={createGameMutation.isPending}
+                    className="w-full bg-sudoku-primary text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                    data-testid={`button-start-${difficulty.level}`}
+                  >
+                    {createGameMutation.isPending ? 'Creating...' : 'Start Game'}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -408,20 +441,20 @@ export default function GamePage() {
                   <button
                     onClick={() => getHintMutation.mutate()}
                     disabled={hintsUsed >= 2 || isCompleted || getHintMutation.isPending}
-                    className="p-2 text-gray-400 hover:text-sudoku-accent transition-colors rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-2 text-gray-600 hover:text-sudoku-accent bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
                     title={`Get Hint (${2 - hintsUsed} left)`}
                     data-testid="button-hint"
                   >
-                    💡
+                    💡 Hint
                   </button>
                   <button
                     onClick={handleUndo}
                     disabled={moves.length === 0 || isCompleted}
-                    className="p-2 text-gray-400 hover:text-sudoku-primary transition-colors rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-2 text-gray-600 hover:text-sudoku-primary bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
                     title="Undo"
                     data-testid="button-undo"
                   >
-                    ↶
+                    ↶ Undo
                   </button>
                 </div>
               </div>
