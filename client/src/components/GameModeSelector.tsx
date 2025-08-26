@@ -13,10 +13,19 @@ interface GameModeSelectorProps {
   isCreating?: boolean;
 }
 
-export default function GameModeSelector({ onSelectGame, isCreating }: GameModeSelectorProps) {
+export default function GameModeSelector({ onSelectGame, isCreating = false }: GameModeSelectorProps) {
   const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty | null>(null);
   const [showHowToPlay, setShowHowToPlay] = useState<GameMode | null>(null);
+
+  // Safety check for GAME_MODES
+  if (!GAME_MODES || Object.keys(GAME_MODES).length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-600">Error loading game modes. Please refresh the page.</p>
+      </div>
+    );
+  }
 
   const handleModeSelect = (mode: GameMode) => {
     setSelectedMode(mode);
@@ -159,7 +168,7 @@ export default function GameModeSelector({ onSelectGame, isCreating }: GameModeS
 
       {/* Game Mode Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Object.values(GAME_MODES).map((mode) => (
+        {Object.values(GAME_MODES || {}).map((mode) => (
           <Card 
             key={mode.id} 
             className={`cursor-pointer transition-all hover:shadow-lg ${
@@ -250,7 +259,7 @@ export default function GameModeSelector({ onSelectGame, isCreating }: GameModeS
       )}
 
       {/* How to Play Dialogs */}
-      {Object.values(GAME_MODES).map((mode) => (
+      {Object.values(GAME_MODES || {}).map((mode) => (
         <HowToPlayDialog key={`dialog-${mode.id}`} mode={mode.id} />
       ))}
     </div>

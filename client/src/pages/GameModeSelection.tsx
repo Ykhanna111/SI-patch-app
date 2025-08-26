@@ -13,6 +13,8 @@ export default function GameModeSelection() {
   const { toast } = useToast();
   const [isCreating, setIsCreating] = useState(false);
 
+  console.log('GameModeSelection component loaded'); // Debug log
+
   const createGameMutation = useMutation({
     mutationFn: async ({ gameMode, difficulty }: { gameMode: GameMode; difficulty: Difficulty }) => {
       setIsCreating(true);
@@ -33,9 +35,20 @@ export default function GameModeSelection() {
     },
     onError: (error) => {
       console.error('Failed to create game:', error);
+      let errorMessage = "Failed to create new game. Please try again.";
+      
+      // Check if it's a network error or specific API error
+      if (error instanceof Error) {
+        if (error.message.includes('Failed to fetch')) {
+          errorMessage = "Network error. Please check your connection and try again.";
+        } else if (error.message.includes('401')) {
+          errorMessage = "Authentication required. Please log in and try again.";
+        }
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to create new game. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -53,10 +66,18 @@ export default function GameModeSelection() {
       <Header />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <GameModeSelector 
-          onSelectGame={handleGameSelection}
-          isCreating={isCreating}
-        />
+        {isCreating ? (
+          <div className="text-center py-16">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-sudoku-primary mx-auto mb-4"></div>
+            <h3 className="text-lg font-semibold">Creating your puzzle...</h3>
+            <p className="text-gray-600">This may take a moment for complex game modes</p>
+          </div>
+        ) : (
+          <GameModeSelector 
+            onSelectGame={handleGameSelection}
+            isCreating={isCreating}
+          />
+        )}
       </div>
     </div>
   );
