@@ -32,10 +32,8 @@ export default function GameModeSelector({ onSelectGame, isCreating = false }: G
   };
 
   const handlePlayClick = (difficulty: Difficulty) => {
-    if (selectedMode) {
-      console.log('Playing game with:', { selectedMode, difficulty }); // Debug log
-      onSelectGame(selectedMode, difficulty);
-    }
+    console.log('Playing game with:', { gameMode: 'standard', difficulty }); // Debug log
+    onSelectGame('standard', difficulty);
   };
 
   const getDifficultyColor = (difficulty: Difficulty) => {
@@ -156,94 +154,123 @@ export default function GameModeSelector({ onSelectGame, isCreating = false }: G
   };
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold mb-2">Choose Your Sudoku Adventure</h2>
-        <p className="text-gray-600">Select just Standard Sudoku and pick a difficulty to start playing</p>
+    <div className="space-y-8">
+      {/* Header matching your image */}
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-bold text-gray-900">Choose Your Challenge</h1>
+        <p className="text-lg text-gray-600">Select a difficulty level to start playing</p>
+        
+        {/* Back to Dashboard button */}
+        <button className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-gray-300 text-gray-600 hover:text-gray-800 hover:border-gray-400 transition-colors">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          Back to Dashboard
+        </button>
       </div>
 
-      {/* Standard Sudoku Only */}
-      <div className="max-w-md mx-auto">
+      {/* Difficulty Cards matching your image design */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
         <Card 
-          className={`cursor-pointer transition-all hover:shadow-lg ${
-            selectedMode === 'standard' ? 'ring-2 ring-sudoku-primary shadow-lg' : ''
+          className={`relative overflow-hidden group transition-all duration-300 hover:shadow-xl border-0 bg-white ${
+            isCreating ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
           }`}
-          onClick={() => handleModeSelect('standard')}
-          data-testid={`mode-standard`}
+          onClick={() => !isCreating && handlePlayClick('easy')}
+          data-testid="difficulty-easy"
         >
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center justify-between text-lg">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">{GAME_MODES.standard.icon}</span>
-                <span>{GAME_MODES.standard.name}</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowHowToPlay('standard');
-                }}
-                data-testid={`how-to-play-standard`}
-              >
-                <HelpCircle className="w-4 h-4" />
-              </Button>
-            </CardTitle>
+          {/* Green gradient bar */}
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-green-400 to-green-600" />
+          
+          <CardHeader className="text-center pt-8 pb-4">
+            <CardTitle className="text-2xl font-bold text-gray-900 mb-2">Easy</CardTitle>
+            <p className="text-gray-600">Perfect for beginners</p>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600 mb-3">{GAME_MODES.standard.description}</p>
-            <div className="flex justify-between items-center">
-              <Badge variant="outline" className="text-xs">
-                {GAME_MODES.standard.gridSize}×{GAME_MODES.standard.gridSize}
-              </Badge>
-              <div className="flex gap-1">
-                {GAME_MODES.standard.difficulty.map((diff) => (
-                  <Badge key={diff} variant="secondary" className="text-xs">
-                    {diff}
-                  </Badge>
-                ))}
-              </div>
-            </div>
+          
+          <CardContent className="text-center pb-8">
+            <Button 
+              className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-2 rounded-full font-medium"
+              disabled={isCreating}
+            >
+              {isCreating ? 'Creating...' : 'Start Game'}
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card 
+          className={`relative overflow-hidden group transition-all duration-300 hover:shadow-xl border-0 bg-white ${
+            isCreating ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+          }`}
+          onClick={() => !isCreating && handlePlayClick('medium')}
+          data-testid="difficulty-medium"
+        >
+          {/* Yellow gradient bar */}
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-yellow-400 to-orange-500" />
+          
+          <CardHeader className="text-center pt-8 pb-4">
+            <CardTitle className="text-2xl font-bold text-gray-900 mb-2">Medium</CardTitle>
+            <p className="text-gray-600">A balanced challenge</p>
+          </CardHeader>
+          
+          <CardContent className="text-center pb-8">
+            <Button 
+              className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-2 rounded-full font-medium"
+              disabled={isCreating}
+            >
+              {isCreating ? 'Creating...' : 'Start Game'}
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card 
+          className={`relative overflow-hidden group transition-all duration-300 hover:shadow-xl border-0 bg-white ${
+            isCreating ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+          }`}
+          onClick={() => !isCreating && handlePlayClick('hard')}
+          data-testid="difficulty-hard"
+        >
+          {/* Orange gradient bar */}
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-orange-500 to-red-500" />
+          
+          <CardHeader className="text-center pt-8 pb-4">
+            <CardTitle className="text-2xl font-bold text-gray-900 mb-2">Hard</CardTitle>
+            <p className="text-gray-600">For experienced players</p>
+          </CardHeader>
+          
+          <CardContent className="text-center pb-8">
+            <Button 
+              className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-2 rounded-full font-medium"
+              disabled={isCreating}
+            >
+              {isCreating ? 'Creating...' : 'Start Game'}
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card 
+          className={`relative overflow-hidden group transition-all duration-300 hover:shadow-xl border-0 bg-white ${
+            isCreating ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+          }`}
+          onClick={() => !isCreating && handlePlayClick('expert')}
+          data-testid="difficulty-expert"
+        >
+          {/* Red gradient bar */}
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-500 to-red-700" />
+          
+          <CardHeader className="text-center pt-8 pb-4">
+            <CardTitle className="text-2xl font-bold text-gray-900 mb-2">Expert</CardTitle>
+            <p className="text-gray-600">Ultimate challenge</p>
+          </CardHeader>
+          
+          <CardContent className="text-center pb-8">
+            <Button 
+              className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-2 rounded-full font-medium"
+              disabled={isCreating}
+            >
+              {isCreating ? 'Creating...' : 'Start Game'}
+            </Button>
           </CardContent>
         </Card>
       </div>
-
-      {/* Difficulty Selection for Standard Sudoku */}
-      {selectedMode && (
-        <div className="border-t pt-6">
-          <h3 className="text-xl font-semibold mb-4 text-center flex items-center justify-center gap-2">
-            <span className="text-2xl">{GAME_MODES[selectedMode].icon}</span>
-            Select Difficulty for {GAME_MODES[selectedMode].name}
-          </h3>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 max-w-4xl mx-auto">
-            {GAME_MODES[selectedMode].difficulty.map((difficulty) => (
-              <Button
-                key={difficulty}
-                variant="outline"
-                className={`h-24 flex flex-col gap-2 transition-all duration-300 hover:shadow-lg hover:scale-105 ${getDifficultyColor(difficulty)}`}
-                onClick={() => handlePlayClick(difficulty)}
-                disabled={isCreating}
-                data-testid={`difficulty-${difficulty}`}
-              >
-                <span className="font-semibold text-lg capitalize">{difficulty}</span>
-                <div className="flex">
-                  {getDifficultyStars(difficulty)}
-                </div>
-                <div className="text-xs opacity-75">
-                  {difficulty === 'easy' && 'Perfect for beginners'}
-                  {difficulty === 'medium' && 'A balanced challenge'}
-                  {difficulty === 'hard' && 'For experienced players'}
-                  {difficulty === 'expert' && 'Ultimate challenge'}
-                </div>
-              </Button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* How to Play Dialog */}
-      <HowToPlayDialog mode="standard" />
     </div>
   );
 }
