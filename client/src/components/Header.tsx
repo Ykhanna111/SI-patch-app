@@ -5,7 +5,7 @@ import type { User as UserType } from "@shared/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
@@ -68,14 +68,16 @@ export default function Header() {
                   </div>
                 </div>
                 
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="p-2 text-gray-400 hover:text-gray-600"
-                  data-testid="button-settings"
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
+                <Link href="/profile">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-2 text-gray-400 hover:text-gray-600"
+                    data-testid="button-settings"
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </Link>
                 
                 <Button
                   variant="ghost"

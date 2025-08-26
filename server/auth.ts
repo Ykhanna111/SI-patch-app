@@ -160,4 +160,43 @@ export async function setupAuth(app: Express) {
       res.status(500).json({ message: "Failed to get user" });
     }
   });
+
+  // Update profile endpoint
+  app.put('/api/auth/profile', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "No user session found" });
+      }
+
+      const updates = req.body;
+      const updatedUser = await storage.updateUser(userId, updates);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const { password: _, ...userResponse } = updatedUser;
+      res.json(userResponse);
+    } catch (error) {
+      console.error('Update profile error:', error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // Upload avatar endpoint (placeholder for now)
+  app.post('/api/auth/avatar', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "No user session found" });
+      }
+
+      // For now, just return success - in a real app you'd handle file upload
+      res.json({ message: "Avatar upload successful" });
+    } catch (error) {
+      console.error('Avatar upload error:', error);
+      res.status(500).json({ message: "Failed to upload avatar" });
+    }
+  });
 }
