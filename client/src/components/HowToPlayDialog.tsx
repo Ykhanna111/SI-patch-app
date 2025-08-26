@@ -1,7 +1,5 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface HowToPlayDialogProps {
   open: boolean;
@@ -13,19 +11,8 @@ export default function HowToPlayDialog({ open, onOpenChange }: HowToPlayDialogP
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl font-bold text-gray-900">How to Play Sudoku</DialogTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onOpenChange(false)}
-              className="p-2 hover:bg-gray-100"
-              data-testid="button-close-dialog"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          <p className="text-gray-600">Master the classic number puzzle game</p>
+          <DialogTitle className="text-2xl font-bold text-gray-900">How to Play Sudoku</DialogTitle>
+          <DialogDescription className="text-gray-600">Master the classic number puzzle game</DialogDescription>
         </DialogHeader>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
