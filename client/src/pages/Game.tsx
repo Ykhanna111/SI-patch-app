@@ -9,6 +9,8 @@ import GameControls from "@/components/GameControls";
 import SudokuGrid from "@/components/SudokuGrid";
 import GameStats from "@/components/GameStats";
 import NumberSelector from "@/components/NumberSelector";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, RotateCcw } from "lucide-react";
 import type { Game } from "@shared/schema";
 
 type SudokuGrid = number[][];
@@ -36,6 +38,8 @@ export default function GamePage() {
   const [isCompleted, setIsCompleted] = useState(false);
   const [moves, setMoves] = useState<Move[]>([]);
   const [isPaused, setIsPaused] = useState(false);
+  const [showGameComplete, setShowGameComplete] = useState(false);
+  const [showGameFailed, setShowGameFailed] = useState(false);
 
   // Timer
   useEffect(() => {
@@ -273,17 +277,17 @@ export default function GamePage() {
           setMistakes(prev => {
             const newMistakes = prev + 1;
             if (newMistakes >= 3) {
+              setShowGameFailed(true);
               toast({
-                title: "Game Over",
-                description: "You've made 3 mistakes. The game will reset.",
+                title: "Game Over!",
+                description: "You've made 3 mistakes. Returning to menu...",
                 variant: "destructive",
               });
-              // Reset to original puzzle
+              // Auto-redirect after 3 seconds
               setTimeout(() => {
-                setCurrentGrid(JSON.parse(currentGame.puzzle));
-                setMistakes(0);
-                setMoves([]);
-              }, 2000);
+                setCurrentGame(null);
+                setShowGameFailed(false);
+              }, 3000);
             } else {
               toast({
                 title: "Invalid move",
@@ -329,10 +333,17 @@ export default function GamePage() {
     
     if (isFilled) {
       setIsCompleted(true);
+      setShowGameComplete(true);
       toast({
         title: "Congratulations! 🎉",
         description: "You've successfully completed the puzzle!",
       });
+      
+      // Auto-redirect after 3 seconds
+      setTimeout(() => {
+        setCurrentGame(null);
+        setShowGameComplete(false);
+      }, 3000);
     }
   };
 
@@ -350,6 +361,43 @@ export default function GamePage() {
 
   const startNewGame = (difficulty: string) => {
     createGameMutation.mutate(difficulty);
+  };
+
+  const resetGame = () => {
+    if (!currentGame) return;
+    
+    try {
+      // Reset to original puzzle state but keep hints used count
+      const originalPuzzle = JSON.parse(currentGame.puzzle);
+      setCurrentGrid(originalPuzzle);
+      setMistakes(0);
+      setTimeElapsed(0);
+      setMoves([]);
+      setSelectedCell(null);
+      setSelectedNumber(null);
+      setIsCompleted(false);
+      setShowGameComplete(false);
+      setShowGameFailed(false);
+      // Keep hintsUsed as is
+      
+      toast({
+        title: "Game Reset",
+        description: "Puzzle has been reset to the beginning. Hints remain used.",
+      });
+    } catch (error) {
+      console.error('Error resetting game:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reset game",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const backToMenu = () => {
+    setCurrentGame(null);
+    setShowGameComplete(false);
+    setShowGameFailed(false);
   };
 
   const togglePause = () => {
@@ -450,10 +498,33 @@ export default function GamePage() {
           <div className="lg:col-span-3 space-y-6">
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900" data-testid="text-puzzle-title">
-                  {currentGame.difficulty.charAt(0).toUpperCase() + currentGame.difficulty.slice(1)} Puzzle
-                </h2>
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={backToMenu}
+                    className="flex items-center gap-2"
+                    data-testid="button-back-menu"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to Menu
+                  </Button>
+                  <h2 className="text-xl font-bold text-gray-900" data-testid="text-puzzle-title">
+                    {currentGame.difficulty.charAt(0).toUpperCase() + currentGame.difficulty.slice(1)} Puzzle
+                  </h2>
+                </div>
                 <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={resetGame}
+                    className="flex items-center gap-2"
+                    disabled={isCompleted}
+                    data-testid="button-reset"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                    Reset
+                  </Button>
                   <button
                     onClick={() => getHintMutation.mutate()}
                     disabled={hintsUsed >= 2 || isCompleted || getHintMutation.isPending}

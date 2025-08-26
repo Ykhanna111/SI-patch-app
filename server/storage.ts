@@ -1,10 +1,13 @@
 import {
   users,
   games,
+  userStats,
   type User,
   type InsertUser,
   type Game,
   type InsertGame,
+  type UserStats,
+  type InsertUserStats,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -24,6 +27,11 @@ export interface IStorage {
   getGame(id: string): Promise<Game | undefined>;
   getUserGames(userId: string): Promise<Game[]>;
   getActiveGame(userId: string): Promise<Game | undefined>;
+  
+  // Statistics operations
+  getUserStats(userId: string): Promise<UserStats | undefined>;
+  createUserStats(stats: InsertUserStats): Promise<UserStats>;
+  updateUserStats(userId: string, updates: Partial<UserStats>): Promise<UserStats | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -94,6 +102,26 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(games.updatedAt))
       .limit(1);
     return game;
+  }
+
+  // Statistics operations
+  async getUserStats(userId: string): Promise<UserStats | undefined> {
+    const [stats] = await db.select().from(userStats).where(eq(userStats.userId, userId));
+    return stats;
+  }
+
+  async createUserStats(statsData: InsertUserStats): Promise<UserStats> {
+    const [stats] = await db.insert(userStats).values(statsData).returning();
+    return stats;
+  }
+
+  async updateUserStats(userId: string, updates: Partial<UserStats>): Promise<UserStats | undefined> {
+    const [updatedStats] = await db
+      .update(userStats)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(userStats.userId, userId))
+      .returning();
+    return updatedStats;
   }
 }
 

@@ -199,4 +199,26 @@ export async function setupAuth(app: Express) {
       res.status(500).json({ message: "Failed to upload avatar" });
     }
   });
+
+  // Get user statistics
+  app.get('/api/auth/stats', isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "No user session found" });
+      }
+
+      let stats = await storage.getUserStats(userId);
+      
+      if (!stats) {
+        // Create initial stats for new user
+        stats = await storage.createUserStats({ userId });
+      }
+
+      res.json(stats);
+    } catch (error) {
+      console.error('Get user stats error:', error);
+      res.status(500).json({ message: "Failed to get user statistics" });
+    }
+  });
 }

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/hooks/useAuth';
-import type { User } from '@shared/schema';
+import type { User, UserStats } from '@shared/schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,6 +40,12 @@ export default function Profile() {
   const { theme, setTheme } = useTheme();
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+  // Fetch user statistics
+  const { data: userStats, isLoading: statsLoading } = useQuery<UserStats>({
+    queryKey: ['/api/auth/stats'],
+    enabled: !!isAuthenticated,
+  });
 
   const form = useForm<ProfileUpdateInput>({
     resolver: zodResolver(profileUpdateSchema),
@@ -344,6 +350,82 @@ export default function Profile() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Game Statistics Section */}
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              📊 Game Statistics
+            </CardTitle>
+            <CardDescription>
+              Track your Sudoku progress and performance
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {statsLoading ? (
+              <div className="text-center py-6">
+                <p className="text-muted-foreground">Loading statistics...</p>
+              </div>
+            ) : userStats ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="text-center p-4 bg-primary/5 rounded-lg">
+                  <div className="text-2xl font-bold text-primary">
+                    {userStats.totalPuzzles || 0}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Total Puzzles</div>
+                </div>
+                
+                <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    {userStats.completedPuzzles || 0}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Completed</div>
+                </div>
+                
+                <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    {userStats.totalPuzzles > 0 
+                      ? Math.round(((userStats.completedPuzzles || 0) / userStats.totalPuzzles) * 100)
+                      : 0
+                    }%
+                  </div>
+                  <div className="text-sm text-muted-foreground">Success Rate</div>
+                </div>
+                
+                <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                  <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                    {userStats.currentStreak || 0}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Current Streak</div>
+                </div>
+                
+                <div className="md:col-span-2 lg:col-span-4 mt-4">
+                  <h4 className="font-semibold mb-3 text-foreground">Best Times by Difficulty</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {['easy', 'medium', 'hard', 'expert'].map(difficulty => {
+                      const timeKey = `best${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}Time` as keyof typeof userStats;
+                      const time = userStats[timeKey] as number | null;
+                      return (
+                        <div key={difficulty} className="text-center p-3 border rounded-lg">
+                          <div className="font-semibold text-sm text-muted-foreground uppercase">
+                            {difficulty}
+                          </div>
+                          <div className="text-lg font-bold text-foreground">
+                            {time ? `${Math.floor(time / 60)}:${(time % 60).toString().padStart(2, '0')}` : 'N/A'}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-6">
+                <p className="text-muted-foreground">No statistics available yet. Start playing to track your progress!</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Theme & Customization Section */}
         <Card className="mt-8">

@@ -49,6 +49,26 @@ export const games = pgTable("games", {
   hintsUsed: integer("hints_used").default(0),
   isCompleted: boolean("is_completed").default(false),
   moves: text("moves"), // JSON string of move history for undo
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User statistics table
+export const userStats = pgTable("user_stats", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id).notNull().unique(),
+  totalPuzzlesPlayed: integer("total_puzzles_played").default(0),
+  totalPuzzlesSolved: integer("total_puzzles_solved").default(0),
+  currentStreak: integer("current_streak").default(0),
+  longestStreak: integer("longest_streak").default(0),
+  totalMistakes: integer("total_mistakes").default(0),
+  totalTimeSpent: integer("total_time_spent").default(0), // in seconds
+  bestTimeEasy: integer("best_time_easy"), // in seconds
+  bestTimeMedium: integer("best_time_medium"),
+  bestTimeHard: integer("best_time_hard"),
+  bestTimeExpert: integer("best_time_expert"),
+  lastPlayedAt: timestamp("last_played_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -109,3 +129,12 @@ export const insertGameSchema = createInsertSchema(games).omit({
 
 export type InsertGame = z.infer<typeof insertGameSchema>;
 export type Game = typeof games.$inferSelect;
+
+export const insertUserStatsSchema = createInsertSchema(userStats).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertUserStats = z.infer<typeof insertUserStatsSchema>;
+export type UserStats = typeof userStats.$inferSelect;
