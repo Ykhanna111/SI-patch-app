@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { Link } from 'wouter';
+import { ArrowLeft } from 'lucide-react';
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -54,7 +55,14 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-sudoku-bg flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+      <div className="w-full max-w-md">
+        <div className="mb-4">
+          <Link href="/" className="inline-flex items-center text-sudoku-primary hover:text-indigo-700 transition-colors" data-testid="link-back-dashboard">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Dashboard
+          </Link>
+        </div>
+        <Card className="w-full">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
           <CardDescription>
@@ -127,7 +135,8 @@ export default function Login() {
             </p>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }
