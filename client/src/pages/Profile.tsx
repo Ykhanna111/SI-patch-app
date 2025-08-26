@@ -15,9 +15,10 @@ import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { Settings, Upload, Palette, Moon, Sun } from 'lucide-react';
+import { Settings, Upload, Palette, Moon, Sun, ArrowLeft } from 'lucide-react';
 import Header from '@/components/Header';
 import { useTheme } from '@/hooks/useTheme';
+import { Link } from 'wouter';
 
 const profileUpdateSchema = z.object({
   username: z.string()
@@ -147,10 +148,10 @@ export default function Profile() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-sudoku-bg flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="p-6 text-center">
-            <p className="text-gray-600">Please log in to access your profile.</p>
+            <p className="text-muted-foreground">Please log in to access your profile.</p>
           </CardContent>
         </Card>
       </div>
@@ -158,13 +159,21 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-sudoku-bg">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <div className="flex items-center gap-4 mb-4">
+            <Link href="/game">
+              <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Game
+              </Button>
+            </Link>
+          </div>
+          <h1 className="text-3xl font-bold text-foreground">Profile Settings</h1>
+          <p className="text-muted-foreground mt-2">
             Manage your account settings and preferences
           </p>
         </div>
@@ -188,14 +197,14 @@ export default function Profile() {
                     src={avatarPreview || typedUser?.avatarUrl || undefined} 
                     alt={typedUser?.username || undefined} 
                   />
-                  <AvatarFallback className="text-xl bg-sudoku-primary text-white">
+                  <AvatarFallback className="text-xl bg-primary text-primary-foreground">
                     {getInitials(typedUser?.firstName, typedUser?.lastName, typedUser?.username)}
                   </AvatarFallback>
                 </Avatar>
                 
                 <div className="space-y-2 w-full">
                   <Label htmlFor="avatar-upload" className="cursor-pointer">
-                    <div className="flex items-center justify-center w-full p-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-sudoku-primary transition-colors">
+                    <div className="flex items-center justify-center w-full p-2 border-2 border-dashed border-border rounded-lg hover:border-primary transition-colors">
                       <Upload className="h-4 w-4 mr-2" />
                       Choose Image
                     </div>
@@ -221,7 +230,7 @@ export default function Profile() {
                   )}
                 </div>
                 
-                <p className="text-xs text-gray-500 text-center">
+                <p className="text-xs text-muted-foreground text-center">
                   Recommended: Square image, max 5MB
                 </p>
               </div>
@@ -294,7 +303,7 @@ export default function Profile() {
                           />
                         </FormControl>
                         <FormMessage />
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-muted-foreground">
                           Username can be changed once per month
                         </p>
                       </FormItem>
@@ -316,7 +325,7 @@ export default function Profile() {
                           />
                         </FormControl>
                         <FormMessage />
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-muted-foreground">
                           Email is private and not shown to other users
                         </p>
                       </FormItem>
@@ -344,7 +353,7 @@ export default function Profile() {
               Theme & Customization
             </CardTitle>
             <CardDescription>
-              Customize your gaming experience with theme preferences
+              Customize your app experience with theme preferences
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -352,7 +361,7 @@ export default function Profile() {
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <Label className="text-sm font-medium">Dark Mode</Label>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Switch between light and dark themes
                 </p>
               </div>
@@ -364,70 +373,6 @@ export default function Profile() {
                   data-testid="toggle-dark-mode"
                 />
                 <Moon className="h-4 w-4" />
-              </div>
-            </div>
-            
-            <Separator />
-            
-            {/* Game Theme Colors */}
-            <div className="space-y-4">
-              <div>
-                <Label className="text-sm font-medium">Game Colors</Label>
-                <p className="text-xs text-gray-500">
-                  Choose your preferred Sudoku grid color scheme
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-xs">Classic Blue</Label>
-                  <div className="h-12 bg-blue-500 rounded-lg border-2 border-gray-300 cursor-pointer hover:border-blue-600 transition-colors" />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label className="text-xs">Purple</Label>
-                  <div className="h-12 bg-purple-500 rounded-lg border-2 border-gray-300 cursor-pointer hover:border-purple-600 transition-colors" />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label className="text-xs">Green</Label>
-                  <div className="h-12 bg-green-500 rounded-lg border-2 border-gray-300 cursor-pointer hover:border-green-600 transition-colors" />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label className="text-xs">Orange</Label>
-                  <div className="h-12 bg-orange-500 rounded-lg border-2 border-gray-300 cursor-pointer hover:border-orange-600 transition-colors" />
-                </div>
-              </div>
-            </div>
-            
-            <Separator />
-            
-            {/* Background Preferences */}
-            <div className="space-y-4">
-              <div>
-                <Label className="text-sm font-medium">Background Style</Label>
-                <p className="text-xs text-gray-500">
-                  Choose your preferred background appearance
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-xs">Minimal</Label>
-                  <div className="h-16 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border-2 border-gray-300 cursor-pointer hover:border-sudoku-primary transition-colors" />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label className="text-xs">Gradient</Label>
-                  <div className="h-16 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-lg border-2 border-gray-300 cursor-pointer hover:border-sudoku-primary transition-colors" />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label className="text-xs">Pattern</Label>
-                  <div className="h-16 bg-gradient-to-br from-indigo-50 to-cyan-50 dark:from-indigo-900 dark:to-cyan-900 rounded-lg border-2 border-gray-300 cursor-pointer hover:border-sudoku-primary transition-colors opacity-75" 
-                       style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,.15) 1px, transparent 0)' }} />
-                </div>
               </div>
             </div>
           </CardContent>
