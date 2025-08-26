@@ -120,9 +120,9 @@ export function isValidMove(
     return false;
   }
   
-  // Create a temporary grid with the new value
+  // Create a temporary grid without the current value at this position
   const tempGrid = currentGrid.map(r => [...r]);
-  tempGrid[row][col] = value;
+  tempGrid[row][col] = 0; // Clear the current value first
   
   return isValidPlacement(tempGrid, row, col, value);
 }
