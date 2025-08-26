@@ -78,7 +78,7 @@ export default function Header() {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
-              }}>Sudoku Infinity</h1>
+              }}>Sudoku Infinium</h1>
             </div>
           </div>
           
