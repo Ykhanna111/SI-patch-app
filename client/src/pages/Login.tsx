@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,6 +15,7 @@ import { Link } from 'wouter';
 export default function Login() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -30,6 +31,8 @@ export default function Login() {
       return await response.json();
     },
     onSuccess: () => {
+      // Invalidate auth query to refresh user state
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
       toast({
         title: "Welcome back!",
         description: "You've been logged in successfully.",
@@ -112,18 +115,14 @@ export default function Login() {
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
-              <Link href="/register">
-                <a className="text-sudoku-primary hover:underline" data-testid="link-register">
-                  Create one here
-                </a>
+              <Link href="/register" className="text-sudoku-primary hover:underline" data-testid="link-register">
+                Create one here
               </Link>
             </p>
             <p className="mt-2 text-sm text-gray-600">
               Or{' '}
-              <Link href="/guest">
-                <a className="text-sudoku-primary hover:underline" data-testid="link-guest">
-                  play as guest
-                </a>
+              <Link href="/guest" className="text-sudoku-primary hover:underline" data-testid="link-guest">
+                play as guest
               </Link>
             </p>
           </div>
