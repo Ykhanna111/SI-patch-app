@@ -78,13 +78,13 @@ export const registerSchema = z.object({
     .min(3, "Username must be at least 3 characters")
     .max(50, "Username must be less than 50 characters")
     .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
-  email: z.string().email("Invalid email address").optional(),
+  email: z.string().email("Invalid email address").or(z.literal("")).optional(),
   password: passwordSchema,
   firstName: z.string().min(1, "First name is required").max(50),
   lastName: z.string().min(1, "Last name is required").max(50),
 }).refine((data) => {
   return data.password !== data.username && 
-         (!data.email || data.password !== data.email);
+         (!data.email || data.email === "" || data.password !== data.email);
 }, {
   message: "Password cannot match username or email",
   path: ["password"]

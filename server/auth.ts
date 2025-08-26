@@ -4,6 +4,7 @@ import session from 'express-session';
 import connectPg from 'connect-pg-simple';
 import { storage } from './storage';
 import type { RegisterInput, LoginInput } from '../shared/schema';
+import { registerSchema } from '../shared/schema';
 
 // Extend session data type
 declare module 'express-session' {
@@ -57,7 +58,15 @@ export async function setupAuth(app: Express) {
   // Register endpoint
   app.post('/api/auth/register', async (req, res) => {
     try {
-      const data = req.body as RegisterInput;
+      // Validate input using the schema
+      const validation = registerSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ 
+          message: "Validation failed", 
+          errors: validation.error.errors 
+        });
+      }
+      const data = validation.data;
       
       // Check if username already exists
       const existingUser = await storage.getUserByUsername(data.username);
@@ -66,7 +75,7 @@ export async function setupAuth(app: Express) {
       }
 
       // Check if email already exists (if provided)
-      if (data.email) {
+      if (data.email && data.email.trim() !== "") {
         const existingEmailUser = await storage.getUserByEmail(data.email);
         if (existingEmailUser) {
           return res.status(400).json({ message: "Email already exists" });
@@ -79,7 +88,7 @@ export async function setupAuth(app: Express) {
       // Create user
       const user = await storage.createUser({
         username: data.username,
-        email: data.email || null,
+        email: data.email && data.email.trim() !== "" ? data.email : null,
         password: hashedPassword,
         firstName: data.firstName,
         lastName: data.lastName,
@@ -135,6 +144,9 @@ export async function setupAuth(app: Express) {
   app.get('/api/auth/user', isAuthenticated, async (req, res) => {
     try {
       const userId = req.session.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "No user session found" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user) {
