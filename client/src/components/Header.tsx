@@ -44,7 +44,7 @@ export default function Header() {
   };
 
   const handlePlayAsGuest = () => {
-    setLocation('/guest');
+    setLocation('/select-game');
   };
 
   const handleHowToPlay = () => {

@@ -28,16 +28,19 @@ export default function GameModeSelector({ onSelectGame, isCreating = false }: G
   }
 
   const handleModeSelect = (mode: GameMode) => {
+    console.log('Selected mode:', mode); // Debug log
     setSelectedMode(mode);
     setSelectedDifficulty(null);
   };
 
   const handleDifficultySelect = (difficulty: Difficulty) => {
+    console.log('Selected difficulty:', difficulty); // Debug log
     setSelectedDifficulty(difficulty);
   };
 
   const handlePlayClick = () => {
     if (selectedMode && selectedDifficulty) {
+      console.log('Playing game with:', { selectedMode, selectedDifficulty }); // Debug log
       onSelectGame(selectedMode, selectedDifficulty);
     }
   };

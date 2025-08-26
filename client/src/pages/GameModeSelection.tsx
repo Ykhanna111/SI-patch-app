@@ -25,6 +25,7 @@ export default function GameModeSelection() {
       return await response.json();
     },
     onSuccess: (game: Game) => {
+      console.log('Game created successfully:', game); // Debug log
       if (game && typeof game === 'object' && 'id' in game) {
         toast({
           title: "Game Created!",
@@ -58,6 +59,7 @@ export default function GameModeSelection() {
   });
 
   const handleGameSelection = (gameMode: GameMode, difficulty: Difficulty) => {
+    console.log('Creating game with:', { gameMode, difficulty }); // Debug log
     createGameMutation.mutate({ gameMode, difficulty });
   };
 
