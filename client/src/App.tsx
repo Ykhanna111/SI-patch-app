@@ -10,6 +10,7 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Game from "@/pages/Game";
 import Profile from "@/pages/Profile";
+import HowToPlay from "@/pages/HowToPlay";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,6 +28,7 @@ function Router() {
           <Route path="/profile" component={Profile} />
           <Route path="/guest" component={Game} />
           <Route path="/game" component={Game} />
+          <Route path="/how-to-play" component={HowToPlay} />
         </>
       )}
       <Route component={NotFound} />

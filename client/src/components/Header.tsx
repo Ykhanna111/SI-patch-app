@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Settings, LogOut, User } from "lucide-react";
+import { Settings, LogOut, User, HelpCircle } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -39,6 +39,14 @@ export default function Header() {
     setLocation('/login');
   };
 
+  const handlePlayAsGuest = () => {
+    setLocation('/guest');
+  };
+
+  const handleHowToPlay = () => {
+    setLocation('/how-to-play');
+  };
+
   const handleLogout = () => {
     logoutMutation.mutate();
   };
@@ -57,6 +65,17 @@ export default function Header() {
           </div>
           
           <div className="flex items-center space-x-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleHowToPlay}
+              className="text-gray-600 hover:text-gray-800"
+              data-testid="button-how-to-play"
+            >
+              <HelpCircle className="h-4 w-4 mr-1" />
+              How to Play
+            </Button>
+
             {isAuthenticated && user ? (
               <>
                 <div className="hidden sm:flex items-center space-x-2 text-sm">
@@ -92,12 +111,16 @@ export default function Header() {
               </>
             ) : (
               <>
-                <div className="hidden sm:flex items-center space-x-2 text-sm">
-                  <div className="flex items-center space-x-1 text-gray-600">
-                    <User className="h-4 w-4" />
-                    <span data-testid="text-guest">Guest</span>
-                  </div>
-                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handlePlayAsGuest}
+                  className="text-gray-600 hover:text-gray-800"
+                  data-testid="button-play-guest"
+                >
+                  <User className="h-4 w-4 mr-1" />
+                  Play as Guest
+                </Button>
                 
                 <Button
                   onClick={handleLogin}
