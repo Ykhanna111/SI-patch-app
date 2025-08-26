@@ -135,12 +135,17 @@ export default function GamePage() {
   const getHintMutation = useMutation({
     mutationFn: async () => {
       if (!currentGame) throw new Error('No active game');
+      console.log('Getting hint for game:', currentGame.id);
+      console.log('Current grid:', currentGrid);
+      
       const response = await apiRequest('POST', `/api/games/${currentGame.id}/hint`, {
         currentState: currentGrid,
       });
       return await response.json();
     },
     onSuccess: (hint: { row: number; col: number; value: number } | null) => {
+      console.log('Hint response:', hint);
+      
       if (!hint) {
         toast({
           title: "No hints available",
@@ -182,6 +187,14 @@ export default function GamePage() {
 
       checkCompletion(newGrid);
     },
+    onError: (error) => {
+      console.error('Hint error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to get hint. Please try again.",
+        variant: "destructive",
+      });
+    },
   });
 
   const initializeGame = (game: Game) => {
@@ -199,7 +212,7 @@ export default function GamePage() {
 
   // Initialize with active game or start new game
   useEffect(() => {
-    if (isAuthenticated && activeGame) {
+    if (isAuthenticated && activeGame && activeGame.id) {
       initializeGame(activeGame);
     } else if (!isAuthenticated && !currentGame) {
       // Start a new medium game by default for guests
