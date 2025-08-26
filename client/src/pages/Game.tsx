@@ -450,9 +450,69 @@ export default function GamePage() {
   };
 
   if (!currentGame) {
-    // Redirect to game selection instead of showing duplicate interface
-    setLocation(isAuthenticated ? '/' : '/select-game');
-    return null;
+    return (
+      <div className="min-h-screen bg-sudoku-bg">
+        <Header />
+        
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">Choose Your Challenge</h1>
+            <p className="text-lg text-gray-600">Select a difficulty level to start playing</p>
+            {!isAuthenticated && (
+              <div className="mt-4">
+                <Button
+                  variant="outline"
+                  onClick={backToDashboard}
+                  className="flex items-center gap-2 mx-auto"
+                  data-testid="button-back-dashboard-challenge"
+                >
+                  <Home className="h-4 w-4" />
+                  Back to Dashboard
+                </Button>
+              </div>
+            )}
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { level: 'easy', title: 'Easy', description: 'Perfect for beginners', color: 'bg-green-500' },
+              { level: 'medium', title: 'Medium', description: 'A balanced challenge', color: 'bg-yellow-500' },
+              { level: 'hard', title: 'Hard', description: 'For experienced players', color: 'bg-orange-500' },
+              { level: 'expert', title: 'Expert', description: 'Ultimate challenge', color: 'bg-red-500' }
+            ].map((difficulty) => (
+              <div
+                key={difficulty.level}
+                className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
+                onClick={() => {
+                  setCreatingDifficulty(difficulty.level);
+                  createGameMutation.mutate(difficulty.level);
+                }}
+              >
+                <div className={`h-2 ${difficulty.color}`}></div>
+                <div className="p-6 text-center">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{difficulty.title}</h3>
+                  <p className="text-gray-600 mb-4">{difficulty.description}</p>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCreatingDifficulty(difficulty.level);
+                      createGameMutation.mutate(difficulty.level);
+                    }}
+                    disabled={createGameMutation.isPending}
+                    className="w-full bg-sudoku-primary text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                    data-testid={`button-start-${difficulty.level}`}
+                  >
+                    {createGameMutation.isPending && creatingDifficulty === difficulty.level 
+                      ? `Creating ${difficulty.title}...` 
+                      : 'Start Game'}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
