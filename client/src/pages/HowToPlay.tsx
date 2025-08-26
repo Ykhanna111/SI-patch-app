@@ -1,19 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/Header";
 
 export default function HowToPlay() {
+  const { isAuthenticated } = useAuth();
+  const [location] = useLocation();
+  
+  // Determine back destination based on user status
+  // If not logged in or not in game context, go to main dashboard
+  // If logged in or playing as guest, go to game selection
+  const isInGameContext = isAuthenticated || location.includes('guest') || location.includes('game');
+  const backUrl = isInGameContext ? '/game' : '/';
+  const backText = isInGameContext ? 'Back to Choose Your Challenge' : 'Back to Dashboard';
+  
   return (
     <div className="min-h-screen bg-sudoku-bg">
       <Header />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-6">
-          <Link href="/game" className="inline-flex items-center text-sudoku-primary hover:text-indigo-700 transition-colors" data-testid="link-back-challenge">
+          <Link href={backUrl} className="inline-flex items-center text-sudoku-primary hover:text-indigo-700 transition-colors" data-testid="link-back">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Choose Your Challenge
+            {backText}
           </Link>
         </div>
 

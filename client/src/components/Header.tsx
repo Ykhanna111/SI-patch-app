@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Settings, LogOut, User, HelpCircle } from "lucide-react";
@@ -6,12 +7,14 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation, Link } from "wouter";
+import HowToPlayDialog from "./HowToPlayDialog";
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [showHowToPlayDialog, setShowHowToPlayDialog] = useState(false);
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -44,7 +47,14 @@ export default function Header() {
   };
 
   const handleHowToPlay = () => {
-    setLocation('/how-to-play');
+    // Show popup if user is in game (/, /guest, /game routes when game is active)
+    const isInGame = location === '/' && isAuthenticated || location === '/guest' || location === '/game';
+    
+    if (isInGame) {
+      setShowHowToPlayDialog(true);
+    } else {
+      setLocation('/how-to-play');
+    }
   };
 
   const handleLogout = () => {
@@ -136,6 +146,11 @@ export default function Header() {
           </div>
         </div>
       </div>
+      
+      <HowToPlayDialog 
+        open={showHowToPlayDialog} 
+        onOpenChange={setShowHowToPlayDialog} 
+      />
     </header>
   );
 }
