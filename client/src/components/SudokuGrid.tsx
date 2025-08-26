@@ -27,9 +27,11 @@ export default function SudokuGrid({
       (Math.floor(selectedCell.row / 3) === Math.floor(row / 3) && 
        Math.floor(selectedCell.col / 3) === Math.floor(col / 3))
     );
-    const isNumberHighlighted = selectedNumber && currentGrid[row][col] === selectedNumber && currentGrid[row][col] !== 0;
-    const isPrefilled = originalPuzzle[row][col] !== 0;
-    const hasValue = currentGrid[row][col] !== 0;
+    const currentValue = currentGrid && currentGrid[row] && currentGrid[row][col] ? currentGrid[row][col] : 0;
+    const originalValue = originalPuzzle && originalPuzzle[row] && originalPuzzle[row][col] ? originalPuzzle[row][col] : 0;
+    const isNumberHighlighted = selectedNumber && currentValue === selectedNumber && currentValue !== 0;
+    const isPrefilled = originalValue !== 0;
+    const hasValue = currentValue !== 0;
 
     return cn(
       "w-10 h-10 sm:w-12 sm:h-12 border border-gray-300 flex items-center justify-center text-lg font-bold cursor-pointer transition-colors",
@@ -49,13 +51,15 @@ export default function SudokuGrid({
   };
 
   const getTextClasses = (row: number, col: number) => {
-    const isPrefilled = originalPuzzle[row][col] !== 0;
+    const originalValue = originalPuzzle && originalPuzzle[row] && originalPuzzle[row][col] ? originalPuzzle[row][col] : 0;
+    const currentValue = currentGrid && currentGrid[row] && currentGrid[row][col] ? currentGrid[row][col] : 0;
+    const isPrefilled = originalValue !== 0;
     
     return cn(
       "select-none",
       {
         "text-gray-400": isPrefilled,
-        "text-sudoku-primary": !isPrefilled && currentGrid[row][col] !== 0,
+        "text-sudoku-primary": !isPrefilled && currentValue !== 0,
       }
     );
   };
@@ -86,7 +90,7 @@ export default function SudokuGrid({
               data-testid={`cell-${row}-${col}`}
             >
               <span className={getTextClasses(row, col)}>
-                {currentGrid[row]?.[col] || ''}
+                {currentGrid && currentGrid[row] && currentGrid[row][col] ? currentGrid[row][col] : ''}
               </span>
             </div>
           ))

@@ -27,7 +27,7 @@ export default function GamePage() {
 
   // Game state
   const [currentGame, setCurrentGame] = useState<Game | null>(null);
-  const [currentGrid, setCurrentGrid] = useState<SudokuGrid>([]);
+  const [currentGrid, setCurrentGrid] = useState<SudokuGrid>(Array(9).fill(0).map(() => Array(9).fill(0)));
   const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [mistakes, setMistakes] = useState(0);
@@ -93,6 +93,7 @@ export default function GamePage() {
     queryKey: ['/api/games/user/active'],
     enabled: isAuthenticated,
     retry: false,
+    staleTime: 30000, // 30 seconds
   });
 
   // Create new game
@@ -102,11 +103,13 @@ export default function GamePage() {
       return await response.json();
     },
     onSuccess: (game: Game) => {
-      initializeGame(game);
-      toast({
-        title: "New Game",
-        description: `Started a new ${game.difficulty} puzzle!`,
-      });
+      if (game && typeof game === 'object' && 'id' in game) {
+        initializeGame(game);
+        toast({
+          title: "New Game",
+          description: `Started a new ${game.difficulty} puzzle!`,
+        });
+      }
     },
     onError: (error) => {
       toast({
@@ -198,22 +201,35 @@ export default function GamePage() {
   });
 
   const initializeGame = (game: Game) => {
-    setCurrentGame(game);
-    setCurrentGrid(JSON.parse(game.currentState));
-    setMistakes(game.mistakes || 0);
-    setHintsUsed(game.hintsUsed || 0);
-    setTimeElapsed(game.timeElapsed || 0);
-    setIsCompleted(game.isCompleted || false);
-    setMoves(game.moves ? JSON.parse(game.moves) : []);
-    setSelectedCell(null);
-    setSelectedNumber(null);
-    setIsPaused(false);
+    try {
+      setCurrentGame(game);
+      const parsedGrid = JSON.parse(game.currentState);
+      // Ensure we have a valid 9x9 grid
+      const validGrid = Array.isArray(parsedGrid) && parsedGrid.length === 9 && 
+        parsedGrid.every(row => Array.isArray(row) && row.length === 9) 
+        ? parsedGrid 
+        : Array(9).fill(0).map(() => Array(9).fill(0));
+      
+      setCurrentGrid(validGrid);
+      setMistakes(game.mistakes || 0);
+      setHintsUsed(game.hintsUsed || 0);
+      setTimeElapsed(game.timeElapsed || 0);
+      setIsCompleted(game.isCompleted || false);
+      setMoves(game.moves ? JSON.parse(game.moves) : []);
+      setSelectedCell(null);
+      setSelectedNumber(null);
+      setIsPaused(false);
+    } catch (error) {
+      console.error('Error initializing game:', error);
+      setCurrentGame(null);
+      setCurrentGrid(Array(9).fill(0).map(() => Array(9).fill(0)));
+    }
   };
 
   // Initialize with active game only, don't auto-start new games
   useEffect(() => {
-    if (isAuthenticated && activeGame && activeGame.id) {
-      initializeGame(activeGame);
+    if (isAuthenticated && activeGame && typeof activeGame === 'object' && 'id' in activeGame) {
+      initializeGame(activeGame as Game);
     }
   }, [activeGame, isAuthenticated]);
 
@@ -348,11 +364,11 @@ export default function GamePage() {
 
   const getNumberCounts = () => {
     const counts = Array(10).fill(0); // Index 0 is unused, 1-9 for numbers
-    if (currentGrid && currentGrid.length > 0) {
+    if (currentGrid && Array.isArray(currentGrid) && currentGrid.length > 0) {
       currentGrid.forEach(row => {
-        if (row) {
+        if (row && Array.isArray(row)) {
           row.forEach(cell => {
-            if (cell !== 0) counts[cell]++;
+            if (typeof cell === 'number' && cell !== 0) counts[cell]++;
           });
         }
       });
@@ -460,8 +476,8 @@ export default function GamePage() {
               </div>
 
               <SudokuGrid
-                currentGrid={currentGrid}
-                originalPuzzle={JSON.parse(currentGame.puzzle)}
+                currentGrid={currentGrid || []}
+                originalPuzzle={currentGame.puzzle ? JSON.parse(currentGame.puzzle) : []}
                 selectedCell={selectedCell}
                 selectedNumber={selectedNumber}
                 onCellClick={handleCellClick}
