@@ -67,6 +67,17 @@ export default {
         'sudoku-error': 'var(--sudoku-error)',
         'sudoku-bg': 'var(--sudoku-bg)',
         'sudoku-dark': 'var(--sudoku-dark)',
+        // Additional color variations for game modes
+        'blue-25': 'var(--blue-25)',
+        'blue-50': 'var(--blue-50)',
+        'red-25': 'var(--red-25)',
+        'green-25': 'var(--green-25)',
+        'yellow-25': 'var(--yellow-25)',
+        'purple-25': 'var(--purple-25)',
+        'pink-25': 'var(--pink-25)',
+        'indigo-25': 'var(--indigo-25)',
+        'gray-25': 'var(--gray-25)',
+        'orange-25': 'var(--orange-25)',
       },
       fontFamily: {
         sans: ["var(--font-sans)"],

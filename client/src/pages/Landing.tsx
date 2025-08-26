@@ -32,7 +32,7 @@ export default function Landing() {
               </Button>
             </Link>
             
-            <Link href="/guest">
+            <Link href="/select-game">
               <Button variant="outline" size="lg" className="w-full" data-testid="button-guest">
                 Play as Guest
               </Button>

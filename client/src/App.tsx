@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/Landing";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import GameModeSelection from "@/pages/GameModeSelection";
 import Game from "@/pages/Game";
 import Profile from "@/pages/Profile";
 import HowToPlay from "@/pages/HowToPlay";
@@ -22,11 +23,11 @@ function Router() {
         <Route path="/" component={() => <div className="min-h-screen flex items-center justify-center">Loading...</div>} />
       ) : (
         <>
-          <Route path="/" component={isAuthenticated ? Game : Landing} />
+          <Route path="/" component={isAuthenticated ? GameModeSelection : Landing} />
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/profile" component={Profile} />
-          <Route path="/guest" component={Game} />
+          <Route path="/select-game" component={GameModeSelection} />
           <Route path="/game" component={Game} />
           <Route path="/how-to-play" component={HowToPlay} />
         </>

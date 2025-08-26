@@ -58,6 +58,18 @@
   --sudoku-error: hsl(4 78% 60%);
   --sudoku-bg: hsl(0 0% 98%);
   --sudoku-dark: hsl(25 50% 25%);
+  
+  /* Additional color variations for game modes */
+  --blue-25: hsl(210 100% 97%);
+  --blue-50: hsl(210 100% 95%);
+  --red-25: hsl(0 100% 97%);
+  --green-25: hsl(120 100% 97%);
+  --yellow-25: hsl(60 100% 97%);
+  --purple-25: hsl(280 100% 97%);
+  --pink-25: hsl(320 100% 97%);
+  --indigo-25: hsl(240 100% 97%);
+  --gray-25: hsl(0 0% 97%);
+  --orange-25: hsl(30 100% 97%);
 }
 
 .dark {

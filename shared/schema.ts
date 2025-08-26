@@ -40,10 +40,13 @@ export const users = pgTable("users", {
 export const games = pgTable("games", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id),
+  gameMode: varchar("game_mode").notNull().default("standard"), // 'standard', 'mini-4x4', 'mini-6x6', 'jigsaw', 'diagonal', 'killer', 'hyper', 'odd-even', 'inequality', 'consecutive'
+  gridSize: integer("grid_size").notNull().default(9), // 4, 6, or 9
   difficulty: varchar("difficulty").notNull(), // 'easy', 'medium', 'hard', 'expert'
   puzzle: text("puzzle").notNull(), // JSON string of the initial puzzle
   currentState: text("current_state").notNull(), // JSON string of current state
   solution: text("solution").notNull(), // JSON string of the solution
+  constraints: text("constraints"), // JSON string of mode-specific constraints (cages, inequalities, etc.)
   timeElapsed: integer("time_elapsed").default(0), // in seconds
   mistakes: integer("mistakes").default(0),
   hintsUsed: integer("hints_used").default(0),

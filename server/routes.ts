@@ -4,6 +4,8 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./auth";
 import { insertGameSchema } from "@shared/schema";
 import { generateSudoku, solveSudoku, isValidMove, getHint } from "./services/sudokuGenerator";
+import { generatePuzzleForMode, isValidMoveForMode } from "./services/gameModeGenerators";
+import { GameMode, Difficulty } from "@shared/gameTypes";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -14,20 +16,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Game routes
   app.post('/api/games', async (req, res) => {
     try {
-      const { difficulty } = req.body;
+      const { difficulty, gameMode = 'standard' } = req.body;
       
       if (!['easy', 'medium', 'hard', 'expert'].includes(difficulty)) {
         return res.status(400).json({ message: "Invalid difficulty level" });
       }
 
-      const { puzzle, solution } = generateSudoku(difficulty);
+      const validGameModes = ['standard', 'mini-4x4', 'mini-6x6', 'jigsaw', 'diagonal', 'killer', 'hyper', 'odd-even', 'inequality', 'consecutive'];
+      if (!validGameModes.includes(gameMode)) {
+        return res.status(400).json({ message: "Invalid game mode" });
+      }
+
+      // Generate puzzle based on game mode
+      let puzzle, solution, constraints;
+      if (gameMode === 'standard') {
+        const result = generateSudoku(difficulty);
+        puzzle = result.puzzle;
+        solution = result.solution;
+      } else {
+        const result = generatePuzzleForMode(gameMode as GameMode, difficulty as Difficulty);
+        puzzle = result.puzzle;
+        solution = result.solution;
+        constraints = result.constraints;
+      }
+
+      const gridSize = gameMode === 'mini-4x4' ? 4 : gameMode === 'mini-6x6' ? 6 : 9;
       
       const gameData = {
         userId: req.session?.userId || null,
+        gameMode,
+        gridSize,
         difficulty,
         puzzle: JSON.stringify(puzzle),
         currentState: JSON.stringify(puzzle),
         solution: JSON.stringify(solution),
+        constraints: constraints ? JSON.stringify(constraints) : null,
         moves: JSON.stringify([]),
       };
 

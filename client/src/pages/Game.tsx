@@ -8,11 +8,17 @@ import { useLocation } from "wouter";
 import Header from "@/components/Header";
 import GameControls from "@/components/GameControls";
 import SudokuGrid from "@/components/SudokuGrid";
+import EnhancedSudokuGrid from "@/components/EnhancedSudokuGrid";
 import GameStats from "@/components/GameStats";
 import NumberSelector from "@/components/NumberSelector";
+import EnhancedNumberSelector from "@/components/EnhancedNumberSelector";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, RotateCcw, Home } from "lucide-react";
+import { ArrowLeft, RotateCcw, Home, HelpCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 import type { Game } from "@shared/schema";
+import { GameMode, GAME_MODES, GameConstraints, getGridDimensions, getValidNumbers } from "@shared/gameTypes";
 
 type SudokuGrid = number[][];
 type Move = {
@@ -43,6 +49,12 @@ export default function GamePage() {
   const [showGameComplete, setShowGameComplete] = useState(false);
   const [showGameFailed, setShowGameFailed] = useState(false);
   const [creatingDifficulty, setCreatingDifficulty] = useState<string | null>(null);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
+  
+  // Game mode specific state
+  const gameMode = (currentGame?.gameMode as GameMode) || 'standard';
+  const gridSize = currentGame?.gridSize || 9;
+  const constraints = currentGame?.constraints ? JSON.parse(currentGame.constraints) as GameConstraints : undefined;
 
   // Timer
   useEffect(() => {
@@ -213,11 +225,13 @@ export default function GamePage() {
     try {
       setCurrentGame(game);
       const parsedGrid = JSON.parse(game.currentState);
-      // Ensure we have a valid 9x9 grid
-      const validGrid = Array.isArray(parsedGrid) && parsedGrid.length === 9 && 
-        parsedGrid.every(row => Array.isArray(row) && row.length === 9) 
+      const size = game.gridSize || 9;
+      
+      // Ensure we have a valid grid of the correct size
+      const validGrid = Array.isArray(parsedGrid) && parsedGrid.length === size && 
+        parsedGrid.every(row => Array.isArray(row) && row.length === size) 
         ? parsedGrid 
-        : Array(9).fill(0).map(() => Array(9).fill(0));
+        : Array(size).fill(0).map(() => Array(size).fill(0));
       
       setCurrentGrid(validGrid);
       setMistakes(game.mistakes || 0);
@@ -231,7 +245,8 @@ export default function GamePage() {
     } catch (error) {
       console.error('Error initializing game:', error);
       setCurrentGame(null);
-      setCurrentGrid(Array(9).fill(0).map(() => Array(9).fill(0)));
+      const size = 9; // fallback to standard size
+      setCurrentGrid(Array(size).fill(0).map(() => Array(size).fill(0)));
     }
   };
 
@@ -420,12 +435,13 @@ export default function GamePage() {
   };
 
   const getNumberCounts = () => {
-    const counts = Array(10).fill(0); // Index 0 is unused, 1-9 for numbers
+    const maxNum = gridSize === 4 ? 4 : gridSize === 6 ? 6 : 9;
+    const counts = Array(maxNum + 1).fill(0); // Index 0 is unused
     if (currentGrid && Array.isArray(currentGrid) && currentGrid.length > 0) {
       currentGrid.forEach(row => {
         if (row && Array.isArray(row)) {
           row.forEach(cell => {
-            if (typeof cell === 'number' && cell !== 0) counts[cell]++;
+            if (typeof cell === 'number' && cell !== 0 && cell <= maxNum) counts[cell]++;
           });
         }
       });
@@ -537,11 +553,24 @@ export default function GamePage() {
                     <ArrowLeft className="h-4 w-4" />
                     Back to Menu
                   </Button>
-                  <h2 className="text-xl font-bold text-gray-900" data-testid="text-puzzle-title">
-                    {currentGame.difficulty.charAt(0).toUpperCase() + currentGame.difficulty.slice(1)} Puzzle
-                  </h2>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">{GAME_MODES[gameMode]?.icon || '🔢'}</span>
+                    <h2 className="text-xl font-bold text-gray-900" data-testid="text-puzzle-title">
+                      {currentGame.difficulty.charAt(0).toUpperCase() + currentGame.difficulty.slice(1)} {GAME_MODES[gameMode]?.name || 'Sudoku'}
+                    </h2>
+                  </div>
                 </div>
                 <div className="flex space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowHowToPlay(true)}
+                    className="flex items-center gap-2"
+                    data-testid="button-how-to-play"
+                  >
+                    <HelpCircle className="h-4 w-4" />
+                    How to Play
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
@@ -574,17 +603,20 @@ export default function GamePage() {
                 </div>
               </div>
 
-              <SudokuGrid
+              <EnhancedSudokuGrid
+                gameMode={gameMode}
                 currentGrid={currentGrid || []}
                 originalPuzzle={currentGame.puzzle ? JSON.parse(currentGame.puzzle) : []}
                 selectedCell={selectedCell}
                 selectedNumber={selectedNumber}
                 onCellClick={handleCellClick}
                 isPaused={isPaused}
+                constraints={constraints}
               />
 
               <div className="mt-6">
-                <NumberSelector
+                <EnhancedNumberSelector
+                  gameMode={gameMode}
                   selectedNumber={selectedNumber}
                   onNumberSelect={handleNumberSelect}
                   onErase={handleErase}
@@ -596,6 +628,74 @@ export default function GamePage() {
           </div>
         </div>
       </div>
+
+      {/* How to Play Dialog */}
+      <Dialog open={showHowToPlay} onOpenChange={setShowHowToPlay}>
+        <DialogContent className="max-w-2xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <span className="text-2xl">{GAME_MODES[gameMode]?.icon}</span>
+              How to Play {GAME_MODES[gameMode]?.name}
+            </DialogTitle>
+            <DialogDescription>
+              {GAME_MODES[gameMode]?.description}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <ScrollArea className="max-h-[60vh] pr-4">
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-semibold mb-2">Rules</h4>
+                <ul className="space-y-1">
+                  {GAME_MODES[gameMode]?.rules.map((rule, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="text-sudoku-primary">•</span>
+                      <span className="text-sm">{rule}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <h4 className="font-semibold mb-2">Grid Information</h4>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium">Grid Size:</span>
+                    <span className="ml-2">{gridSize}×{gridSize}</span>
+                  </div>
+                  <div>
+                    <span className="font-medium">Difficulty:</span>
+                    <Badge variant="outline" className="ml-2 text-xs">
+                      {currentGame?.difficulty}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              {gameMode === 'killer' && constraints?.killerCages && (
+                <div>
+                  <h4 className="font-semibold mb-2">Killer Sudoku Cages</h4>
+                  <div className="bg-gray-50 p-3 rounded text-sm">
+                    <p>This puzzle has {constraints.killerCages.length} cages with target sums.</p>
+                    <p className="mt-1">Each cage must sum to its target number with no repeated digits.</p>
+                  </div>
+                </div>
+              )}
+
+              {gameMode === 'odd-even' && constraints?.oddEvenCells && (
+                <div>
+                  <h4 className="font-semibold mb-2">Odd-Even Constraints</h4>
+                  <div className="bg-gray-50 p-3 rounded text-sm">
+                    <p>Gray cells: Only odd numbers (1,3,5,7,9)</p>
+                    <p>Blue cells: Only even numbers (2,4,6,8)</p>
+                    <p>White cells: Any number allowed</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
