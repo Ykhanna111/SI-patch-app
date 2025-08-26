@@ -33,7 +33,7 @@ export default function GamePage() {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
 
   // Game state
   const [currentGame, setCurrentGame] = useState<Game | null>(null);
