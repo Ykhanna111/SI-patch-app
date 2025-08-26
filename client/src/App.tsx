@@ -27,7 +27,7 @@ function Router() {
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/profile" component={Profile} />
-          <Route path="/select-game" component={Game} />
+          <Route path="/select-game" component={GameModeSelection} />
           <Route path="/game" component={Game} />
           <Route path="/how-to-play" component={HowToPlay} />
         </>
