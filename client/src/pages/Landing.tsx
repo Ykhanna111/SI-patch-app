@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Header from "@/components/Header";
 import { Gamepad2, Trophy, Clock, Target } from "lucide-react";
 import { Link } from "wouter";
+import logoImage from "@assets/ChatGPT_Image_Aug_26__2025__08_08_54_PM-removebg-preview_1756219381419.png";
 
 export default function Landing() {
 
@@ -12,16 +13,16 @@ export default function Landing() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <div className="w-20 h-20 bg-gradient-to-br from-sudoku-primary to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <div className="w-12 h-12 grid grid-cols-3 gap-1">
-              {Array.from({ length: 9 }).map((_, i) => (
-                <div key={i} className="w-3 h-3 bg-white rounded-sm" />
-              ))}
-            </div>
+          <div className="flex justify-center mb-6">
+            <img 
+              src={logoImage} 
+              alt="Sudoku Infinity Logo" 
+              className="w-48 h-48 md:w-64 md:h-64 object-contain"
+            />
           </div>
           
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4">
-            Sudoku Master
+            Welcome to Sudoku Infinity
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Challenge your mind with our beautiful Sudoku puzzles. Multiple difficulty levels, 

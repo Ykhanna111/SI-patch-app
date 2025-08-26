@@ -4,13 +4,14 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { useLocation } from "wouter";
 import Header from "@/components/Header";
 import GameControls from "@/components/GameControls";
 import SudokuGrid from "@/components/SudokuGrid";
 import GameStats from "@/components/GameStats";
 import NumberSelector from "@/components/NumberSelector";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, RotateCcw } from "lucide-react";
+import { ArrowLeft, RotateCcw, Home } from "lucide-react";
 import type { Game } from "@shared/schema";
 
 type SudokuGrid = number[][];
@@ -26,6 +27,7 @@ export default function GamePage() {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [location] = useLocation();
 
   // Game state
   const [currentGame, setCurrentGame] = useState<Game | null>(null);
@@ -400,6 +402,10 @@ export default function GamePage() {
     setShowGameFailed(false);
   };
 
+  const backToDashboard = () => {
+    window.location.href = '/';
+  };
+
   const togglePause = () => {
     setIsPaused(prev => !prev);
   };
@@ -510,6 +516,18 @@ export default function GamePage() {
                     <ArrowLeft className="h-4 w-4" />
                     Back to Menu
                   </Button>
+                  {location === '/guest' && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={backToDashboard}
+                      className="flex items-center gap-2 text-gray-600 hover:text-gray-800"
+                      data-testid="button-back-dashboard"
+                    >
+                      <Home className="h-4 w-4" />
+                      Dashboard
+                    </Button>
+                  )}
                   <h2 className="text-xl font-bold text-gray-900" data-testid="text-puzzle-title">
                     {currentGame.difficulty.charAt(0).toUpperCase() + currentGame.difficulty.slice(1)} Puzzle
                   </h2>

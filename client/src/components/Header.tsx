@@ -8,7 +8,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation, Link } from "wouter";
 import HowToPlayDialog from "./HowToPlayDialog";
-import logoImage from "@assets/ChatGPT Image Aug 26, 2025, 08_08_54 PM_1756219245278.png";
+import logoImage from "@assets/ChatGPT_Image_Aug_26__2025__08_08_54_PM-removebg-preview_1756219381419.png";
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
@@ -71,7 +71,7 @@ export default function Header() {
               <img 
                 src={logoImage} 
                 alt="Sudoku Infinity Logo" 
-                className="w-8 h-8 object-contain"
+                className="w-12 h-12 object-contain"
               />
               <h1 className="text-xl font-bold text-gray-900">Sudoku Infinity</h1>
             </div>
