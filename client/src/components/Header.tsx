@@ -2,16 +2,45 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Settings, LogOut, User } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 export default function Header() {
   const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest('POST', '/api/auth/logout', {});
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.removeQueries({ queryKey: ["/api/auth/user"] });
+      toast({
+        title: "Logged out",
+        description: "You've been logged out successfully.",
+      });
+      setLocation('/');
+    },
+    onError: () => {
+      toast({
+        title: "Logout failed",
+        description: "There was an error logging you out.",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleLogin = () => {
-    window.location.href = '/api/login';
+    setLocation('/login');
   };
 
   const handleLogout = () => {
-    window.location.href = '/api/logout';
+    logoutMutation.mutate();
   };
 
   return (
@@ -34,7 +63,7 @@ export default function Header() {
                   <div className="flex items-center space-x-1 text-gray-600">
                     <User className="h-4 w-4" />
                     <span data-testid="text-username">
-                      {(user as UserType)?.firstName ? `${(user as UserType).firstName} ${(user as UserType).lastName || ''}`.trim() : (user as UserType)?.email}
+                      {(user as UserType)?.firstName ? `${(user as UserType).firstName} ${(user as UserType).lastName || ''}`.trim() : (user as UserType)?.username}
                     </span>
                   </div>
                 </div>

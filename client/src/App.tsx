@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/Landing";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
 import Game from "@/pages/Game";
 import NotFound from "@/pages/not-found";
 
@@ -18,6 +20,9 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={isAuthenticated ? Game : Landing} />
+          <Route path="/login" component={Login} />
+          <Route path="/register" component={Register} />
+          <Route path="/guest" component={Game} />
           <Route path="/game" component={Game} />
         </>
       )}

@@ -2,15 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Header from "@/components/Header";
 import { Gamepad2, Trophy, Clock, Target } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Landing() {
-  const handlePlayAsGuest = () => {
-    window.location.href = '/game';
-  };
-
-  const handleLogin = () => {
-    window.location.href = '/api/login';
-  };
 
   return (
     <div className="min-h-screen bg-sudoku-bg">
@@ -34,26 +28,24 @@ export default function Landing() {
             progress tracking, and endless entertainment await!
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              onClick={handlePlayAsGuest}
-              size="lg"
-              className="bg-sudoku-secondary hover:bg-emerald-700 text-white px-8 py-4 text-lg font-semibold"
-              data-testid="button-play-guest"
-            >
-              <Gamepad2 className="mr-2 h-5 w-5" />
-              Play as Guest
-            </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+            <Link href="/login">
+              <Button size="lg" className="w-full" data-testid="button-login">
+                Login to Play
+              </Button>
+            </Link>
             
-            <Button 
-              onClick={handleLogin}
-              size="lg"
-              variant="outline"
-              className="border-sudoku-primary text-sudoku-primary hover:bg-sudoku-primary hover:text-white px-8 py-4 text-lg font-semibold"
-              data-testid="button-login"
-            >
-              Login to Save Progress
-            </Button>
+            <Link href="/guest">
+              <Button variant="outline" size="lg" className="w-full" data-testid="button-guest">
+                Play as Guest
+              </Button>
+            </Link>
+            
+            <Link href="/register">
+              <Button variant="secondary" size="lg" className="w-full" data-testid="button-register">
+                Create Account
+              </Button>
+            </Link>
           </div>
         </div>
 
