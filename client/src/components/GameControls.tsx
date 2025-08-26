@@ -10,6 +10,7 @@ interface GameControlsProps {
   onPause: () => void;
   isPaused: boolean;
   isLoading: boolean;
+  showDifficultySelector?: boolean;
 }
 
 export default function GameControls({
@@ -18,6 +19,7 @@ export default function GameControls({
   onPause,
   isPaused,
   isLoading,
+  showDifficultySelector = true,
 }: GameControlsProps) {
   const [selectedDifficulty, setSelectedDifficulty] = useState(currentDifficulty);
 
@@ -34,32 +36,36 @@ export default function GameControls({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Difficulty
-          </label>
-          <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
-            <SelectTrigger data-testid="select-difficulty">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="easy">Easy</SelectItem>
-              <SelectItem value="medium">Medium</SelectItem>
-              <SelectItem value="hard">Hard</SelectItem>
-              <SelectItem value="expert">Expert</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <Button
-          onClick={handleNewGame}
-          disabled={isLoading}
-          className="w-full bg-sudoku-secondary text-white hover:bg-emerald-700 font-semibold"
-          data-testid="button-new-game"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          {isLoading ? "Creating..." : "New Game"}
-        </Button>
+        {showDifficultySelector && (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Difficulty
+              </label>
+              <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
+                <SelectTrigger data-testid="select-difficulty">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="easy">Easy</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="hard">Hard</SelectItem>
+                  <SelectItem value="expert">Expert</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <Button
+              onClick={handleNewGame}
+              disabled={isLoading}
+              className="w-full bg-sudoku-secondary text-white hover:bg-emerald-700 font-semibold"
+              data-testid="button-new-game"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              {isLoading ? "Creating..." : "New Game"}
+            </Button>
+          </>
+        )}
         
         <Button
           onClick={onPause}

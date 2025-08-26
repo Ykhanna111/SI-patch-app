@@ -484,6 +484,7 @@ export default function GamePage() {
               onPause={togglePause}
               isPaused={isPaused}
               isLoading={createGameMutation.isPending}
+              showDifficultySelector={false}
             />
             
             <GameStats
