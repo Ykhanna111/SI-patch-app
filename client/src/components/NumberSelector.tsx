@@ -6,6 +6,7 @@ interface NumberSelectorProps {
   onNumberSelect: (number: number) => void;
   onErase: () => void;
   disabled: boolean;
+  numberCounts: number[];
 }
 
 export default function NumberSelector({
@@ -13,6 +14,7 @@ export default function NumberSelector({
   onNumberSelect,
   onErase,
   disabled,
+  numberCounts,
 }: NumberSelectorProps) {
   return (
     <div className="flex justify-center">
@@ -23,7 +25,7 @@ export default function NumberSelector({
             onClick={() => onNumberSelect(number)}
             disabled={disabled}
             className={cn(
-              "w-12 h-12 rounded-xl border-2 flex items-center justify-center text-lg font-bold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed",
+              "w-12 h-14 rounded-xl border-2 flex flex-col items-center justify-center text-lg font-bold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed",
               {
                 "border-sudoku-primary text-sudoku-primary bg-blue-50": selectedNumber === number,
                 "border-gray-200 hover:border-sudoku-primary hover:text-sudoku-primary": selectedNumber !== number,
@@ -31,13 +33,16 @@ export default function NumberSelector({
             )}
             data-testid={`button-number-${number}`}
           >
-            {number}
+            <span>{number}</span>
+            <span className="text-xs text-gray-500 leading-none">
+              {9 - (numberCounts[number] || 0)}
+            </span>
           </button>
         ))}
         <button
           onClick={onErase}
           disabled={disabled}
-          className="w-12 h-12 rounded-xl border-2 border-sudoku-error text-sudoku-error flex items-center justify-center text-lg font-bold hover:bg-sudoku-error hover:text-white transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-12 h-14 rounded-xl border-2 border-sudoku-error text-sudoku-error flex items-center justify-center text-lg font-bold hover:bg-sudoku-error hover:text-white transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           title="Erase"
           data-testid="button-erase"
         >

@@ -338,11 +338,15 @@ export default function GamePage() {
 
   const getNumberCounts = () => {
     const counts = Array(10).fill(0); // Index 0 is unused, 1-9 for numbers
-    currentGrid.forEach(row => {
-      row.forEach(cell => {
-        if (cell !== 0) counts[cell]++;
+    if (currentGrid && currentGrid.length > 0) {
+      currentGrid.forEach(row => {
+        if (row) {
+          row.forEach(cell => {
+            if (cell !== 0) counts[cell]++;
+          });
+        }
       });
-    });
+    }
     return counts;
   };
 
@@ -392,10 +396,10 @@ export default function GamePage() {
                     onClick={() => getHintMutation.mutate()}
                     disabled={hintsUsed >= 2 || isCompleted || getHintMutation.isPending}
                     className="p-2 text-gray-400 hover:text-sudoku-accent transition-colors rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Get Hint"
+                    title={`Get Hint (${2 - hintsUsed} left)`}
                     data-testid="button-hint"
                   >
-                    <i className="fas fa-lightbulb"></i>
+                    💡
                   </button>
                   <button
                     onClick={handleUndo}
@@ -404,7 +408,7 @@ export default function GamePage() {
                     title="Undo"
                     data-testid="button-undo"
                   >
-                    <i className="fas fa-undo"></i>
+                    ↶
                   </button>
                 </div>
               </div>
@@ -424,6 +428,7 @@ export default function GamePage() {
                   onNumberSelect={handleNumberSelect}
                   onErase={handleErase}
                   disabled={!selectedCell || isCompleted}
+                  numberCounts={getNumberCounts()}
                 />
               </div>
             </div>

@@ -69,28 +69,6 @@ export default function GameStats({
         </CardContent>
       </Card>
 
-      <Card className="border-gray-100">
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center text-lg">
-            <Hash className="text-sudoku-primary mr-2 h-5 w-5" />
-            Numbers Left
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-2">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
-              <div
-                key={number}
-                className="flex items-center justify-between p-2 bg-gray-50 rounded-lg text-sm"
-                data-testid={`number-count-${number}`}
-              >
-                <span className="font-bold text-sudoku-primary">{number}</span>
-                <span className="text-gray-600">{9 - (numberCounts[number] || 0)}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </>
   );
 }
