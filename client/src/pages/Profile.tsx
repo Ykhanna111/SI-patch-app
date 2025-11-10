@@ -370,22 +370,22 @@ export default function Profile() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="text-center p-4 bg-primary/5 rounded-lg">
                   <div className="text-2xl font-bold text-primary">
-                    {userStats.totalPuzzles || 0}
+                    {userStats.totalPuzzlesPlayed || 0}
                   </div>
                   <div className="text-sm text-muted-foreground">Total Puzzles</div>
                 </div>
                 
                 <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                   <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {userStats.completedPuzzles || 0}
+                    {userStats.totalPuzzlesSolved || 0}
                   </div>
                   <div className="text-sm text-muted-foreground">Completed</div>
                 </div>
                 
                 <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                   <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {userStats.totalPuzzles > 0 
-                      ? Math.round(((userStats.completedPuzzles || 0) / userStats.totalPuzzles) * 100)
+                    {(userStats.totalPuzzlesPlayed || 0) > 0 
+                      ? Math.round(((userStats.totalPuzzlesSolved || 0) / (userStats.totalPuzzlesPlayed || 1)) * 100)
                       : 0
                     }%
                   </div>
