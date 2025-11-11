@@ -619,31 +619,35 @@ export default function GamePage() {
               </div>
 
               {/* Grid - Centered and Scaled */}
-              <div className="flex-1 min-h-0 flex items-center justify-center p-2 sm:p-3">
-                <div className="w-full max-w-[90vmin] max-h-full aspect-square">
-                  <EnhancedSudokuGrid
-                    gameMode={gameMode}
-                    currentGrid={currentGrid || []}
-                    originalPuzzle={currentGame.puzzle ? JSON.parse(currentGame.puzzle) : []}
-                    selectedCell={selectedCell}
-                    selectedNumber={selectedNumber}
-                    onCellClick={handleCellClick}
-                    isPaused={isPaused}
-                    constraints={constraints}
-                  />
+              <div className="flex-1 min-h-0 flex items-center justify-center px-2 sm:px-3 pb-2">
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-full h-full max-w-[min(90vw,60vh)] max-h-full">
+                    <EnhancedSudokuGrid
+                      gameMode={gameMode}
+                      currentGrid={currentGrid || []}
+                      originalPuzzle={currentGame.puzzle ? JSON.parse(currentGame.puzzle) : []}
+                      selectedCell={selectedCell}
+                      selectedNumber={selectedNumber}
+                      onCellClick={handleCellClick}
+                      isPaused={isPaused}
+                      constraints={constraints}
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* Number Selector - Always Visible */}
-              <div className="px-3 pb-3 pt-2 shrink-0">
-                <EnhancedNumberSelector
-                  gameMode={gameMode}
-                  selectedNumber={selectedNumber}
-                  onNumberSelect={handleNumberSelect}
-                  onErase={handleErase}
-                  disabled={!selectedCell || isCompleted}
-                  numberCounts={getNumberCounts()}
-                />
+              <div className="px-2 sm:px-3 pb-2 shrink-0 border-t">
+                <div className="pt-2">
+                  <EnhancedNumberSelector
+                    gameMode={gameMode}
+                    selectedNumber={selectedNumber}
+                    onNumberSelect={handleNumberSelect}
+                    onErase={handleErase}
+                    disabled={!selectedCell || isCompleted}
+                    numberCounts={getNumberCounts()}
+                  />
+                </div>
               </div>
             </div>
           </div>
