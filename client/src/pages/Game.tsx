@@ -516,11 +516,11 @@ export default function GamePage() {
   }
 
   return (
-    <div className="min-h-screen bg-sudoku-bg">
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-1 space-y-6">
+    <div className="h-screen bg-sudoku-bg flex flex-col overflow-hidden">
+      <div className="flex-1 min-h-0 max-w-7xl mx-auto w-full px-2 sm:px-4 py-2">
+        <div className="h-full grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-2 lg:gap-3">
+          {/* Sidebar */}
+          <div className="hidden lg:flex lg:flex-col gap-2">
             <GameControls
               currentDifficulty={currentGame.difficulty}
               onNewGame={startNewGame}
@@ -529,7 +529,6 @@ export default function GamePage() {
               isLoading={createGameMutation.isPending}
               showDifficultySelector={false}
             />
-            
             <GameStats
               timeElapsed={timeElapsed}
               mistakes={mistakes}
@@ -539,82 +538,104 @@ export default function GamePage() {
             />
           </div>
 
-          <div className="lg:col-span-3 space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
+          {/* Main Game Panel */}
+          <div className="h-full flex flex-col min-h-0">
+            <div className="flex-1 bg-white rounded-lg shadow-lg border border-gray-100 flex flex-col min-h-0 overflow-hidden">
+              {/* Compact Header */}
+              <div className="flex items-center justify-between px-3 py-2 border-b shrink-0">
+                <div className="flex items-center gap-2">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={backToMenu}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-1 px-2 py-1 h-7"
                     data-testid="button-back-menu"
                   >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to Menu
+                    <ArrowLeft className="h-3 w-3" />
+                    <span className="text-xs">Menu</span>
                   </Button>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">{GAME_MODES[gameMode]?.icon || '🔢'}</span>
-                    <h2 className="text-xl font-bold text-gray-900" data-testid="text-puzzle-title">
-                      {currentGame.difficulty.charAt(0).toUpperCase() + currentGame.difficulty.slice(1)} {GAME_MODES[gameMode]?.name || 'Sudoku'}
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-lg">{GAME_MODES[gameMode]?.icon || '🔢'}</span>
+                    <h2 className="text-sm font-bold text-gray-900" data-testid="text-puzzle-title">
+                      {currentGame.difficulty.charAt(0).toUpperCase() + currentGame.difficulty.slice(1)} Sudoku
                     </h2>
                   </div>
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex gap-1">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowHowToPlay(true)}
-                    className="flex items-center gap-2"
+                    className="h-7 px-2 text-xs"
                     data-testid="button-how-to-play"
                   >
-                    <HelpCircle className="h-4 w-4" />
-                    How to Play
+                    <HelpCircle className="h-3 w-3" />
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={resetGame}
-                    className="flex items-center gap-2"
+                    className="h-7 px-2 text-xs"
                     disabled={isCompleted}
                     data-testid="button-reset"
                   >
-                    <RotateCcw className="h-4 w-4" />
-                    Reset
+                    <RotateCcw className="h-3 w-3" />
                   </Button>
                   <button
                     onClick={() => getHintMutation.mutate()}
                     disabled={hintsUsed >= 2 || isCompleted || getHintMutation.isPending}
-                    className="px-3 py-2 text-gray-600 hover:text-sudoku-accent bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
-                    title={`Get Hint (${2 - hintsUsed} left)`}
+                    className="h-7 px-2 text-xs bg-gray-100 hover:bg-gray-200 rounded disabled:opacity-50"
+                    title={`Hint (${2 - hintsUsed})`}
                     data-testid="button-hint"
                   >
-                    💡 Hint
+                    💡
                   </button>
                   <button
                     onClick={handleUndo}
                     disabled={moves.length === 0 || isCompleted}
-                    className="px-3 py-2 text-gray-600 hover:text-sudoku-primary bg-gray-100 hover:bg-gray-200 transition-colors rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                    className="h-7 px-2 text-xs bg-gray-100 hover:bg-gray-200 rounded disabled:opacity-50"
                     title="Undo"
                     data-testid="button-undo"
                   >
-                    ↶ Undo
+                    ↶
                   </button>
                 </div>
               </div>
 
-              <EnhancedSudokuGrid
-                gameMode={gameMode}
-                currentGrid={currentGrid || []}
-                originalPuzzle={currentGame.puzzle ? JSON.parse(currentGame.puzzle) : []}
-                selectedCell={selectedCell}
-                selectedNumber={selectedNumber}
-                onCellClick={handleCellClick}
-                isPaused={isPaused}
-                constraints={constraints}
-              />
+              {/* Mobile Stats Row */}
+              <div className="lg:hidden flex gap-2 px-3 py-2 border-b text-xs shrink-0">
+                <div className="flex items-center gap-1">
+                  <span>⏱️</span>
+                  <span className="font-mono">{formatTime(timeElapsed)}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span>❌</span>
+                  <span>{mistakes}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span>💡</span>
+                  <span>{hintsUsed}/2</span>
+                </div>
+              </div>
 
-              <div className="mt-6">
+              {/* Grid - Centered and Scaled */}
+              <div className="flex-1 min-h-0 flex items-center justify-center p-2 sm:p-3">
+                <div className="w-full max-w-[90vmin] max-h-full aspect-square">
+                  <EnhancedSudokuGrid
+                    gameMode={gameMode}
+                    currentGrid={currentGrid || []}
+                    originalPuzzle={currentGame.puzzle ? JSON.parse(currentGame.puzzle) : []}
+                    selectedCell={selectedCell}
+                    selectedNumber={selectedNumber}
+                    onCellClick={handleCellClick}
+                    isPaused={isPaused}
+                    constraints={constraints}
+                  />
+                </div>
+              </div>
+
+              {/* Number Selector - Always Visible */}
+              <div className="px-3 pb-3 pt-2 shrink-0">
                 <EnhancedNumberSelector
                   gameMode={gameMode}
                   selectedNumber={selectedNumber}
