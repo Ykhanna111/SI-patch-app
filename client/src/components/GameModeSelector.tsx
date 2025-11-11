@@ -258,7 +258,7 @@ export default function GameModeSelector({ onSelectGame, isCreating = false }: G
           
           <CardHeader className="text-center pt-8 pb-4">
             <CardTitle className="text-2xl font-bold text-gray-900 mb-2">Expert</CardTitle>
-            <p className="text-gray-600">Ultimate challenge</p>
+            <p className="text-gray-600">An Ultimate challenge</p>
           </CardHeader>
           
           <CardContent className="text-center pb-8">
