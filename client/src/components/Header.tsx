@@ -64,16 +64,16 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20">
+          <div className="flex items-center space-x-1 sm:space-x-2 min-w-0 flex-shrink">
+            <div className="flex items-center space-x-1 sm:space-x-2">
               <img 
                 src={logoImage} 
                 alt="Sudoku Infinity Logo" 
-                className="w-16 h-16 object-contain"
+                className="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 object-contain flex-shrink-0"
               />
-              <h1 className="text-xl font-bold" style={{
+              <h1 className="text-sm sm:text-base lg:text-xl font-bold truncate" style={{
                 background: 'linear-gradient(135deg, hsl(35 100% 60%), hsl(50 100% 65%), hsl(320 85% 65%))',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -82,21 +82,31 @@ export default function Header() {
             </div>
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 flex-shrink-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={handleHowToPlay}
-              className="text-gray-600 hover:text-gray-800"
+              className="text-gray-600 hover:text-gray-800 px-1 sm:px-2 lg:px-3 hidden sm:flex"
               data-testid="button-how-to-play"
             >
-              <HelpCircle className="h-4 w-4 mr-1" />
-              How to Play
+              <HelpCircle className="h-4 w-4 sm:mr-1" />
+              <span className="hidden lg:inline">How to Play</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleHowToPlay}
+              className="text-gray-600 hover:text-gray-800 p-1 sm:hidden"
+              data-testid="button-how-to-play-mobile"
+            >
+              <HelpCircle className="h-4 w-4" />
             </Button>
 
             {isAuthenticated && user ? (
               <>
-                <div className="hidden sm:flex items-center space-x-2 text-sm">
+                <div className="hidden lg:flex items-center space-x-2 text-sm">
                   <div className="flex items-center space-x-1 text-gray-600">
                     <User className="h-4 w-4" />
                     <span data-testid="text-username">
@@ -109,7 +119,7 @@ export default function Header() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="p-2 text-gray-400 hover:text-gray-600"
+                    className="p-1 sm:p-2 text-gray-400 hover:text-gray-600"
                     data-testid="button-settings"
                   >
                     <Settings className="h-4 w-4" />
@@ -120,11 +130,21 @@ export default function Header() {
                   variant="ghost"
                   size="sm"
                   onClick={handleLogout}
-                  className="text-gray-600 hover:text-gray-800"
+                  className="text-gray-600 hover:text-gray-800 px-1 sm:px-2 lg:px-3 hidden sm:flex"
                   data-testid="button-logout"
                 >
-                  <LogOut className="h-4 w-4 mr-1" />
-                  Logout
+                  <LogOut className="h-4 w-4 sm:mr-1" />
+                  <span className="hidden lg:inline">Logout</span>
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="text-gray-600 hover:text-gray-800 p-1 sm:hidden"
+                  data-testid="button-logout-mobile"
+                >
+                  <LogOut className="h-4 w-4" />
                 </Button>
               </>
             ) : (
@@ -133,21 +153,21 @@ export default function Header() {
                   variant="ghost"
                   size="sm"
                   onClick={handlePlayAsGuest}
-                  className="text-gray-600 hover:text-gray-800"
+                  className="text-gray-600 hover:text-gray-800 px-1 sm:px-2 text-xs sm:text-sm"
                   data-testid="button-play-guest"
                 >
-                  <User className="h-4 w-4 mr-1" />
-                  Play as Guest
+                  <User className="h-4 w-4 sm:mr-1" />
+                  <span className="hidden sm:inline">Play as Guest</span>
                 </Button>
                 
                 <Button
                   onClick={handleLogin}
-                  className="bg-sudoku-primary text-white hover:bg-indigo-700"
+                  className="bg-sudoku-primary text-white hover:bg-indigo-700 px-2 sm:px-3 text-xs sm:text-sm"
                   size="sm"
                   data-testid="button-login"
                 >
-                  <i className="fas fa-sign-in-alt mr-1"></i>
-                  Login
+                  <i className="fas fa-sign-in-alt sm:mr-1"></i>
+                  <span className="hidden sm:inline">Login</span>
                 </Button>
               </>
             )}

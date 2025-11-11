@@ -84,12 +84,12 @@ export default function EnhancedSudokuGrid({
       }
     }
 
-    // Base cell styling
-    let cellSize = "w-8 h-8 text-sm";
+    // Base cell styling - responsive sizing
+    let cellSize = "aspect-square text-xs sm:text-sm";
     if (size === 9) {
-      cellSize = "w-10 h-10 sm:w-12 sm:h-12 text-lg";
+      cellSize = "aspect-square text-sm sm:text-base lg:text-lg";
     } else if (size === 6) {
-      cellSize = "w-10 h-10 text-base";
+      cellSize = "aspect-square text-sm sm:text-base";
     }
 
     return cn(
@@ -202,12 +202,12 @@ export default function EnhancedSudokuGrid({
 
   if (isPaused) {
     return (
-      <div className="flex justify-center mb-6">
-        <div className="w-fit bg-gray-100 rounded-lg p-8 border-4 border-gray-300">
+      <div className="flex justify-center items-center w-full h-full">
+        <div className="bg-gray-100 rounded-lg p-4 sm:p-8 border-2 sm:border-4 border-gray-300">
           <div className="text-center text-gray-500">
-            <div className="text-4xl mb-4">⏸️</div>
-            <p className="text-lg font-semibold">Game Paused</p>
-            <p className="text-sm">Click Resume to continue</p>
+            <div className="text-2xl sm:text-4xl mb-2 sm:mb-4">⏸️</div>
+            <p className="text-base sm:text-lg font-semibold">Game Paused</p>
+            <p className="text-xs sm:text-sm">Click Resume to continue</p>
           </div>
         </div>
       </div>
@@ -215,15 +215,16 @@ export default function EnhancedSudokuGrid({
   }
 
   return (
-    <div className="flex justify-center mb-6">
-      <div className="relative">
+    <div className="flex justify-center w-full h-full">
+      <div className="relative w-full h-full max-w-full max-h-full flex items-center justify-center">
         <div 
           className={cn(
-            "grid gap-0 border-4 border-gray-800 rounded-lg overflow-hidden bg-white",
+            "grid gap-0 border-2 sm:border-4 border-gray-800 rounded-md sm:rounded-lg overflow-hidden bg-white",
+            "w-full h-full max-w-[min(100%,100vh-12rem)]",
             `grid-cols-${size}`
           )} 
           style={{ 
-            width: 'fit-content',
+            aspectRatio: '1/1',
             gridTemplateColumns: `repeat(${size}, 1fr)`
           }}
         >

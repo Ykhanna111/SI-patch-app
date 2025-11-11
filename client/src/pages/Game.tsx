@@ -7,10 +7,8 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { useLocation } from "wouter";
 import Header from "@/components/Header";
 import GameControls from "@/components/GameControls";
-import SudokuGrid from "@/components/SudokuGrid";
 import EnhancedSudokuGrid from "@/components/EnhancedSudokuGrid";
 import GameStats from "@/components/GameStats";
-import NumberSelector from "@/components/NumberSelector";
 import EnhancedNumberSelector from "@/components/EnhancedNumberSelector";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, RotateCcw, Home, HelpCircle } from "lucide-react";
@@ -516,11 +514,11 @@ export default function GamePage() {
   }
 
   return (
-    <div className="h-screen bg-sudoku-bg flex flex-col overflow-hidden">
-      <div className="flex-1 min-h-0 max-w-7xl mx-auto w-full px-2 sm:px-4 py-2">
+    <div className="min-h-screen bg-sudoku-bg flex flex-col overflow-x-hidden">
+      <div className="flex-1 w-full max-w-7xl mx-auto px-2 sm:px-4 py-2">
         <div className="h-full grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-2 lg:gap-3">
           {/* Sidebar */}
-          <div className="hidden lg:flex lg:flex-col gap-2">
+          <div className="hidden lg:flex lg:flex-col gap-2 overflow-hidden">
             <GameControls
               currentDifficulty={currentGame.difficulty}
               onNewGame={startNewGame}
@@ -539,34 +537,34 @@ export default function GamePage() {
           </div>
 
           {/* Main Game Panel */}
-          <div className="h-full flex flex-col min-h-0">
-            <div className="flex-1 bg-white rounded-lg shadow-lg border border-gray-100 flex flex-col min-h-0 overflow-hidden">
+          <div className="flex flex-col min-h-[calc(100vh-5rem)] lg:min-h-0 overflow-hidden">
+            <div className="flex-1 bg-white rounded-lg shadow-lg border border-gray-100 flex flex-col overflow-hidden">
               {/* Compact Header */}
-              <div className="flex items-center justify-between px-3 py-2 border-b shrink-0">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between px-2 sm:px-3 py-1.5 sm:py-2 border-b shrink-0">
+                <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={backToMenu}
-                    className="flex items-center gap-1 px-2 py-1 h-7"
+                    className="flex items-center gap-0.5 sm:gap-1 px-1 sm:px-2 py-1 h-6 sm:h-7 flex-shrink-0"
                     data-testid="button-back-menu"
                   >
                     <ArrowLeft className="h-3 w-3" />
                     <span className="text-xs">Menu</span>
                   </Button>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-lg">{GAME_MODES[gameMode]?.icon || '🔢'}</span>
-                    <h2 className="text-sm font-bold text-gray-900" data-testid="text-puzzle-title">
+                  <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
+                    <span className="text-base sm:text-lg flex-shrink-0">{GAME_MODES[gameMode]?.icon || '🔢'}</span>
+                    <h2 className="text-xs sm:text-sm font-bold text-gray-900 truncate" data-testid="text-puzzle-title">
                       {currentGame.difficulty.charAt(0).toUpperCase() + currentGame.difficulty.slice(1)} Sudoku
                     </h2>
                   </div>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-0.5 sm:gap-1 flex-shrink-0">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setShowHowToPlay(true)}
-                    className="h-7 px-2 text-xs"
+                    className="h-6 sm:h-7 px-1.5 sm:px-2 text-xs"
                     data-testid="button-how-to-play"
                   >
                     <HelpCircle className="h-3 w-3" />
@@ -575,7 +573,7 @@ export default function GamePage() {
                     variant="outline"
                     size="sm"
                     onClick={resetGame}
-                    className="h-7 px-2 text-xs"
+                    className="h-6 sm:h-7 px-1.5 sm:px-2 text-xs"
                     disabled={isCompleted}
                     data-testid="button-reset"
                   >
@@ -584,7 +582,7 @@ export default function GamePage() {
                   <button
                     onClick={() => getHintMutation.mutate()}
                     disabled={hintsUsed >= 2 || isCompleted || getHintMutation.isPending}
-                    className="h-7 px-2 text-xs bg-gray-100 hover:bg-gray-200 rounded disabled:opacity-50"
+                    className="h-6 sm:h-7 px-1.5 sm:px-2 text-xs bg-gray-100 hover:bg-gray-200 rounded disabled:opacity-50"
                     title={`Hint (${2 - hintsUsed})`}
                     data-testid="button-hint"
                   >
@@ -593,7 +591,7 @@ export default function GamePage() {
                   <button
                     onClick={handleUndo}
                     disabled={moves.length === 0 || isCompleted}
-                    className="h-7 px-2 text-xs bg-gray-100 hover:bg-gray-200 rounded disabled:opacity-50"
+                    className="h-6 sm:h-7 px-1.5 sm:px-2 text-xs bg-gray-100 hover:bg-gray-200 rounded disabled:opacity-50"
                     title="Undo"
                     data-testid="button-undo"
                   >
@@ -603,7 +601,7 @@ export default function GamePage() {
               </div>
 
               {/* Mobile Stats Row */}
-              <div className="lg:hidden flex gap-2 px-3 py-2 border-b text-xs shrink-0">
+              <div className="lg:hidden flex gap-2 px-2 sm:px-3 py-1.5 sm:py-2 border-b text-xs shrink-0">
                 <div className="flex items-center gap-1">
                   <span>⏱️</span>
                   <span className="font-mono">{formatTime(timeElapsed)}</span>
@@ -619,9 +617,9 @@ export default function GamePage() {
               </div>
 
               {/* Grid - Centered and Scaled */}
-              <div className="flex-1 min-h-0 flex items-center justify-center px-2 sm:px-3 pb-2">
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="w-full h-full max-w-[min(90vw,60vh)] max-h-full">
+              <div className="flex-1 flex flex-col overflow-hidden">
+                <div className="flex-1 flex items-center justify-center p-2 sm:p-3 overflow-hidden">
+                  <div className="w-full max-w-[min(100vw-2rem,calc(100vh-20rem))] aspect-square">
                     <EnhancedSudokuGrid
                       gameMode={gameMode}
                       currentGrid={currentGrid || []}
@@ -634,19 +632,19 @@ export default function GamePage() {
                     />
                   </div>
                 </div>
-              </div>
 
-              {/* Number Selector - Always Visible */}
-              <div className="px-2 sm:px-3 pb-2 shrink-0 border-t">
-                <div className="pt-2">
-                  <EnhancedNumberSelector
-                    gameMode={gameMode}
-                    selectedNumber={selectedNumber}
-                    onNumberSelect={handleNumberSelect}
-                    onErase={handleErase}
-                    disabled={!selectedCell || isCompleted}
-                    numberCounts={getNumberCounts()}
-                  />
+                {/* Number Selector - Always Visible */}
+                <div className="px-2 sm:px-3 pb-2 sm:pb-3 shrink-0 border-t overflow-x-hidden">
+                  <div className="pt-2">
+                    <EnhancedNumberSelector
+                      gameMode={gameMode}
+                      selectedNumber={selectedNumber}
+                      onNumberSelect={handleNumberSelect}
+                      onErase={handleErase}
+                      disabled={!selectedCell || isCompleted}
+                      numberCounts={getNumberCounts()}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
