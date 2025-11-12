@@ -95,7 +95,7 @@ export default function GameModeSelection() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
             {/* Standard Sudoku */}
             <Card 
-              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-blue-300 hover:border-blue-500 bg-gradient-to-br from-blue-50 to-white"
+              className="relative cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-blue-300 hover:border-blue-500 bg-gradient-to-br from-blue-50 to-white"
               onClick={() => handleModeSelect('standard')}
               data-testid="mode-standard"
             >
@@ -147,7 +147,7 @@ export default function GameModeSelection() {
 
             {/* Diagonal Sudoku */}
             <Card 
-              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-purple-300 hover:border-purple-500 bg-gradient-to-br from-purple-50 to-white"
+              className="relative cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-purple-300 hover:border-purple-500 bg-gradient-to-br from-purple-50 to-white"
               onClick={() => handleModeSelect('diagonal')}
               data-testid="mode-diagonal"
             >
@@ -199,7 +199,7 @@ export default function GameModeSelection() {
 
             {/* Hyper Sudoku (Windoku) */}
             <Card 
-              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-orange-300 hover:border-orange-500 bg-gradient-to-br from-orange-50 to-white"
+              className="relative cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-orange-300 hover:border-orange-500 bg-gradient-to-br from-orange-50 to-white"
               onClick={() => handleModeSelect('hyper')}
               data-testid="mode-hyper"
             >
@@ -251,7 +251,7 @@ export default function GameModeSelection() {
 
             {/* Odd-Even Sudoku */}
             <Card 
-              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-green-300 hover:border-green-500 bg-gradient-to-br from-green-50 to-white"
+              className="relative cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-green-300 hover:border-green-500 bg-gradient-to-br from-green-50 to-white"
               onClick={() => handleModeSelect('odd-even')}
               data-testid="mode-odd-even"
             >
@@ -303,7 +303,7 @@ export default function GameModeSelection() {
 
             {/* Killer Sudoku */}
             <Card 
-              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-red-300 hover:border-red-500 bg-gradient-to-br from-red-50 to-white"
+              className="relative cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-red-300 hover:border-red-500 bg-gradient-to-br from-red-50 to-white"
               onClick={() => handleModeSelect('killer')}
               data-testid="mode-killer"
             >
