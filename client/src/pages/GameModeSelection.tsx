@@ -95,11 +95,12 @@ export default function GameModeSelection() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
             {/* Standard Sudoku */}
             <Card 
-              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-sudoku-primary"
+              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-blue-300 hover:border-blue-500 bg-gradient-to-br from-blue-50 to-white"
               onClick={() => handleModeSelect('standard')}
               data-testid="mode-standard"
             >
-              <CardHeader className="pb-3">
+              <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-400 to-blue-600 rounded-t-lg" />
+              <CardHeader className="pb-3 pt-6">
                 <CardTitle className="flex items-center justify-between text-xl">
                   <div className="flex items-center gap-3">
                     <span className="text-3xl">{GAME_MODES.standard.icon}</span>
@@ -146,11 +147,12 @@ export default function GameModeSelection() {
 
             {/* Diagonal Sudoku */}
             <Card 
-              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-sudoku-primary"
+              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-purple-300 hover:border-purple-500 bg-gradient-to-br from-purple-50 to-white"
               onClick={() => handleModeSelect('diagonal')}
               data-testid="mode-diagonal"
             >
-              <CardHeader className="pb-3">
+              <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-purple-400 to-purple-600 rounded-t-lg" />
+              <CardHeader className="pb-3 pt-6">
                 <CardTitle className="flex items-center justify-between text-xl">
                   <div className="flex items-center gap-3">
                     <span className="text-3xl">{GAME_MODES.diagonal.icon}</span>
@@ -197,11 +199,12 @@ export default function GameModeSelection() {
 
             {/* Hyper Sudoku (Windoku) */}
             <Card 
-              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-sudoku-primary"
+              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-orange-300 hover:border-orange-500 bg-gradient-to-br from-orange-50 to-white"
               onClick={() => handleModeSelect('hyper')}
               data-testid="mode-hyper"
             >
-              <CardHeader className="pb-3">
+              <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-orange-400 to-orange-600 rounded-t-lg" />
+              <CardHeader className="pb-3 pt-6">
                 <CardTitle className="flex items-center justify-between text-xl">
                   <div className="flex items-center gap-3">
                     <span className="text-3xl">{GAME_MODES.hyper.icon}</span>
@@ -248,11 +251,12 @@ export default function GameModeSelection() {
 
             {/* Odd-Even Sudoku */}
             <Card 
-              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-sudoku-primary"
+              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-green-300 hover:border-green-500 bg-gradient-to-br from-green-50 to-white"
               onClick={() => handleModeSelect('odd-even')}
               data-testid="mode-odd-even"
             >
-              <CardHeader className="pb-3">
+              <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-green-400 to-green-600 rounded-t-lg" />
+              <CardHeader className="pb-3 pt-6">
                 <CardTitle className="flex items-center justify-between text-xl">
                   <div className="flex items-center gap-3">
                     <span className="text-3xl">{GAME_MODES['odd-even'].icon}</span>
@@ -299,11 +303,12 @@ export default function GameModeSelection() {
 
             {/* Killer Sudoku */}
             <Card 
-              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-sudoku-primary"
+              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-red-300 hover:border-red-500 bg-gradient-to-br from-red-50 to-white"
               onClick={() => handleModeSelect('killer')}
               data-testid="mode-killer"
             >
-              <CardHeader className="pb-3">
+              <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-400 to-red-600 rounded-t-lg" />
+              <CardHeader className="pb-3 pt-6">
                 <CardTitle className="flex items-center justify-between text-xl">
                   <div className="flex items-center gap-3">
                     <span className="text-3xl">{GAME_MODES.killer.icon}</span>
