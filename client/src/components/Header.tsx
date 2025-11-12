@@ -87,26 +87,16 @@ export default function Header() {
               variant="ghost"
               size="sm"
               onClick={handleHowToPlay}
-              className="text-gray-600 hover:text-gray-800 px-1 sm:px-2 lg:px-3 hidden sm:flex"
+              className="text-gray-600 hover:text-gray-800 px-1 sm:px-2 lg:px-3"
               data-testid="button-how-to-play"
             >
               <HelpCircle className="h-4 w-4 sm:mr-1" />
-              <span className="hidden lg:inline">How to Play</span>
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleHowToPlay}
-              className="text-gray-600 hover:text-gray-800 p-1 sm:hidden"
-              data-testid="button-how-to-play-mobile"
-            >
-              <HelpCircle className="h-4 w-4" />
+              <span className="hidden sm:inline text-xs sm:text-sm lg:text-base">Help</span>
             </Button>
 
             {isAuthenticated && user ? (
               <>
-                <div className="hidden lg:flex items-center space-x-2 text-sm">
+                <div className="hidden md:flex items-center space-x-2 text-sm">
                   <div className="flex items-center space-x-1 text-gray-600">
                     <User className="h-4 w-4" />
                     <span data-testid="text-username">
@@ -119,10 +109,11 @@ export default function Header() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="p-1 sm:p-2 text-gray-400 hover:text-gray-600"
+                    className="text-gray-600 hover:text-gray-800 px-1 sm:px-2"
                     data-testid="button-settings"
                   >
-                    <Settings className="h-4 w-4" />
+                    <Settings className="h-4 w-4 sm:mr-1" />
+                    <span className="hidden sm:inline text-xs sm:text-sm lg:text-base">Settings</span>
                   </Button>
                 </Link>
                 
@@ -130,21 +121,11 @@ export default function Header() {
                   variant="ghost"
                   size="sm"
                   onClick={handleLogout}
-                  className="text-gray-600 hover:text-gray-800 px-1 sm:px-2 lg:px-3 hidden sm:flex"
+                  className="text-gray-600 hover:text-gray-800 px-1 sm:px-2 lg:px-3"
                   data-testid="button-logout"
                 >
                   <LogOut className="h-4 w-4 sm:mr-1" />
-                  <span className="hidden lg:inline">Logout</span>
-                </Button>
-                
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="text-gray-600 hover:text-gray-800 p-1 sm:hidden"
-                  data-testid="button-logout-mobile"
-                >
-                  <LogOut className="h-4 w-4" />
+                  <span className="hidden sm:inline text-xs sm:text-sm lg:text-base">Logout</span>
                 </Button>
               </>
             ) : (
@@ -157,7 +138,7 @@ export default function Header() {
                   data-testid="button-play-guest"
                 >
                   <User className="h-4 w-4 sm:mr-1" />
-                  <span className="hidden sm:inline">Play as Guest</span>
+                  <span className="hidden sm:inline">Guest</span>
                 </Button>
                 
                 <Button
@@ -166,8 +147,7 @@ export default function Header() {
                   size="sm"
                   data-testid="button-login"
                 >
-                  <i className="fas fa-sign-in-alt sm:mr-1"></i>
-                  <span className="hidden sm:inline">Login</span>
+                  Login
                 </Button>
               </>
             )}

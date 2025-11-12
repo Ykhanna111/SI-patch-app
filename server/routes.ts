@@ -29,8 +29,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Generate puzzle based on game mode
       let puzzle, solution, constraints;
-      if (gameMode === 'standard') {
-        const result = generateSudoku(difficulty);
+      if (gameMode === 'standard' || gameMode === 'diagonal') {
+        const result = generateSudoku(difficulty, gameMode);
         puzzle = result.puzzle;
         solution = result.solution;
       } else {
@@ -125,7 +125,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const puzzle = JSON.parse(game.puzzle);
-      const isValid = isValidMove(currentState, row, col, value, puzzle);
+      const gameMode = game.gameMode || 'standard';
+      const isValid = isValidMove(currentState, row, col, value, puzzle, gameMode);
       
       res.json({ isValid });
     } catch (error) {

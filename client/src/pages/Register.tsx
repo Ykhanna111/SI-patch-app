@@ -184,7 +184,7 @@ export default function Register() {
             </p>
             <p className="mt-2 text-sm text-gray-600">
               Or{' '}
-              <Link href="/guest" className="text-sudoku-primary hover:underline" data-testid="link-guest">
+              <Link href="/select-game" className="text-sudoku-primary hover:underline" data-testid="link-guest">
                 play as guest
               </Link>
             </p>

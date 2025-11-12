@@ -116,15 +116,17 @@ export default function GamePage() {
   // Create new game
   const createGameMutation = useMutation({
     mutationFn: async (difficulty: string) => {
-      const response = await apiRequest('POST', '/api/games', { difficulty });
+      const gameMode = sessionStorage.getItem('selectedGameMode') || 'standard';
+      const response = await apiRequest('POST', '/api/games', { difficulty, gameMode });
       return await response.json();
     },
     onSuccess: (game: Game) => {
       if (game && typeof game === 'object' && 'id' in game) {
         initializeGame(game);
+        const modeName = game.gameMode === 'diagonal' ? 'Diagonal Sudoku' : 'Standard Sudoku';
         toast({
           title: "New Game",
-          description: `Started a new ${game.difficulty} puzzle!`,
+          description: `Started a new ${game.difficulty} ${modeName} puzzle!`,
         });
         setCreatingDifficulty(null);
       }

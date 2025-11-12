@@ -1,8 +1,9 @@
 type SudokuGrid = number[][];
+type GameMode = 'standard' | 'diagonal' | string;
 
-export function generateSudoku(difficulty: string): { puzzle: SudokuGrid; solution: SudokuGrid } {
+export function generateSudoku(difficulty: string, gameMode: GameMode = 'standard'): { puzzle: SudokuGrid; solution: SudokuGrid } {
   // Generate a complete valid Sudoku grid
-  const solution = generateCompleteSudoku();
+  const solution = generateCompleteSudoku(gameMode);
   
   // Create puzzle by removing numbers based on difficulty
   const puzzle = createPuzzle(solution, difficulty);
@@ -10,26 +11,26 @@ export function generateSudoku(difficulty: string): { puzzle: SudokuGrid; soluti
   return { puzzle, solution };
 }
 
-function generateCompleteSudoku(): SudokuGrid {
+function generateCompleteSudoku(gameMode: GameMode = 'standard'): SudokuGrid {
   const grid: SudokuGrid = Array(9).fill(0).map(() => Array(9).fill(0));
   
   // Fill the grid using backtracking
-  fillGrid(grid);
+  fillGrid(grid, gameMode);
   
   return grid;
 }
 
-function fillGrid(grid: SudokuGrid): boolean {
+function fillGrid(grid: SudokuGrid, gameMode: GameMode = 'standard'): boolean {
   for (let row = 0; row < 9; row++) {
     for (let col = 0; col < 9; col++) {
       if (grid[row][col] === 0) {
         const numbers = shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9]);
         
         for (const num of numbers) {
-          if (isValidPlacement(grid, row, col, num)) {
+          if (isValidPlacement(grid, row, col, num, gameMode)) {
             grid[row][col] = num;
             
-            if (fillGrid(grid)) {
+            if (fillGrid(grid, gameMode)) {
               return true;
             }
             
@@ -45,7 +46,7 @@ function fillGrid(grid: SudokuGrid): boolean {
   return true;
 }
 
-function isValidPlacement(grid: SudokuGrid, row: number, col: number, num: number): boolean {
+function isValidPlacement(grid: SudokuGrid, row: number, col: number, num: number, gameMode: GameMode = 'standard'): boolean {
   // Check row
   for (let i = 0; i < 9; i++) {
     if (grid[row][i] === num) return false;
@@ -63,6 +64,23 @@ function isValidPlacement(grid: SudokuGrid, row: number, col: number, num: numbe
   for (let i = boxRow; i < boxRow + 3; i++) {
     for (let j = boxCol; j < boxCol + 3; j++) {
       if (grid[i][j] === num) return false;
+    }
+  }
+  
+  // Check diagonals for diagonal mode
+  if (gameMode === 'diagonal') {
+    // Check main diagonal (top-left to bottom-right)
+    if (row === col) {
+      for (let i = 0; i < 9; i++) {
+        if (grid[i][i] === num) return false;
+      }
+    }
+    
+    // Check anti-diagonal (top-right to bottom-left)
+    if (row + col === 8) {
+      for (let i = 0; i < 9; i++) {
+        if (grid[i][8 - i] === num) return false;
+      }
     }
   }
   
@@ -98,10 +116,10 @@ function createPuzzle(solution: SudokuGrid, difficulty: string): SudokuGrid {
   return puzzle;
 }
 
-export function solveSudoku(grid: SudokuGrid): SudokuGrid | null {
+export function solveSudoku(grid: SudokuGrid, gameMode: GameMode = 'standard'): SudokuGrid | null {
   const solution = grid.map(row => [...row]);
   
-  if (fillGrid(solution)) {
+  if (fillGrid(solution, gameMode)) {
     return solution;
   }
   
@@ -113,7 +131,8 @@ export function isValidMove(
   row: number,
   col: number,
   value: number,
-  originalPuzzle: SudokuGrid
+  originalPuzzle: SudokuGrid,
+  gameMode: GameMode = 'standard'
 ): boolean {
   // Can't modify pre-filled cells
   if (originalPuzzle[row][col] !== 0) {
@@ -124,7 +143,7 @@ export function isValidMove(
   const tempGrid = currentGrid.map(r => [...r]);
   tempGrid[row][col] = 0; // Clear the current value first
   
-  return isValidPlacement(tempGrid, row, col, value);
+  return isValidPlacement(tempGrid, row, col, value, gameMode);
 }
 
 export function getHint(currentGrid: SudokuGrid, solution: SudokuGrid): { row: number; col: number; value: number } | null {

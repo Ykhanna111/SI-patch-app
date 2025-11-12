@@ -18,6 +18,8 @@ export default function GameModeSelection() {
   
   const handleModeSelect = (gameMode: GameMode) => {
     console.log('Selected game mode:', gameMode); // Debug log
+    // Store selected game mode in sessionStorage for Game.tsx to use
+    sessionStorage.setItem('selectedGameMode', gameMode);
     // Navigate to the challenge selection in Game.tsx
     setLocation('/game');
   };
@@ -86,11 +88,12 @@ export default function GameModeSelection() {
         <div className="space-y-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">Choose Your Sudoku Adventure</h1>
-            <p className="text-lg text-gray-600">Select Standard Sudoku to start playing</p>
+            <p className="text-lg text-gray-600">Select a game mode to start playing</p>
           </div>
 
-          {/* Standard Sudoku Only */}
-          <div className="max-w-md mx-auto">
+          {/* Game Mode Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* Standard Sudoku */}
             <Card 
               className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-sudoku-primary"
               onClick={() => handleModeSelect('standard')}
@@ -140,10 +143,62 @@ export default function GameModeSelection() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Diagonal Sudoku */}
+            <Card 
+              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-sudoku-primary"
+              onClick={() => handleModeSelect('diagonal')}
+              data-testid="mode-diagonal"
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center justify-between text-xl">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{GAME_MODES.diagonal.icon}</span>
+                    <span>{GAME_MODES.diagonal.name}</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowHowToPlay('diagonal');
+                    }}
+                    data-testid="how-to-play-diagonal"
+                  >
+                    <HelpCircle className="w-5 h-5" />
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">{GAME_MODES.diagonal.description}</p>
+                <div className="flex justify-between items-center mb-4">
+                  <Badge variant="outline" className="text-sm">
+                    {GAME_MODES.diagonal.gridSize}×{GAME_MODES.diagonal.gridSize} Grid
+                  </Badge>
+                  <div className="flex gap-1">
+                    {GAME_MODES.diagonal.difficulty.map((diff) => (
+                      <Badge key={diff} variant="secondary" className="text-xs">
+                        {diff}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <Button 
+                  className="w-full bg-sudoku-primary hover:bg-sudoku-primary/90 text-white py-3 text-lg font-semibold"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleModeSelect('diagonal');
+                  }}
+                >
+                  Play Diagonal Sudoku
+                </Button>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* How to Play Dialog */}
+          {/* How to Play Dialogs */}
           <HowToPlayDialog mode="standard" />
+          <HowToPlayDialog mode="diagonal" />
         </div>
       </div>
     </div>
