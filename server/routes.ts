@@ -126,7 +126,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const puzzle = JSON.parse(game.puzzle);
       const gameMode = game.gameMode || 'standard';
-      const isValid = isValidMove(currentState, row, col, value, puzzle, gameMode);
+      const constraints = game.constraints ? JSON.parse(game.constraints) : undefined;
+      
+      let isValid: boolean;
+      if (gameMode === 'standard' || gameMode === 'diagonal') {
+        isValid = isValidMove(currentState, row, col, value, puzzle, gameMode);
+      } else {
+        isValid = isValidMoveForMode(gameMode as GameMode, currentState, row, col, value, puzzle, constraints);
+      }
       
       res.json({ isValid });
     } catch (error) {
