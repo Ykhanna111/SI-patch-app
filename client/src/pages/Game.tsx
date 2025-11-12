@@ -125,7 +125,8 @@ export default function GamePage() {
         initializeGame(game);
         const modeName = game.gameMode === 'diagonal' ? 'Diagonal Sudoku' : 
                         game.gameMode === 'hyper' ? 'Hyper Sudoku' : 
-                        game.gameMode === 'odd-even' ? 'Odd-Even Sudoku' : 'Standard Sudoku';
+                        game.gameMode === 'odd-even' ? 'Odd-Even Sudoku' : 
+                        game.gameMode === 'killer' ? 'Killer Sudoku' : 'Standard Sudoku';
         toast({
           title: "New Game",
           description: `Started a new ${game.difficulty} ${modeName} puzzle!`,

@@ -296,6 +296,57 @@ export default function GameModeSelection() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Killer Sudoku */}
+            <Card 
+              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-sudoku-primary"
+              onClick={() => handleModeSelect('killer')}
+              data-testid="mode-killer"
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center justify-between text-xl">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{GAME_MODES.killer.icon}</span>
+                    <span>{GAME_MODES.killer.name}</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowHowToPlay('killer');
+                    }}
+                    data-testid="how-to-play-killer"
+                  >
+                    <HelpCircle className="w-5 h-5" />
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">{GAME_MODES.killer.description}</p>
+                <div className="flex justify-between items-center mb-4">
+                  <Badge variant="outline" className="text-sm">
+                    {GAME_MODES.killer.gridSize}×{GAME_MODES.killer.gridSize} Grid
+                  </Badge>
+                  <div className="flex gap-1">
+                    {GAME_MODES.killer.difficulty.map((diff) => (
+                      <Badge key={diff} variant="secondary" className="text-xs">
+                        {diff}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <Button 
+                  className="w-full bg-sudoku-primary hover:bg-sudoku-primary/90 text-white py-3 text-lg font-semibold"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleModeSelect('killer');
+                  }}
+                >
+                  Play Killer Sudoku
+                </Button>
+              </CardContent>
+            </Card>
           </div>
 
           {/* How to Play Dialogs */}
@@ -303,6 +354,7 @@ export default function GameModeSelection() {
           <HowToPlayDialog mode="diagonal" />
           <HowToPlayDialog mode="hyper" />
           <HowToPlayDialog mode="odd-even" />
+          <HowToPlayDialog mode="killer" />
         </div>
       </div>
     </div>
