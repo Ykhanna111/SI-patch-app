@@ -92,7 +92,7 @@ export default function GameModeSelection() {
           </div>
 
           {/* Game Mode Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {/* Standard Sudoku */}
             <Card 
               className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-sudoku-primary"
@@ -194,11 +194,63 @@ export default function GameModeSelection() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Hyper Sudoku (Windoku) */}
+            <Card 
+              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-sudoku-primary"
+              onClick={() => handleModeSelect('hyper')}
+              data-testid="mode-hyper"
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center justify-between text-xl">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{GAME_MODES.hyper.icon}</span>
+                    <span>{GAME_MODES.hyper.name}</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowHowToPlay('hyper');
+                    }}
+                    data-testid="how-to-play-hyper"
+                  >
+                    <HelpCircle className="w-5 h-5" />
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">{GAME_MODES.hyper.description}</p>
+                <div className="flex justify-between items-center mb-4">
+                  <Badge variant="outline" className="text-sm">
+                    {GAME_MODES.hyper.gridSize}×{GAME_MODES.hyper.gridSize} Grid
+                  </Badge>
+                  <div className="flex gap-1">
+                    {GAME_MODES.hyper.difficulty.map((diff) => (
+                      <Badge key={diff} variant="secondary" className="text-xs">
+                        {diff}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <Button 
+                  className="w-full bg-sudoku-primary hover:bg-sudoku-primary/90 text-white py-3 text-lg font-semibold"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleModeSelect('hyper');
+                  }}
+                >
+                  Play Hyper Sudoku
+                </Button>
+              </CardContent>
+            </Card>
           </div>
 
           {/* How to Play Dialogs */}
           <HowToPlayDialog mode="standard" />
           <HowToPlayDialog mode="diagonal" />
+          <HowToPlayDialog mode="hyper" />
         </div>
       </div>
     </div>
