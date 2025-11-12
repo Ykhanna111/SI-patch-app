@@ -92,7 +92,7 @@ export default function GameModeSelection() {
           </div>
 
           {/* Game Mode Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
             {/* Standard Sudoku */}
             <Card 
               className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-sudoku-primary"
@@ -245,12 +245,64 @@ export default function GameModeSelection() {
                 </Button>
               </CardContent>
             </Card>
+
+            {/* Odd-Even Sudoku */}
+            <Card 
+              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-gray-200 hover:border-sudoku-primary"
+              onClick={() => handleModeSelect('odd-even')}
+              data-testid="mode-odd-even"
+            >
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center justify-between text-xl">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{GAME_MODES['odd-even'].icon}</span>
+                    <span>{GAME_MODES['odd-even'].name}</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowHowToPlay('odd-even');
+                    }}
+                    data-testid="how-to-play-odd-even"
+                  >
+                    <HelpCircle className="w-5 h-5" />
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">{GAME_MODES['odd-even'].description}</p>
+                <div className="flex justify-between items-center mb-4">
+                  <Badge variant="outline" className="text-sm">
+                    {GAME_MODES['odd-even'].gridSize}×{GAME_MODES['odd-even'].gridSize} Grid
+                  </Badge>
+                  <div className="flex gap-1">
+                    {GAME_MODES['odd-even'].difficulty.map((diff) => (
+                      <Badge key={diff} variant="secondary" className="text-xs">
+                        {diff}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <Button 
+                  className="w-full bg-sudoku-primary hover:bg-sudoku-primary/90 text-white py-3 text-lg font-semibold"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleModeSelect('odd-even');
+                  }}
+                >
+                  Play Odd-Even Sudoku
+                </Button>
+              </CardContent>
+            </Card>
           </div>
 
           {/* How to Play Dialogs */}
           <HowToPlayDialog mode="standard" />
           <HowToPlayDialog mode="diagonal" />
           <HowToPlayDialog mode="hyper" />
+          <HowToPlayDialog mode="odd-even" />
         </div>
       </div>
     </div>
