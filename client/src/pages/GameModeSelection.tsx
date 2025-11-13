@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, Home } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Header from '@/components/Header';
@@ -89,6 +89,17 @@ export default function GameModeSelection() {
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">Choose Your Sudoku Adventure</h1>
             <p className="text-lg text-gray-600">Select a game mode to start playing</p>
+            <div className="mt-4">
+              <Button
+                variant="outline"
+                onClick={() => setLocation('/')}
+                className="flex items-center gap-2 mx-auto"
+                data-testid="button-back-dashboard"
+              >
+                <Home className="h-4 w-4" />
+                Back to Dashboard
+              </Button>
+            </div>
           </div>
 
           {/* Game Mode Cards */}
