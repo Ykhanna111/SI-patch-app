@@ -155,7 +155,7 @@ function fillGrid(grid: SudokuGrid, size: number): boolean {
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
       if (grid[row][col] === 0) {
-        const numbers = shuffleArray(getValidNumbers(size === 4 ? 'mini-4x4' : size === 6 ? 'mini-6x6' : 'standard'));
+        const numbers = shuffleArray(getValidNumbers(size === 4 ? 'mini-4x4' : size === 6 ? 'mini-6x6' : size === 16 ? 'hexadoku' : 'standard'));
         
         for (const num of numbers) {
           if (isValidPlacement(grid, row, col, num, size)) {
@@ -207,6 +207,7 @@ function getBoxDimensions(size: number): { boxWidth: number; boxHeight: number }
     case 4: return { boxWidth: 2, boxHeight: 2 };
     case 6: return { boxWidth: 3, boxHeight: 2 };
     case 9: return { boxWidth: 3, boxHeight: 3 };
+    case 16: return { boxWidth: 4, boxHeight: 4 };
     default: return { boxWidth: 3, boxHeight: 3 };
   }
 }
