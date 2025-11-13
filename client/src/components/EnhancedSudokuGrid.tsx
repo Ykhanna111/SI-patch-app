@@ -127,30 +127,6 @@ export default function EnhancedSudokuGrid({
 
     const markers: JSX.Element[] = [];
 
-    // Killer Sudoku cages
-    if (constraints.killerCages && gameMode === 'killer') {
-      constraints.killerCages.forEach((cage, index) => {
-        // Find top-left cell of cage for sum display
-        const topLeft = cage.cells.reduce((min, cell) => 
-          (cell.row < min.row || (cell.row === min.row && cell.col < min.col)) ? cell : min
-        );
-        
-        markers.push(
-          <div
-            key={`cage-sum-${index}`}
-            className="absolute text-xs font-bold text-red-600 pointer-events-none"
-            style={{
-              left: `${(topLeft.col * (100 / size)) + 1}%`,
-              top: `${(topLeft.row * (100 / size)) + 1}%`,
-              zIndex: 10
-            }}
-          >
-            {cage.sum}
-          </div>
-        );
-      });
-    }
-
     // Inequality markers
     if (constraints.inequalities && gameMode === 'inequality') {
       constraints.inequalities.forEach((ineq, index) => {
@@ -322,20 +298,6 @@ function getGameSpecificBackground(
       "bg-purple-50", "bg-pink-50", "bg-indigo-50", "bg-gray-50", "bg-orange-50"
     ];
     return colors[regionId % colors.length];
-  }
-
-  if (gameMode === 'killer' && constraints?.killerCages) {
-    // Find which cage this cell belongs to and give it a subtle background
-    const cageIndex = constraints.killerCages.findIndex(cage => 
-      cage.cells.some(cell => cell.row === row && cell.col === col)
-    );
-    if (cageIndex !== -1) {
-      const colors = [
-        "bg-red-25", "bg-blue-25", "bg-green-25", "bg-yellow-25", 
-        "bg-purple-25", "bg-pink-25", "bg-indigo-25", "bg-gray-25"
-      ];
-      return colors[cageIndex % colors.length];
-    }
   }
 
   return "";

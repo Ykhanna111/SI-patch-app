@@ -125,8 +125,7 @@ export default function GamePage() {
         initializeGame(game);
         const modeName = game.gameMode === 'diagonal' ? 'Diagonal Sudoku' : 
                         game.gameMode === 'hyper' ? 'Hyper Sudoku' : 
-                        game.gameMode === 'odd-even' ? 'Odd-Even Sudoku' : 
-                        game.gameMode === 'killer' ? 'Killer Sudoku' : 'Standard Sudoku';
+                        game.gameMode === 'odd-even' ? 'Odd-Even Sudoku' : 'Standard Sudoku';
         toast({
           title: "New Game",
           description: `Started a new ${game.difficulty} ${modeName} puzzle!`,
@@ -699,16 +698,6 @@ export default function GamePage() {
                   </div>
                 </div>
               </div>
-
-              {gameMode === 'killer' && constraints?.killerCages && (
-                <div>
-                  <h4 className="font-semibold mb-2">Killer Sudoku Cages</h4>
-                  <div className="bg-gray-50 p-3 rounded text-sm">
-                    <p>This puzzle has {constraints.killerCages.length} cages with target sums.</p>
-                    <p className="mt-1">Each cage must sum to its target number with no repeated digits.</p>
-                  </div>
-                </div>
-              )}
 
               {gameMode === 'odd-even' && constraints?.oddEvenCells && (
                 <div>

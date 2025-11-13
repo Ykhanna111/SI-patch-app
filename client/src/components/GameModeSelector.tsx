@@ -108,19 +108,6 @@ export default function GameModeSelector({ onSelectGame, isCreating = false }: G
                 </div>
               </div>
 
-              {mode === 'killer' && (
-                <>
-                  <Separator />
-                  <div>
-                    <h4 className="font-semibold mb-2">Killer Sudoku Example</h4>
-                    <div className="bg-gray-50 p-3 rounded text-sm">
-                      <p>Dotted cages show groups of cells that must sum to a target number.</p>
-                      <p className="mt-1">Example: A 3-cell cage with sum "15" could contain [1,5,9] or [2,4,9] etc.</p>
-                    </div>
-                  </div>
-                </>
-              )}
-
               {mode === 'jigsaw' && (
                 <>
                   <Separator />

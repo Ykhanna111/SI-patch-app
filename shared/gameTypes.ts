@@ -6,7 +6,6 @@ export type GameMode =
   | 'mini-6x6'      // 6x6 Mini Sudoku  
   | 'jigsaw'        // Irregular regions instead of 3x3 boxes
   | 'diagonal'      // Sudoku X - diagonals must contain 1-9
-  | 'killer'        // Cages with sum constraints
   | 'hyper'         // Windoku - extra 3x3 regions
   | 'odd-even'      // Some cells restricted to odd/even numbers
   | 'inequality'    // Greater/less than signs between cells
@@ -25,7 +24,6 @@ export interface GameModeInfo {
   example?: string;
   constraints?: {
     oddEvenCells?: { row: number; col: number; type: 'odd' | 'even' }[];
-    killerCages?: { cells: { row: number; col: number }[]; sum: number }[];
     jigsawRegions?: number[][];
     hyperRegions?: { row: number; col: number }[][];
     inequalities?: { cell1: { row: number; col: number }; cell2: { row: number; col: number }; operator: '>' | '<' }[];
@@ -104,20 +102,6 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
       'Top-right to bottom-left diagonal: 1–9'
     ]
   },
-  killer: {
-    id: 'killer',
-    name: 'Killer Sudoku',
-    description: 'Cages with sum constraints, no given numbers',
-    icon: '🔺',
-    gridSize: 9,
-    difficulty: ['hard', 'expert'],
-    rules: [
-      'All standard Sudoku rules apply',
-      'Numbers in each cage must sum to the target',
-      'No number can repeat within a cage',
-      'Cages are shown with dotted outlines'
-    ]
-  },
   hyper: {
     id: 'hyper',
     name: 'Hyper Sudoku (Windoku)',
@@ -177,11 +161,6 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
 };
 
 // Constraint types for different game modes
-export interface KillerCage {
-  cells: { row: number; col: number }[];
-  sum: number;
-}
-
 export interface OddEvenCell {
   row: number;
   col: number;
@@ -204,7 +183,6 @@ export interface HyperRegion {
 }
 
 export interface GameConstraints {
-  killerCages?: KillerCage[];
   oddEvenCells?: OddEvenCell[];
   jigsawRegions?: number[][];
   hyperRegions?: HyperRegion[];

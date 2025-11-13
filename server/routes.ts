@@ -22,7 +22,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid difficulty level" });
       }
 
-      const validGameModes = ['standard', 'mini-4x4', 'mini-6x6', 'jigsaw', 'diagonal', 'killer', 'hyper', 'odd-even', 'inequality', 'consecutive'];
+      const validGameModes = ['standard', 'mini-4x4', 'mini-6x6', 'jigsaw', 'diagonal', 'hyper', 'odd-even', 'inequality', 'consecutive'];
       if (!validGameModes.includes(gameMode)) {
         return res.status(400).json({ message: "Invalid game mode" });
       }

@@ -81,7 +81,6 @@ export default function EnhancedNumberSelector({
         {gameMode === 'standard' && "Fill with numbers 1-9"}
         {gameMode === 'jigsaw' && "Fill irregular regions with 1-9"}
         {gameMode === 'diagonal' && "Fill rows, columns, boxes, and diagonals with 1-9"}
-        {gameMode === 'killer' && "Fill cages to match target sums"}
         {gameMode === 'hyper' && "Fill standard regions plus 4 extra highlighted areas"}
         {gameMode === 'odd-even' && "Respect odd/even cell restrictions"}
         {gameMode === 'inequality' && "Follow inequality constraints between cells"}
