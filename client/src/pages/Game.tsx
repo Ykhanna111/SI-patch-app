@@ -480,7 +480,7 @@ export default function GamePage() {
               { level: 'easy', title: 'Easy', description: 'Perfect for beginners', color: 'bg-green-500' },
               { level: 'medium', title: 'Medium', description: 'A balanced challenge', color: 'bg-yellow-500' },
               { level: 'hard', title: 'Hard', description: 'For experienced players', color: 'bg-orange-500' },
-              { level: 'expert', title: 'Expert', description: 'Ultimate challenge', color: 'bg-red-500' }
+              { level: 'expert', title: 'Expert', description: 'An ultimate challenge', color: 'bg-red-500' }
             ].map((difficulty) => (
               <div
                 key={difficulty.level}
