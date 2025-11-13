@@ -22,7 +22,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid difficulty level" });
       }
 
-      const validGameModes = ['standard', 'mini-4x4', 'mini-6x6', 'jigsaw', 'diagonal', 'hyper', 'odd-even', 'inequality', 'consecutive'];
+      const validGameModes = ['standard', 'mini-4x4', 'mini-6x6', 'hexadoku', 'jigsaw', 'diagonal', 'killer', 'hyper', 'odd-even', 'inequality', 'consecutive'];
       if (!validGameModes.includes(gameMode)) {
         return res.status(400).json({ message: "Invalid game mode" });
       }
@@ -40,7 +40,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         constraints = result.constraints;
       }
 
-      const gridSize = gameMode === 'mini-4x4' ? 4 : gameMode === 'mini-6x6' ? 6 : 9;
+      const gridSize = gameMode === 'mini-4x4' ? 4 : gameMode === 'mini-6x6' ? 6 : gameMode === 'hexadoku' ? 16 : 9;
       
       const gameData = {
         userId: req.session?.userId || null,

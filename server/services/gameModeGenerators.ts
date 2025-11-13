@@ -17,10 +17,14 @@ export function generatePuzzleForMode(gameMode: GameMode, difficulty: Difficulty
       return generateMiniSudoku(4, difficulty);
     case 'mini-6x6':
       return generateMiniSudoku(6, difficulty);
+    case 'hexadoku':
+      return generateHexadoku(difficulty);
     case 'jigsaw':
       return generateJigsawSudoku(difficulty);
     case 'diagonal':
       return generateDiagonalSudoku(difficulty);
+    case 'killer':
+      return generateKillerSudoku(difficulty);
     case 'hyper':
       return generateHyperSudoku(difficulty);
     case 'odd-even':
@@ -61,6 +65,13 @@ function generateJigsawSudoku(difficulty: Difficulty): GeneratedPuzzle {
   };
 }
 
+// Hexadoku 16x16 Generator
+function generateHexadoku(difficulty: Difficulty): GeneratedPuzzle {
+  const solution = generateCompleteSudoku(16);
+  const puzzle = createPuzzle(solution, difficulty, 16);
+  return { puzzle, solution };
+}
+
 // Diagonal Sudoku (Sudoku X) Generator
 function generateDiagonalSudoku(difficulty: Difficulty): GeneratedPuzzle {
   const solution = generateDiagonalCompleteSudoku();
@@ -68,6 +79,18 @@ function generateDiagonalSudoku(difficulty: Difficulty): GeneratedPuzzle {
   return { puzzle, solution };
 }
 
+// Killer Sudoku Generator
+function generateKillerSudoku(difficulty: Difficulty): GeneratedPuzzle {
+  const solution = generateCompleteSudoku(9);
+  const killerCages = generateKillerCages(solution);
+  const puzzle = createKillerPuzzle(killerCages);
+  
+  return {
+    puzzle,
+    solution,
+    constraints: { killerCages }
+  };
+}
 
 // Hyper Sudoku (Windoku) Generator
 function generateHyperSudoku(difficulty: Difficulty): GeneratedPuzzle {
@@ -373,6 +396,66 @@ function createJigsawPuzzle(solution: SudokuGrid, difficulty: Difficulty, region
   return createPuzzle(solution, difficulty, 9);
 }
 
+// Killer Sudoku functions
+function generateKillerCages(solution: SudokuGrid) {
+  const cages = [];
+  const used = Array(9).fill(false).map(() => Array(9).fill(false));
+  
+  // Generate cages of various sizes
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (!used[row][col]) {
+        const cage = createCage(solution, used, row, col);
+        if (cage.cells.length > 0) {
+          cages.push(cage);
+        }
+      }
+    }
+  }
+  
+  return cages;
+}
+
+function createCage(solution: SudokuGrid, used: boolean[][], startRow: number, startCol: number) {
+  const cells = [{ row: startRow, col: startCol }];
+  used[startRow][startCol] = true;
+  
+  // Randomly expand cage (2-4 cells typically)
+  const targetSize = Math.floor(Math.random() * 3) + 2;
+  
+  while (cells.length < targetSize) {
+    const expandableCell = cells[Math.floor(Math.random() * cells.length)];
+    const directions = [
+      { dr: -1, dc: 0 }, { dr: 1, dc: 0 },
+      { dr: 0, dc: -1 }, { dr: 0, dc: 1 }
+    ];
+    
+    let expanded = false;
+    for (const dir of shuffleArray(directions)) {
+      const newRow = expandableCell.row + dir.dr;
+      const newCol = expandableCell.col + dir.dc;
+      
+      if (newRow >= 0 && newRow < 9 && newCol >= 0 && newCol < 9 && !used[newRow][newCol]) {
+        cells.push({ row: newRow, col: newCol });
+        used[newRow][newCol] = true;
+        expanded = true;
+        break;
+      }
+    }
+    
+    if (!expanded) break;
+  }
+  
+  // Calculate sum
+  const sum = cells.reduce((total, cell) => total + solution[cell.row][cell.col], 0);
+  
+  return { cells, sum };
+}
+
+function createKillerPuzzle(cages: any[]): SudokuGrid {
+  // Killer sudoku typically has no given numbers
+  return Array(9).fill(0).map(() => Array(9).fill(0));
+}
 
 // Odd-Even Sudoku functions
 function generateOddEvenConstraints(solution: SudokuGrid) {
