@@ -55,7 +55,7 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
     description: 'Smaller 4×4 grid perfect for beginners',
     icon: '🔤',
     gridSize: 4,
-    difficulty: ['easy', 'medium'],
+    difficulty: ['easy', 'medium', 'hard', 'expert'],
     rules: [
       'Fill the 4×4 grid so every row contains digits 1–4',
       'Every column must contain digits 1–4',
@@ -69,7 +69,7 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
     description: 'Medium-sized 6×6 grid with 2×3 boxes',
     icon: '📱',
     gridSize: 6,
-    difficulty: ['easy', 'medium', 'hard'],
+    difficulty: ['easy', 'medium', 'hard', 'expert'],
     rules: [
       'Fill the 6×6 grid so every row contains digits 1–6',
       'Every column must contain digits 1–6',
@@ -83,7 +83,7 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
     description: 'Large 16×16 grid with numbers 1–16 (or A-P)',
     icon: '🔷',
     gridSize: 16,
-    difficulty: ['medium', 'hard', 'expert'],
+    difficulty: ['easy', 'medium', 'hard', 'expert'],
     rules: [
       'Fill the 16×16 grid so every row contains digits 1–16',
       'Every column must contain digits 1–16',
@@ -98,7 +98,7 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
     description: 'Irregular shaped regions instead of 3×3 boxes',
     icon: '🧩',
     gridSize: 9,
-    difficulty: ['medium', 'hard', 'expert'],
+    difficulty: ['easy', 'medium', 'hard', 'expert'],
     rules: [
       'Fill the 9×9 grid so every row contains digits 1–9',
       'Every column must contain digits 1–9',
@@ -112,7 +112,7 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
     description: 'Standard rules plus both main diagonals must contain 1–9',
     icon: '❌',
     gridSize: 9,
-    difficulty: ['medium', 'hard', 'expert'],
+    difficulty: ['easy', 'medium', 'hard', 'expert'],
     rules: [
       'All standard Sudoku rules apply',
       'Each main diagonal must also contain digits 1–9',
@@ -126,7 +126,7 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
     description: 'Cages with sum constraints, no given numbers',
     icon: '🔺',
     gridSize: 9,
-    difficulty: ['hard', 'expert'],
+    difficulty: ['easy', 'medium', 'hard', 'expert'],
     rules: [
       'All standard Sudoku rules apply',
       'Numbers in each cage must sum to the target',
@@ -140,7 +140,7 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
     description: 'Standard rules plus four extra shaded 3×3 regions',
     icon: '🔶',
     gridSize: 9,
-    difficulty: ['medium', 'hard', 'expert'],
+    difficulty: ['easy', 'medium', 'hard', 'expert'],
     rules: [
       'All standard Sudoku rules apply',
       'Four extra shaded 3×3 regions must contain 1–9',
@@ -154,7 +154,7 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
     description: 'Some cells restricted to odd or even numbers only',
     icon: '⚫',
     gridSize: 9,
-    difficulty: ['easy', 'medium', 'hard'],
+    difficulty: ['easy', 'medium', 'hard', 'expert'],
     rules: [
       'All standard Sudoku rules apply',
       'Gray shaded cells can only contain odd numbers (1,3,5,7,9)',
@@ -168,7 +168,7 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
     description: 'Inequality signs show relative values between cells',
     icon: '📊',
     gridSize: 9,
-    difficulty: ['medium', 'hard', 'expert'],
+    difficulty: ['easy', 'medium', 'hard', 'expert'],
     rules: [
       'All standard Sudoku rules apply',
       'Inequality signs (> <) show number relationships',
@@ -182,7 +182,7 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
     description: 'Marked adjacent cells must contain consecutive numbers',
     icon: '🔗',
     gridSize: 9,
-    difficulty: ['medium', 'hard', 'expert'],
+    difficulty: ['easy', 'medium', 'hard', 'expert'],
     rules: [
       'All standard Sudoku rules apply',
       'White dots between cells mean consecutive numbers',
