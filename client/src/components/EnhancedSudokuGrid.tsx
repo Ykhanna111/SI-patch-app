@@ -86,7 +86,9 @@ export default function EnhancedSudokuGrid({
 
     // Base cell styling - responsive sizing
     let cellSize = "aspect-square text-xs sm:text-sm";
-    if (size === 9) {
+    if (size === 16) {
+      cellSize = "aspect-square text-[0.5rem] sm:text-xs";
+    } else if (size === 9) {
       cellSize = "aspect-square text-sm sm:text-base lg:text-lg";
     } else if (size === 6) {
       cellSize = "aspect-square text-sm sm:text-base";
@@ -116,10 +118,18 @@ export default function EnhancedSudokuGrid({
     return cn(
       "select-none",
       {
-        "text-gray-400": isPrefilled,
-        "text-sudoku-primary": !isPrefilled && currentValue !== 0,
+        "text-gray-400 dark:text-gray-500": isPrefilled,
+        "text-sudoku-primary dark:text-blue-400": !isPrefilled && currentValue !== 0,
       }
     );
+  };
+
+  // Convert number to display format (1-9,A-F for hexadoku)
+  const numberToDisplay = (num: number) => {
+    if (gameMode === 'hexadoku' && num > 9) {
+      return String.fromCharCode(65 + num - 10); // A-F
+    }
+    return num > 0 ? num.toString() : '';
   };
 
   const renderConstraintMarkers = () => {
@@ -173,6 +183,64 @@ export default function EnhancedSudokuGrid({
       });
     }
 
+    // Killer Sudoku cages
+    if (constraints.killerCages && gameMode === 'killer') {
+      constraints.killerCages.forEach((cage, cageIndex) => {
+        // Find the top-left cell of the cage for the sum label
+        const topLeftCell = cage.cells.reduce((min, cell) => {
+          if (cell.row < min.row || (cell.row === min.row && cell.col < min.col)) {
+            return cell;
+          }
+          return min;
+        }, cage.cells[0]);
+
+        // Render sum label
+        markers.push(
+          <div
+            key={`cage-sum-${cageIndex}`}
+            className="absolute text-[0.65rem] font-bold text-gray-700 dark:text-gray-300 bg-white/80 dark:bg-gray-800/80 px-0.5 rounded pointer-events-none"
+            style={{
+              left: `${(topLeftCell.col * (100 / size)) + 0.5}%`,
+              top: `${(topLeftCell.row * (100 / size)) + 0.5}%`,
+              zIndex: 5
+            }}
+          >
+            {cage.sum}
+          </div>
+        );
+
+        // Render cage borders
+        cage.cells.forEach((cell, cellIndex) => {
+          const cageSet = new Set(cage.cells.map(c => `${c.row},${c.col}`));
+          
+          const hasBorderTop = !cageSet.has(`${cell.row - 1},${cell.col}`);
+          const hasBorderBottom = !cageSet.has(`${cell.row + 1},${cell.col}`);
+          const hasBorderLeft = !cageSet.has(`${cell.row},${cell.col - 1}`);
+          const hasBorderRight = !cageSet.has(`${cell.row},${cell.col + 1}`);
+
+          if (hasBorderTop || hasBorderBottom || hasBorderLeft || hasBorderRight) {
+            markers.push(
+              <div
+                key={`cage-border-${cageIndex}-${cellIndex}`}
+                className="absolute pointer-events-none"
+                style={{
+                  left: `${(cell.col * (100 / size))}%`,
+                  top: `${(cell.row * (100 / size))}%`,
+                  width: `${100 / size}%`,
+                  height: `${100 / size}%`,
+                  borderTop: hasBorderTop ? '2px dashed rgba(0,0,0,0.4)' : 'none',
+                  borderBottom: hasBorderBottom ? '2px dashed rgba(0,0,0,0.4)' : 'none',
+                  borderLeft: hasBorderLeft ? '2px dashed rgba(0,0,0,0.4)' : 'none',
+                  borderRight: hasBorderRight ? '2px dashed rgba(0,0,0,0.4)' : 'none',
+                  zIndex: 3
+                }}
+              />
+            );
+          }
+        });
+      });
+    }
+
     return markers;
   };
 
@@ -213,7 +281,7 @@ export default function EnhancedSudokuGrid({
                 data-testid={`cell-${row}-${col}`}
               >
                 <span className={getTextClasses(row, col)}>
-                  {currentGrid?.[row]?.[col] || ''}
+                  {numberToDisplay(currentGrid?.[row]?.[col] || 0)}
                 </span>
               </div>
             ))
@@ -248,15 +316,18 @@ function getGameSpecificBorders(
   }
 
   // Standard box borders
-  if (size === 9) {
-    if (col === 2 || col === 5) classes.push("border-r-2 border-gray-800");
-    if (row === 2 || row === 5) classes.push("border-b-2 border-gray-800");
+  if (size === 16) {
+    if (col === 3 || col === 7 || col === 11) classes.push("border-r-2 border-gray-800 dark:border-gray-600");
+    if (row === 3 || row === 7 || row === 11) classes.push("border-b-2 border-gray-800 dark:border-gray-600");
+  } else if (size === 9) {
+    if (col === 2 || col === 5) classes.push("border-r-2 border-gray-800 dark:border-gray-600");
+    if (row === 2 || row === 5) classes.push("border-b-2 border-gray-800 dark:border-gray-600");
   } else if (size === 6) {
-    if (col === 2) classes.push("border-r-2 border-gray-800");
-    if (row === 1 || row === 3) classes.push("border-b-2 border-gray-800");
+    if (col === 2) classes.push("border-r-2 border-gray-800 dark:border-gray-600");
+    if (row === 1 || row === 3) classes.push("border-b-2 border-gray-800 dark:border-gray-600");
   } else if (size === 4) {
-    if (col === 1) classes.push("border-r-2 border-gray-800");
-    if (row === 1) classes.push("border-b-2 border-gray-800");
+    if (col === 1) classes.push("border-r-2 border-gray-800 dark:border-gray-600");
+    if (row === 1) classes.push("border-b-2 border-gray-800 dark:border-gray-600");
   }
 
   return classes.join(" ");

@@ -301,6 +301,110 @@ export default function GameModeSelection() {
               </CardContent>
             </Card>
 
+            {/* Hexadoku 16x16 */}
+            <Card 
+              className="relative cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-cyan-300 hover:border-cyan-500 bg-gradient-to-br from-cyan-50 to-white"
+              onClick={() => handleModeSelect('hexadoku')}
+              data-testid="mode-hexadoku"
+            >
+              <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-cyan-400 to-cyan-600 rounded-t-lg" />
+              <CardHeader className="pb-3 pt-6">
+                <CardTitle className="flex items-center justify-between text-xl">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{GAME_MODES.hexadoku.icon}</span>
+                    <span>{GAME_MODES.hexadoku.name}</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowHowToPlay('hexadoku');
+                    }}
+                    data-testid="how-to-play-hexadoku"
+                  >
+                    <HelpCircle className="w-5 h-5" />
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">{GAME_MODES.hexadoku.description}</p>
+                <div className="flex justify-between items-center mb-4">
+                  <Badge variant="outline" className="text-sm">
+                    {GAME_MODES.hexadoku.gridSize}×{GAME_MODES.hexadoku.gridSize} Grid
+                  </Badge>
+                  <div className="flex gap-1">
+                    {GAME_MODES.hexadoku.difficulty.map((diff) => (
+                      <Badge key={diff} variant="secondary" className="text-xs">
+                        {diff}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <Button 
+                  className="w-full bg-sudoku-primary hover:bg-sudoku-primary/90 text-white py-3 text-lg font-semibold"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleModeSelect('hexadoku');
+                  }}
+                >
+                  Play Hexadoku
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Killer Sudoku */}
+            <Card 
+              className="relative cursor-pointer transition-all hover:shadow-lg hover:scale-105 border-2 border-red-300 hover:border-red-500 bg-gradient-to-br from-red-50 to-white"
+              onClick={() => handleModeSelect('killer')}
+              data-testid="mode-killer"
+            >
+              <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-red-400 to-red-600 rounded-t-lg" />
+              <CardHeader className="pb-3 pt-6">
+                <CardTitle className="flex items-center justify-between text-xl">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{GAME_MODES.killer.icon}</span>
+                    <span>{GAME_MODES.killer.name}</span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowHowToPlay('killer');
+                    }}
+                    data-testid="how-to-play-killer"
+                  >
+                    <HelpCircle className="w-5 h-5" />
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">{GAME_MODES.killer.description}</p>
+                <div className="flex justify-between items-center mb-4">
+                  <Badge variant="outline" className="text-sm">
+                    {GAME_MODES.killer.gridSize}×{GAME_MODES.killer.gridSize} Grid
+                  </Badge>
+                  <div className="flex gap-1">
+                    {GAME_MODES.killer.difficulty.map((diff) => (
+                      <Badge key={diff} variant="secondary" className="text-xs">
+                        {diff}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <Button 
+                  className="w-full bg-sudoku-primary hover:bg-sudoku-primary/90 text-white py-3 text-lg font-semibold"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleModeSelect('killer');
+                  }}
+                >
+                  Play Killer Sudoku
+                </Button>
+              </CardContent>
+            </Card>
+
           </div>
 
           {/* How to Play Dialogs */}
@@ -308,6 +412,8 @@ export default function GameModeSelection() {
           <HowToPlayDialog mode="diagonal" />
           <HowToPlayDialog mode="hyper" />
           <HowToPlayDialog mode="odd-even" />
+          <HowToPlayDialog mode="hexadoku" />
+          <HowToPlayDialog mode="killer" />
         </div>
       </div>
     </div>
