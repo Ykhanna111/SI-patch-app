@@ -1,0 +1,79 @@
+You are an expert QA tester, security specialist, and senior full-stack engineer. Your task is to thoroughly test my Sudoku application/website and ensure:
+
+1. Functionality Testing
+
+Verify all Sudoku variants (Classic, Killer, Samurai, X-Sudoku, Hyper-Sudoku, Jigsaw, etc.) work correctly.
+
+Check all game modes, levels, timers, hints, error highlighting, and custom puzzles.
+
+Solve multiple puzzles in each variant to ensure there are no logical inconsistencies, dead ends, or unsolvable puzzles.
+
+Test auto-solver—ensure it follows valid Sudoku rules and supports every variant implemented.
+
+2. Logic + Algorithm Testing
+
+Make sure puzzle generation never creates invalid or multiple-solution puzzles.
+
+Verify solving algorithms are correctly implemented.
+
+Check no algorithm produces contradictions or breaks Sudoku constraints.
+
+Validate edge cases: minimum clues, maximum clues, 16x16 grids, diagonal rules, killer cages, overlapping zones.
+
+3. Implementation Error Testing
+
+Test responsiveness on mobile/tablet/desktop.
+
+Check UI/UX for any broken buttons, menus, or timers.
+
+Test performance under load (fast switching, generating multiple puzzles).
+
+Check for any runtime warnings or console errors.
+
+Verify accessibility (keyboard navigation, ARIA labels, color contrast).
+
+4. Security Testing
+
+Ensure all code is properly wrapped/minified/obfuscated so it cannot be easily viewed after deployment.
+
+Confirm no API keys, environment variables, or logic is exposed.
+
+Add CSP (Content Security Policy) headers to prevent XSS attacks.
+
+Add protections including:
+
+XSS protection
+
+CSRF protection
+
+CSP & frame-ancestors
+
+Referrer-Policy
+
+Strict-Transport-Security
+
+X-Content-Type-Options
+
+Rate limiting for puzzle endpoint
+
+Input sanitation on all user inputs
+
+Ensure backend endpoints are protected, rate-limited, and sanitized.
+
+5. Code Wrapping & Deployment Hardening
+
+Minify, obfuscate, and bundle the final code so no source code is visible to users.
+
+Ensure API logic is executed server-side, not client-side.
+
+Hide implementation details and restrict access using best security practices.
+
+Perform a final review to validate that no sensitive information is exposed.
+
+6. Provide Output As:
+
+Detailed bug report (functional + logical + security).
+
+List of recommended fixes.
+
+Final secure deployment checklist.”
