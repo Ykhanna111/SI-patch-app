@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { fetchCsrfToken, setCsrfToken, getCachedCsrfToken } from "@/hooks/useCsrf";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -12,15 +13,42 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
+  const headers: Record<string, string> = {};
+  
+  if (data) {
+    headers["Content-Type"] = "application/json";
+  }
+  
+  const skipCsrfEndpoints = ['/api/auth/login', '/api/auth/register'];
+  const requiresCsrf = method !== "GET" && method !== "HEAD" && !skipCsrfEndpoints.includes(url);
+  
+  if (requiresCsrf) {
+    try {
+      let csrfToken = getCachedCsrfToken();
+      if (!csrfToken) {
+        csrfToken = await fetchCsrfToken();
+      }
+      headers["X-CSRF-Token"] = csrfToken;
+    } catch (e) {
+      console.warn("Could not fetch CSRF token:", e);
+    }
+  }
+  
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
 
   await throwIfResNotOk(res);
   return res;
+}
+
+export function updateCsrfFromResponse(response: { csrfToken?: string }): void {
+  if (response.csrfToken) {
+    setCsrfToken(response.csrfToken);
+  }
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";

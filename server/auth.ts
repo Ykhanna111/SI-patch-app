@@ -1,26 +1,27 @@
 import bcrypt from 'bcryptjs';
-import type { Express, RequestHandler } from 'express';
+import type { Express, RequestHandler, Request, Response, NextFunction } from 'express';
 import session from 'express-session';
-import connectPg from 'connect-pg-simple';
+import MemoryStore from 'memorystore';
 import { storage } from './storage';
-import type { RegisterInput, LoginInput } from '../shared/schema';
+import type { LoginInput } from '../shared/schema';
 import { registerSchema } from '../shared/schema';
+import crypto from 'crypto';
 
-// Extend session data type
 declare module 'express-session' {
   interface SessionData {
     userId: string;
+    csrfToken: string;
+    guestId: string;
+    guestGamesPlayed: number;
+    guestLastPlayDate: string;
   }
 }
 
 export function getSession() {
-  const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
-    ttl: sessionTtl,
-    tableName: "sessions",
+  const sessionTtl = 7 * 24 * 60 * 60 * 1000;
+  const MemStore = MemoryStore(session);
+  const sessionStore = new MemStore({
+    checkPeriod: 86400000
   });
   
   return session({
@@ -32,6 +33,7 @@ export function getSession() {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: sessionTtl,
+      sameSite: 'lax',
     },
   });
 }
@@ -51,14 +53,59 @@ export const isAuthenticated: RequestHandler = (req, res, next) => {
   return res.status(401).json({ message: "Unauthorized" });
 };
 
+function validateOrigin(req: Request): boolean {
+  const origin = req.get('origin');
+  const host = req.get('host');
+  
+  if (!origin) {
+    return true;
+  }
+  
+  if (!host) {
+    return false;
+  }
+  
+  try {
+    const originUrl = new URL(origin);
+    const hostHostname = host.split(':')[0];
+    
+    if (originUrl.hostname === hostHostname) {
+      return true;
+    }
+    
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+function csrfProtectionForAuth(): RequestHandler {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!validateOrigin(req)) {
+      return res.status(403).json({ message: 'Forbidden: Invalid origin' });
+    }
+    
+    const csrfToken = req.headers['x-csrf-token'] as string || req.body?._csrf;
+    const sessionToken = req.session?.csrfToken;
+    
+    if (!csrfToken || !sessionToken || csrfToken !== sessionToken) {
+      return res.status(403).json({ message: 'Forbidden: Invalid CSRF token' });
+    }
+    
+    next();
+  };
+}
+
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
   app.use(getSession());
 
-  // Register endpoint
   app.post('/api/auth/register', async (req, res) => {
     try {
-      // Validate input using the schema
+      if (!validateOrigin(req)) {
+        return res.status(403).json({ message: 'Forbidden: Invalid origin' });
+      }
+      
       const validation = registerSchema.safeParse(req.body);
       if (!validation.success) {
         return res.status(400).json({ 
@@ -68,13 +115,11 @@ export async function setupAuth(app: Express) {
       }
       const data = validation.data;
       
-      // Check if username already exists
       const existingUser = await storage.getUserByUsername(data.username);
       if (existingUser) {
         return res.status(400).json({ message: "Username already exists" });
       }
 
-      // Check if email already exists (if provided)
       if (data.email && data.email.trim() !== "") {
         const existingEmailUser = await storage.getUserByEmail(data.email);
         if (existingEmailUser) {
@@ -82,10 +127,8 @@ export async function setupAuth(app: Express) {
         }
       }
 
-      // Hash password
       const hashedPassword = await hashPassword(data.password);
 
-      // Create user
       const user = await storage.createUser({
         username: data.username,
         email: data.email && data.email.trim() !== "" ? data.email : null,
@@ -94,11 +137,11 @@ export async function setupAuth(app: Express) {
         lastName: data.lastName,
       });
 
-      // Create session
       req.session.userId = user.id;
+      req.session.csrfToken = crypto.randomBytes(32).toString('hex');
       req.session.save(() => {
         const { password: _, ...userResponse } = user;
-        res.status(201).json(userResponse);
+        res.status(201).json({ ...userResponse, csrfToken: req.session.csrfToken });
       });
     } catch (error) {
       console.error('Registration error:', error);
@@ -106,9 +149,12 @@ export async function setupAuth(app: Express) {
     }
   });
 
-  // Login endpoint
   app.post('/api/auth/login', async (req, res) => {
     try {
+      if (!validateOrigin(req)) {
+        return res.status(403).json({ message: 'Forbidden: Invalid origin' });
+      }
+      
       const data = req.body as LoginInput;
       
       const user = await storage.getUserByUsername(data.username);
@@ -121,11 +167,11 @@ export async function setupAuth(app: Express) {
         return res.status(401).json({ message: "Invalid username or password" });
       }
 
-      // Create session
       req.session.userId = user.id;
+      req.session.csrfToken = crypto.randomBytes(32).toString('hex');
       req.session.save(() => {
         const { password: _, ...userResponse } = user;
-        res.json(userResponse);
+        res.json({ ...userResponse, csrfToken: req.session.csrfToken });
       });
     } catch (error) {
       console.error('Login error:', error);
@@ -133,14 +179,12 @@ export async function setupAuth(app: Express) {
     }
   });
 
-  // Logout endpoint
-  app.post('/api/auth/logout', (req, res) => {
+  app.post('/api/auth/logout', csrfProtectionForAuth(), (req, res) => {
     req.session.destroy(() => {
       res.json({ message: "Logged out successfully" });
     });
   });
 
-  // Get current user endpoint
   app.get('/api/auth/user', isAuthenticated, async (req, res) => {
     try {
       const userId = req.session.userId;
@@ -161,15 +205,21 @@ export async function setupAuth(app: Express) {
     }
   });
 
-  // Update profile endpoint
-  app.put('/api/auth/profile', isAuthenticated, async (req, res) => {
+  app.put('/api/auth/profile', isAuthenticated, csrfProtectionForAuth(), async (req, res) => {
     try {
       const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "No user session found" });
       }
 
-      const updates = req.body;
+      const allowedUpdates = ['firstName', 'lastName', 'email'];
+      const updates: Record<string, string> = {};
+      for (const key of allowedUpdates) {
+        if (req.body[key] !== undefined) {
+          updates[key] = req.body[key];
+        }
+      }
+      
       const updatedUser = await storage.updateUser(userId, updates);
       
       if (!updatedUser) {
@@ -184,15 +234,13 @@ export async function setupAuth(app: Express) {
     }
   });
 
-  // Upload avatar endpoint (placeholder for now)
-  app.post('/api/auth/avatar', isAuthenticated, async (req, res) => {
+  app.post('/api/auth/avatar', isAuthenticated, csrfProtectionForAuth(), async (req, res) => {
     try {
       const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "No user session found" });
       }
 
-      // For now, just return success - in a real app you'd handle file upload
       res.json({ message: "Avatar upload successful" });
     } catch (error) {
       console.error('Avatar upload error:', error);
@@ -200,7 +248,6 @@ export async function setupAuth(app: Express) {
     }
   });
 
-  // Get user statistics
   app.get('/api/auth/stats', isAuthenticated, async (req, res) => {
     try {
       const userId = req.session.userId;
@@ -211,7 +258,6 @@ export async function setupAuth(app: Express) {
       let stats = await storage.getUserStats(userId);
       
       if (!stats) {
-        // Create initial stats for new user
         stats = await storage.createUserStats({ userId });
       }
 

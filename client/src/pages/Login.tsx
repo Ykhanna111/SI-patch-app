@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, updateCsrfFromResponse } from '@/lib/queryClient';
 import { Link } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
 
@@ -31,8 +31,8 @@ export default function Login() {
       const response = await apiRequest('POST', '/api/auth/login', data);
       return await response.json();
     },
-    onSuccess: () => {
-      // Invalidate auth query to refresh user state
+    onSuccess: (data) => {
+      updateCsrfFromResponse(data);
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
       toast({
         title: "Welcome back!",

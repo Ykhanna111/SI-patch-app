@@ -5,6 +5,7 @@ import { Settings, LogOut, User, HelpCircle } from "lucide-react";
 import type { User as UserType } from "@shared/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { clearCsrfToken } from "@/hooks/useCsrf";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation, Link } from "wouter";
 import HowToPlayDialog from "./HowToPlayDialog";
@@ -23,6 +24,7 @@ export default function Header() {
       return response;
     },
     onSuccess: () => {
+      clearCsrfToken();
       queryClient.removeQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: "Logged out",
