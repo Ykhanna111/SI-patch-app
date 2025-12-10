@@ -23,13 +23,17 @@ export function securityHeaders(): RequestHandler {
     const nonce = crypto.randomBytes(16).toString('base64');
     res.locals.cspNonce = nonce;
     
+    if (process.env.NODE_ENV !== 'production') {
+      return next();
+    }
+    
     const csp = [
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline' 'unsafe-eval'`,
-      "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob:",
-      "font-src 'self'",
-      "connect-src 'self'",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "img-src 'self' data: blob: https:",
+      "font-src 'self' https://fonts.gstatic.com",
+      "connect-src 'self' ws: wss:",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
@@ -120,6 +124,10 @@ setInterval(cleanupRateLimitStore, 60000);
 
 export function rateLimit(): RequestHandler {
   return (req: Request, res: Response, next: NextFunction) => {
+    if (process.env.NODE_ENV !== 'production') {
+      return next();
+    }
+    
     const key = getRateLimitKey(req);
     const isAuthenticated = !!req.session?.userId;
     const limit = isAuthenticated ? AUTHENTICATED_RATE_LIMIT : GUEST_RATE_LIMIT;
