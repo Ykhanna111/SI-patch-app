@@ -24,8 +24,8 @@ import {
   getGuestDailyLimit
 } from "./middleware/security";
 
-const GUEST_ALLOWED_MODES = ['standard', 'mini-4x4'];
-const GUEST_ALLOWED_DIFFICULTIES = ['easy', 'medium'];
+const GUEST_ALLOWED_MODES = ['standard', 'diagonal', 'hyper', 'odd-even', 'hexadoku', 'killer'];
+const GUEST_ALLOWED_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'];
 const MAX_PUZZLE_GENERATION_ATTEMPTS = 10;
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -84,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid difficulty level" });
       }
 
-      const validGameModes = ['standard', 'mini-4x4', 'mini-6x6', 'hexadoku', 'jigsaw', 'diagonal', 'killer', 'hyper', 'odd-even', 'inequality', 'consecutive'];
+      const validGameModes = ['standard', 'hexadoku', 'diagonal', 'killer', 'hyper', 'odd-even'];
       if (!validGameModes.includes(gameMode)) {
         return res.status(400).json({ message: "Invalid game mode" });
       }
@@ -124,7 +124,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ message: "Failed to generate a valid puzzle. Please try again." });
       }
 
-      const gridSize = gameMode === 'mini-4x4' ? 4 : gameMode === 'mini-6x6' ? 6 : gameMode === 'hexadoku' ? 16 : 9;
+      const gridSize = gameMode === 'hexadoku' ? 16 : 9;
       
       const gameData = {
         userId: req.session?.userId || null,

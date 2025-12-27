@@ -382,6 +382,20 @@ export default function GamePage() {
   };
 
   const startNewGame = (difficulty: string) => {
+    // Reset all game state before creating new game
+    setCurrentGame(null);
+    setCurrentGrid(Array(9).fill(0).map(() => Array(9).fill(0)));
+    setSelectedCell(null);
+    setSelectedNumber(null);
+    setMistakes(0);
+    setHintsUsed(0);
+    setTimeElapsed(0);
+    setIsCompleted(false);
+    setMoves([]);
+    setIsPaused(false);
+    setShowGameComplete(false);
+    setShowGameFailed(false);
+    
     createGameMutation.mutate(difficulty);
   };
 
@@ -417,7 +431,17 @@ export default function GamePage() {
   };
 
   const backToMenu = () => {
+    // Ensure complete state cleanup when backing out
     setCurrentGame(null);
+    setCurrentGrid(Array(9).fill(0).map(() => Array(9).fill(0)));
+    setSelectedCell(null);
+    setSelectedNumber(null);
+    setMistakes(0);
+    setHintsUsed(0);
+    setTimeElapsed(0);
+    setIsCompleted(false);
+    setMoves([]);
+    setIsPaused(false);
     setShowGameComplete(false);
     setShowGameFailed(false);
   };

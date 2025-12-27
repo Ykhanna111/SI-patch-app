@@ -2,16 +2,11 @@
 
 export type GameMode = 
   | 'standard'      // Classic 9x9 Sudoku
-  | 'mini-4x4'      // 4x4 Mini Sudoku
-  | 'mini-6x6'      // 6x6 Mini Sudoku
   | 'hexadoku'      // 16x16 Sudoku
-  | 'jigsaw'        // Irregular regions instead of 3x3 boxes
   | 'diagonal'      // Sudoku X - diagonals must contain 1-9
   | 'killer'        // Cages with sum constraints
   | 'hyper'         // Windoku - extra 3x3 regions
-  | 'odd-even'      // Some cells restricted to odd/even numbers
-  | 'inequality'    // Greater/less than signs between cells
-  | 'consecutive';  // Adjacent cells can be consecutive
+  | 'odd-even';     // Some cells restricted to odd/even numbers
 
 export type Difficulty = 'easy' | 'medium' | 'hard' | 'expert';
 
@@ -49,34 +44,6 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
       'No digit can repeat in any row, column, or box'
     ]
   },
-  'mini-4x4': {
-    id: 'mini-4x4',
-    name: 'Mini Sudoku 4×4',
-    description: 'Smaller 4×4 grid perfect for beginners',
-    icon: '🔤',
-    gridSize: 4,
-    difficulty: ['easy', 'medium', 'hard', 'expert'],
-    rules: [
-      'Fill the 4×4 grid so every row contains digits 1–4',
-      'Every column must contain digits 1–4',
-      'Every 2×2 box must contain digits 1–4',
-      'No digit can repeat in any row, column, or box'
-    ]
-  },
-  'mini-6x6': {
-    id: 'mini-6x6',
-    name: 'Mini Sudoku 6×6',
-    description: 'Medium-sized 6×6 grid with 2×3 boxes',
-    icon: '📱',
-    gridSize: 6,
-    difficulty: ['easy', 'medium', 'hard', 'expert'],
-    rules: [
-      'Fill the 6×6 grid so every row contains digits 1–6',
-      'Every column must contain digits 1–6',
-      'Every 2×3 box must contain digits 1–6',
-      'No digit can repeat in any row, column, or box'
-    ]
-  },
   hexadoku: {
     id: 'hexadoku',
     name: 'Hexadoku 16×16',
@@ -90,20 +57,6 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
       'Every 4×4 box must contain digits 1–16',
       'No digit can repeat in any row, column, or box',
       'Numbers can be displayed as 1-9,A,B,C,D,E,F,10 or 1-16'
-    ]
-  },
-  jigsaw: {
-    id: 'jigsaw',
-    name: 'Jigsaw Sudoku',
-    description: 'Irregular shaped regions instead of 3×3 boxes',
-    icon: '🧩',
-    gridSize: 9,
-    difficulty: ['easy', 'medium', 'hard', 'expert'],
-    rules: [
-      'Fill the 9×9 grid so every row contains digits 1–9',
-      'Every column must contain digits 1–9',
-      'Every irregular region must contain digits 1–9',
-      'No digit can repeat in any row, column, or region'
     ]
   },
   diagonal: {
@@ -161,34 +114,6 @@ export const GAME_MODES: Record<GameMode, GameModeInfo> = {
       'White cells can only contain even numbers (2,4,6,8)',
       'Unshaded cells can contain any number'
     ]
-  },
-  inequality: {
-    id: 'inequality',
-    name: 'Greater/Less Than Sudoku',
-    description: 'Inequality signs show relative values between cells',
-    icon: '📊',
-    gridSize: 9,
-    difficulty: ['easy', 'medium', 'hard', 'expert'],
-    rules: [
-      'All standard Sudoku rules apply',
-      'Inequality signs (> <) show number relationships',
-      'Adjacent cells must respect the inequality',
-      'Greater number points to smaller number'
-    ]
-  },
-  consecutive: {
-    id: 'consecutive',
-    name: 'Consecutive Sudoku',
-    description: 'Marked adjacent cells must contain consecutive numbers',
-    icon: '🔗',
-    gridSize: 9,
-    difficulty: ['easy', 'medium', 'hard', 'expert'],
-    rules: [
-      'All standard Sudoku rules apply',
-      'White dots between cells mean consecutive numbers',
-      'Example: if marked, cells could be 4 and 5',
-      'No marks means numbers are NOT consecutive'
-    ]
   }
 };
 
@@ -231,10 +156,6 @@ export interface GameConstraints {
 // Helper functions
 export function getGridDimensions(gameMode: GameMode): { size: number; boxWidth: number; boxHeight: number } {
   switch (gameMode) {
-    case 'mini-4x4':
-      return { size: 4, boxWidth: 2, boxHeight: 2 };
-    case 'mini-6x6':
-      return { size: 6, boxWidth: 3, boxHeight: 2 };
     case 'hexadoku':
       return { size: 16, boxWidth: 4, boxHeight: 4 };
     default:

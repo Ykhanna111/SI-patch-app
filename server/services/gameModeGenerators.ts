@@ -13,14 +13,8 @@ export function generatePuzzleForMode(gameMode: GameMode, difficulty: Difficulty
   switch (gameMode) {
     case 'standard':
       return generateStandardSudoku(difficulty);
-    case 'mini-4x4':
-      return generateMiniSudoku(4, difficulty);
-    case 'mini-6x6':
-      return generateMiniSudoku(6, difficulty);
     case 'hexadoku':
       return generateHexadoku(difficulty);
-    case 'jigsaw':
-      return generateJigsawSudoku(difficulty);
     case 'diagonal':
       return generateDiagonalSudoku(difficulty);
     case 'killer':
@@ -29,10 +23,6 @@ export function generatePuzzleForMode(gameMode: GameMode, difficulty: Difficulty
       return generateHyperSudoku(difficulty);
     case 'odd-even':
       return generateOddEvenSudoku(difficulty);
-    case 'inequality':
-      return generateInequalitySudoku(difficulty);
-    case 'consecutive':
-      return generateConsecutiveSudoku(difficulty);
     default:
       return generateStandardSudoku(difficulty);
   }
@@ -43,26 +33,6 @@ function generateStandardSudoku(difficulty: Difficulty): GeneratedPuzzle {
   const solution = generateCompleteSudoku(9);
   const puzzle = createPuzzle(solution, difficulty, 9);
   return { puzzle, solution };
-}
-
-// Mini Sudoku Generator (4x4 or 6x6)
-function generateMiniSudoku(size: number, difficulty: Difficulty): GeneratedPuzzle {
-  const solution = generateCompleteSudoku(size);
-  const puzzle = createPuzzle(solution, difficulty, size);
-  return { puzzle, solution };
-}
-
-// Jigsaw Sudoku Generator
-function generateJigsawSudoku(difficulty: Difficulty): GeneratedPuzzle {
-  const solution = generateCompleteSudoku(9);
-  const jigsawRegions = generateJigsawRegions();
-  const puzzle = createJigsawPuzzle(solution, difficulty, jigsawRegions);
-  
-  return {
-    puzzle,
-    solution,
-    constraints: { jigsawRegions }
-  };
 }
 
 // Hexadoku 16x16 Generator
@@ -118,32 +88,6 @@ function generateOddEvenSudoku(difficulty: Difficulty): GeneratedPuzzle {
   };
 }
 
-// Inequality Sudoku Generator
-function generateInequalitySudoku(difficulty: Difficulty): GeneratedPuzzle {
-  const solution = generateCompleteSudoku(9);
-  const inequalities = generateInequalityConstraints(solution);
-  const puzzle = createPuzzle(solution, difficulty, 9);
-  
-  return {
-    puzzle,
-    solution,
-    constraints: { inequalities }
-  };
-}
-
-// Consecutive Sudoku Generator
-function generateConsecutiveSudoku(difficulty: Difficulty): GeneratedPuzzle {
-  const solution = generateCompleteSudoku(9);
-  const consecutiveMarkers = generateConsecutiveMarkers(solution);
-  const puzzle = createPuzzle(solution, difficulty, 9);
-  
-  return {
-    puzzle,
-    solution,
-    constraints: { consecutiveMarkers }
-  };
-}
-
 // Core sudoku generation functions
 function generateCompleteSudoku(size: number): SudokuGrid {
   const grid: SudokuGrid = Array(size).fill(0).map(() => Array(size).fill(0));
@@ -155,7 +99,7 @@ function fillGrid(grid: SudokuGrid, size: number): boolean {
   for (let row = 0; row < size; row++) {
     for (let col = 0; col < size; col++) {
       if (grid[row][col] === 0) {
-        const numbers = shuffleArray(getValidNumbers(size === 4 ? 'mini-4x4' : size === 6 ? 'mini-6x6' : size === 16 ? 'hexadoku' : 'standard'));
+        const numbers = shuffleArray(getValidNumbers(size === 16 ? 'hexadoku' : 'standard'));
         
         for (const num of numbers) {
           if (isValidPlacement(grid, row, col, num, size)) {
