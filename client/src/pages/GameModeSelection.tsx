@@ -97,7 +97,7 @@ export default function GameModeSelection() {
                 data-testid="button-back-dashboard"
               >
                 <Home className="h-4 w-4" />
-                Back to Dashboard
+                Back to Home
               </Button>
             </div>
           </div>
