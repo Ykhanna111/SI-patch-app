@@ -7,6 +7,7 @@ import { HelpCircle, Home } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 import { GameMode, Difficulty, GAME_MODES } from '@shared/gameTypes';
 
@@ -427,6 +428,7 @@ export default function GameModeSelection() {
           <HowToPlayDialog mode="killer" />
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

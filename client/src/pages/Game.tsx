@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { useLocation } from "wouter";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import GameControls from "@/components/GameControls";
 import EnhancedSudokuGrid from "@/components/EnhancedSudokuGrid";
 import GameStats from "@/components/GameStats";
@@ -737,6 +738,7 @@ export default function GamePage() {
           </ScrollArea>
         </DialogContent>
       </Dialog>
+      <Footer />
     </div>
   );
 }
