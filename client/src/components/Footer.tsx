@@ -680,34 +680,34 @@ export default function Footer() {
       </div>
 
       <Dialog open={showTerms} onOpenChange={setShowTerms}>
-        <DialogContent className="max-w-3xl max-h-[85vh] flex flex-col p-0">
+        <DialogContent className="max-w-3xl h-[85vh] flex flex-col p-0">
           <DialogHeader className="px-6 pt-6 pb-2">
             <DialogTitle>Terms and Conditions</DialogTitle>
             <DialogDescription>
               Last Updated: 28 November 2025
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea className="flex-1 px-6 pb-6">
+          <div className="flex-1 overflow-y-auto px-6 pb-6">
             <div className="text-sm text-gray-600 font-sans leading-relaxed">
               {formatText(EULA_TEXT)}
             </div>
-          </ScrollArea>
+          </div>
         </DialogContent>
       </Dialog>
 
       <Dialog open={showPrivacy} onOpenChange={setShowPrivacy}>
-        <DialogContent className="max-w-3xl max-h-[85vh] flex flex-col p-0">
+        <DialogContent className="max-w-3xl h-[85vh] flex flex-col p-0">
           <DialogHeader className="px-6 pt-6 pb-2">
             <DialogTitle>Privacy Policy</DialogTitle>
             <DialogDescription>
               Last Updated: December 2025
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea className="flex-1 px-6 pb-6">
+          <div className="flex-1 overflow-y-auto px-6 pb-6">
             <div className="text-sm text-gray-600 font-sans leading-relaxed">
               {formatText(PRIVACY_POLICY_TEXT)}
             </div>
-          </ScrollArea>
+          </div>
         </DialogContent>
       </Dialog>
     </footer>
