@@ -524,7 +524,7 @@ export default function Footer() {
           {/* Contact Section */}
           <div className="space-y-3">
             <h4 className="font-bold text-gray-900 text-sm">Contact Us</h4>
-            <div className="flex items-center gap-2 text-gray-600 hover:text-sudoku-primary transition-colors">
+            <div className="flex items-center gap-2 text-gray-400 hover:text-sudoku-primary transition-colors">
               <Mail className="h-4 w-4" />
               <a href="mailto:metainfinium@gmail.com" className="text-sm font-bold">
                 metainfinium@gmail.com
@@ -540,7 +540,7 @@ export default function Footer() {
                 href="https://www.metainfinium.com/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-gray-600 hover:text-sudoku-primary transition-colors"
+                className="flex items-center gap-2 text-gray-400 hover:text-sudoku-primary transition-colors"
               >
                 <Globe className="h-4 w-4" />
                 <span className="text-sm font-bold">Website</span>
@@ -549,7 +549,7 @@ export default function Footer() {
                 href="https://www.linkedin.com/company/meta-infinium/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-gray-600 hover:text-sudoku-primary transition-colors"
+                className="flex items-center gap-2 text-gray-400 hover:text-sudoku-primary transition-colors"
               >
                 <SiLinkedin className="h-4 w-4" />
                 <span className="text-sm font-bold">LinkedIn</span>
@@ -558,7 +558,7 @@ export default function Footer() {
                 href="https://www.instagram.com/metainfinium/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-gray-600 hover:text-sudoku-primary transition-colors"
+                className="flex items-center gap-2 text-gray-400 hover:text-sudoku-primary transition-colors"
               >
                 <SiInstagram className="h-4 w-4" />
                 <span className="text-sm font-bold">Instagram</span>
