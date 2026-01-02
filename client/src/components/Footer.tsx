@@ -103,6 +103,7 @@ SDKs (mobile apps)
 Pixels and similar technologies
 
 These are used to:
+
 Operate the app
 Analyze performance
 Deliver ads
@@ -176,7 +177,7 @@ We may show:
 
 Personalized ads (with consent)
 Contextual ads (without personalization)
-Device advertising settings
+
 Analytics
 
 We use:
@@ -219,10 +220,12 @@ Industry-standard security measures
 11. DATA RETENTION
 
 We retain personal data:
+
 Only as long as necessary
 For a maximum of 5 years, unless legally required longer
 
 After this, data is:
+
 Deleted, or
 Anonymized
 
@@ -272,7 +275,9 @@ We are not responsible for their privacy practices.
 16. CHANGES TO THIS POLICY
 
 We may update this Privacy Policy periodically.
+
 Material changes will be notified via:
+
 App notification
 Website notice
 Continued use means acceptance.
