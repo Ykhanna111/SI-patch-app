@@ -5,6 +5,367 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+const PRIVACY_POLICY_TEXT = `PRIVACY POLICY
+
+Sudoku Infinium
+By Meta Infinium
+
+Last Updated: December 2025
+Effective Date: 4 December 2025
+
+1. INTRODUCTION
+
+This Privacy Policy explains how Meta Infinium (“we”, “us”, “our”) collects, uses, stores, processes, and shares information when you use Sudoku Infinium, including our mobile apps, websites, and related services (collectively, the “Services”).
+
+We are committed to protecting your privacy and handling your data transparently and securely in accordance with:
+
+The Information Technology Act, 2000 (India)
+
+IT (Reasonable Security Practices and Procedures) Rules, 2011
+
+Applicable global data protection laws (including GDPR, where relevant)
+
+2. DATA CONTROLLER
+
+Meta Infinium
+India
+📧 privacy@metainfinium.com
+
+🌐 https://metainfinium.com
+
+Meta Infinium is the data controller responsible for your personal data.
+
+3. INFORMATION WE COLLECT
+
+We may collect and process the following categories of information:
+
+A. Identifiers
+
+Device identifiers
+
+Advertising IDs (Google Advertising ID / Apple IDFA)
+
+Internal user IDs
+
+IP address
+
+B. Commercial Information
+
+In-app purchases
+
+Subscription status
+
+Payment confirmation (payments are handled by platform providers)
+
+C. Device Information
+
+Device model and manufacturer
+
+Operating system and version
+
+App version
+
+Language, region, time zone
+
+Network type and approximate internet speed
+
+D. Usage Information
+
+App interactions
+
+Game progress and completion data
+
+Features used
+
+Session duration and frequency
+
+Interaction with ads
+
+E. Diagnostics & Performance Data
+
+Crash logs
+
+App launch time
+
+Battery and performance metrics
+
+Error reports
+
+F. Location Information
+
+Country and state inferred from IP address
+(We do not collect precise GPS location)
+
+G. Media & Files (Optional)
+
+Files or screenshots you submit to customer support
+
+Camera or media access only when explicitly enabled by you
+
+H. Contact & Communication Data
+
+Name and email address (when you contact us)
+
+Support messages
+
+Feedback and survey responses
+
+I. Public & Community Content
+
+App Store reviews
+
+Social media interactions mentioning Sudoku Infinium
+
+4. COOKIES, SDKs & TRACKING TECHNOLOGIES
+
+We and our partners may use:
+
+Cookies (web)
+
+SDKs (mobile apps)
+
+Pixels and similar technologies
+
+These are used to:
+
+Operate the app
+
+Analyze performance
+
+Deliver ads
+
+Prevent fraud
+
+Improve user experience
+
+You can manage preferences via:
+
+In-app Privacy Preferences
+
+Device-level settings (Android / iOS)
+
+⚠️ We do not respond to browser “Do Not Track” signals.
+
+5. SOURCES OF DATA
+
+We collect data:
+
+Directly from you
+
+Automatically through app usage
+
+From device/platform providers
+
+From advertising and analytics partners
+
+From public platforms (reviews, social media)
+
+6. PURPOSES OF PROCESSING
+
+We use your data for the following purposes:
+
+A. Service Operation
+
+App functionality
+
+Saving progress
+
+Sync (if enabled)
+
+Customer support
+
+B. Security & Fraud Prevention
+
+Detect abuse or misuse
+
+Prevent unauthorized access
+
+C. Analytics & Improvement
+
+Understand feature usage
+
+Improve gameplay
+
+Fix bugs
+
+D. Marketing & Promotions
+
+In-app promotions
+
+Non-intrusive notifications
+
+Advertising (personalized or contextual)
+
+E. Legal & Compliance
+
+Legal obligations
+
+Enforcement of terms
+
+Regulatory requirements
+
+7. LEGAL BASIS FOR PROCESSING
+
+Depending on jurisdiction, processing is based on:
+
+Your consent
+
+Contract performance
+
+Legitimate business interests
+
+Legal obligations
+
+8. ADVERTISING & ANALYTICS
+Advertising
+
+We may show:
+
+Personalized ads (with consent)
+
+Contextual ads (without personalization)
+
+You can opt-out via:
+
+App → Settings → Privacy Preferences
+
+Device advertising settings
+
+Analytics
+
+We use:
+
+First-party analytics (internal)
+
+Third-party analytics (with consent where required)
+
+9. DATA SHARING
+
+We may share data with:
+
+A. Service Providers
+
+Hosting
+
+Analytics
+
+Customer support
+
+Advertising partners
+
+B. Legal Authorities
+
+When required by law or court order
+
+C. Business Transfers
+
+Mergers, acquisitions, restructuring
+
+D. With Your Consent
+
+When you explicitly request or approve sharing
+
+We never sell personal data in violation of applicable law.
+
+10. CROSS-BORDER DATA TRANSFERS
+
+Your data may be processed outside India.
+We ensure appropriate safeguards such as:
+
+Contractual protections
+
+Industry-standard security measures
+
+11. DATA RETENTION
+
+We retain personal data:
+
+Only as long as necessary
+
+For a maximum of 5 years, unless legally required longer
+
+After this, data is:
+
+Deleted, or
+
+Anonymized
+
+12. CHILDREN’S PRIVACY
+
+Our Services are intended for users 16 years and older.
+
+We do not knowingly collect data from children.
+If you believe a child’s data was collected, contact us immediately.
+
+13. YOUR PRIVACY RIGHTS
+
+Depending on your jurisdiction, you may have rights to:
+
+Access your data
+
+Correct inaccuracies
+
+Delete your data
+
+Restrict processing
+
+Withdraw consent
+
+Object to targeted advertising
+
+Data portability
+
+How to Exercise Rights
+
+Via:
+
+App → Settings → Privacy Preferences
+or
+📧 privacy@metainfinium.com
+
+We respond within 30 days.
+
+14. SECURITY MEASURES
+
+We implement reasonable security practices including:
+
+Encryption
+
+Access controls
+
+Secure infrastructure
+
+Regular monitoring
+
+However, no system is 100% secure.
+
+15. THIRD-PARTY LINKS
+
+Our Services may link to third-party platforms.
+We are not responsible for their privacy practices.
+
+16. CHANGES TO THIS POLICY
+
+We may update this Privacy Policy periodically.
+
+Material changes will be notified via:
+
+App notification
+
+Website notice
+
+Continued use means acceptance.
+
+17. CONTACT US
+
+For privacy-related queries or requests:
+
+Meta Infinium
+📧 info@metainfinium.com
+📧 metainfinium@gmail.com
+
+🌐 https://metainfinium.com`;
+
 const EULA_TEXT = `END USER LICENSE AGREEMENT (EULA)
 
 Sudoku Infinium
@@ -210,6 +571,18 @@ Meta Infinium
 
 export default function Footer() {
   const [showTerms, setShowTerms] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+
+  const formatText = (text: string) => {
+    return text.split('\n').map((line, i) => {
+      const isHeading = /^\d+\.|\b(INTRODUCTION|DEFINITIONS|ACCEPTANCE|GRANT|RESTRICTIONS|AI & DATA|SUBSCRIPTIONS|AVAILABILITY|CONDUCT|PROPERTY|PRIVACY|DISCLAIMER|LIMITATION|INDEMNIFICATION|TERMINATION|GOVERNING|AMENDMENTS|CONTACT|DATA CONTROLLER|INFORMATION WE COLLECT|COOKIES|SOURCES OF DATA|PURPOSES OF PROCESSING|LEGAL BASIS|ADVERTISING|DATA SHARING|CROSS-BORDER|DATA RETENTION|CHILDREN|YOUR PRIVACY RIGHTS|SECURITY MEASURES|THIRD-PARTY LINKS|CHANGES|YOUR RIGHTS)\b/i.test(line);
+      return (
+        <p key={i} className={`${isHeading ? "font-bold text-gray-900 text-base mt-4 mb-2" : "mb-2"} ${line.trim() === "" ? "h-2" : ""}`}>
+          {line}
+        </p>
+      );
+    });
+  };
 
   return (
     <footer className="bg-white border-t border-gray-200 pt-12 pb-8 mt-auto">
@@ -236,7 +609,12 @@ export default function Footer() {
               Bringing the best puzzle experiences to your screen.
             </p>
             <div className="flex items-center gap-3">
-              <a href="#" className="text-xs text-gray-400 hover:text-sudoku-primary transition-colors">Privacy Policy</a>
+              <button 
+                onClick={() => setShowPrivacy(true)}
+                className="text-xs text-gray-400 hover:text-sudoku-primary transition-colors"
+              >
+                Privacy Policy
+              </button>
               <span className="text-gray-300 text-xs">|</span>
               <button 
                 onClick={() => setShowTerms(true)}
@@ -310,8 +688,24 @@ export default function Footer() {
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="flex-1 px-6 pb-6">
-            <div className="whitespace-pre-wrap text-sm text-gray-600 font-sans leading-relaxed">
-              {EULA_TEXT}
+            <div className="text-sm text-gray-600 font-sans leading-relaxed">
+              {formatText(EULA_TEXT)}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPrivacy} onOpenChange={setShowPrivacy}>
+        <DialogContent className="max-w-3xl max-h-[85vh] flex flex-col p-0">
+          <DialogHeader className="px-6 pt-6 pb-2">
+            <DialogTitle>Privacy Policy</DialogTitle>
+            <DialogDescription>
+              Last Updated: December 2025
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="flex-1 px-6 pb-6">
+            <div className="text-sm text-gray-600 font-sans leading-relaxed">
+              {formatText(PRIVACY_POLICY_TEXT)}
             </div>
           </ScrollArea>
         </DialogContent>
