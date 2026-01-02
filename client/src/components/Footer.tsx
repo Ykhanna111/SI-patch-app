@@ -465,10 +465,12 @@ export default function Footer() {
       const trimmedLine = line.trim();
       // Match section headers like "1. Definitions" or "A. Identifiers"
       const isSectionHeading = /^\d+\.\s+[A-Z\s&/]+$|^[A-Z]\.\s+[A-Z\s&/]+$/i.test(trimmedLine);
+      // Match specific sub-headings like "Advertising", "Analytics", etc.
+      const isSubHeading = /^(Advertising|Analytics|G\. Media & Files \(Optional\)|4\. COOKIES, SDKs & TRACKING TECHNOLOGIES|10\. CROSS-BORDER DATA TRANSFERS|12\. CHILDREN’S PRIVACY)$/i.test(trimmedLine);
       // Match the main document title at the top
       const isMainTitle = i < 10 && /^(END USER LICENSE AGREEMENT|PRIVACY POLICY)/i.test(trimmedLine);
       
-      const isHeading = isSectionHeading || isMainTitle;
+      const isHeading = isSectionHeading || isMainTitle || isSubHeading;
 
       return (
         <p key={i} className={`${isHeading ? "font-bold text-gray-900 text-base mt-4 mb-2" : "mb-2"} ${trimmedLine === "" ? "h-2" : ""}`}>
