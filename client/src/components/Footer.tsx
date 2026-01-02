@@ -457,11 +457,16 @@ export default function Footer() {
 
   const formatText = (text: string) => {
     return text.split('\n').map((line, i) => {
-      // Improved regex to match only clear section headers like "1. INTRODUCTION" or "A. Identifiers"
-      // while avoiding bolding normal sentences that might contain these words.
-      const isHeading = /^\d+\.\s+[A-Z\s&]+$|^[A-Z]\.\s+[A-Z\s&]+$/.test(line.trim());
+      const trimmedLine = line.trim();
+      // Match section headers like "1. Definitions" or "A. Identifiers"
+      const isSectionHeading = /^\d+\.\s+[A-Z\s&/]+$|^[A-Z]\.\s+[A-Z\s&/]+$/i.test(trimmedLine);
+      // Match the main document title at the top
+      const isMainTitle = i < 10 && /^(END USER LICENSE AGREEMENT|PRIVACY POLICY)/i.test(trimmedLine);
+      
+      const isHeading = isSectionHeading || isMainTitle;
+
       return (
-        <p key={i} className={`${isHeading ? "font-bold text-gray-900 text-base mt-4 mb-2" : "mb-2"} ${line.trim() === "" ? "h-2" : ""}`}>
+        <p key={i} className={`${isHeading ? "font-bold text-gray-900 text-base mt-4 mb-2" : "mb-2"} ${trimmedLine === "" ? "h-2" : ""}`}>
           {line}
         </p>
       );
