@@ -481,97 +481,64 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-white border-t border-gray-200 pt-12 pb-8 mt-auto">
+    <footer className="bg-white border-t border-gray-200 py-4 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Brand Section */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <img 
-                src={logoImage} 
-                alt="Meta Infinium Logo" 
-                className="w-10 h-10 object-contain"
-              />
-              <div className="flex flex-col">
-                <span className="text-xl font-bold bg-gradient-to-r from-sudoku-primary to-sudoku-accent bg-clip-text text-transparent">
-                  Sudoku Infinium
-                </span>
-                <span className="text-xs text-gray-500 font-medium -mt-1">
-                  Meta infinium product
-                </span>
-              </div>
+          <div className="flex items-center gap-3">
+            <img 
+              src={logoImage} 
+              alt="Meta Infinium Logo" 
+              className="w-8 h-8 object-contain"
+            />
+            <div className="flex flex-col">
+              <span className="text-sm font-bold bg-gradient-to-r from-sudoku-primary to-sudoku-accent bg-clip-text text-transparent">
+                Sudoku Infinium
+              </span>
+              <span className="text-[10px] text-gray-500 font-medium -mt-1">
+                Meta infinium product
+              </span>
             </div>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-xs font-bold border-l border-gray-200 pl-3 ml-1 hidden sm:block">
               Bringing the best puzzle experiences to your screen.
             </p>
+          </div>
+
+          {/* Links & Copyright */}
+          <div className="flex flex-col md:flex-row items-center gap-4">
             <div className="flex items-center gap-3">
               <button 
                 onClick={() => setShowPrivacy(true)}
-                className="text-xs text-gray-400 hover:text-sudoku-primary transition-colors"
+                className="text-xs text-gray-400 hover:text-sudoku-primary transition-colors font-bold"
               >
                 Privacy Policy
               </button>
               <span className="text-gray-300 text-xs">|</span>
               <button 
                 onClick={() => setShowTerms(true)}
-                className="text-xs text-gray-400 hover:text-sudoku-primary transition-colors"
+                className="text-xs text-gray-400 hover:text-sudoku-primary transition-colors font-bold"
               >
                 Terms and Conditions
               </button>
             </div>
-          </div>
-
-          {/* Contact Section */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-gray-900">Contact Us</h4>
-            <div className="flex items-center gap-2 text-gray-600 hover:text-sudoku-primary transition-colors">
-              <Mail className="h-4 w-4" />
-              <a href="mailto:metainfinium@gmail.com" className="text-sm">
-                metainfinium@gmail.com
+            <p className="text-gray-400 text-xs font-bold">
+              © 2025 META INFINIUM. All rights reserved.
+            </p>
+            <div className="flex items-center gap-3 border-l border-gray-200 pl-4 ml-1">
+              <a href="mailto:metainfinium@gmail.com" className="text-gray-400 hover:text-sudoku-primary transition-colors">
+                <Mail className="h-4 w-4" />
               </a>
-            </div>
-          </div>
-
-          {/* Links Section */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-gray-900">Connect With Us</h4>
-            <div className="flex flex-col gap-3">
-              <a 
-                href="https://www.metainfinium.com/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-gray-600 hover:text-sudoku-primary transition-colors"
-              >
+              <a href="https://www.metainfinium.com/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-sudoku-primary transition-colors">
                 <Globe className="h-4 w-4" />
-                <span className="text-sm">Website</span>
               </a>
-              <a 
-                href="https://www.linkedin.com/company/meta-infinium/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-gray-600 hover:text-sudoku-primary transition-colors"
-              >
+              <a href="https://www.linkedin.com/company/meta-infinium/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-sudoku-primary transition-colors">
                 <SiLinkedin className="h-4 w-4" />
-                <span className="text-sm">LinkedIn</span>
               </a>
-              <a 
-                href="https://www.instagram.com/metainfinium/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-gray-600 hover:text-sudoku-primary transition-colors"
-              >
+              <a href="https://www.instagram.com/metainfinium/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-sudoku-primary transition-colors">
                 <SiInstagram className="h-4 w-4" />
-                <span className="text-sm">Instagram</span>
               </a>
             </div>
           </div>
-        </div>
-
-        {/* Copyright Section */}
-        <div className="pt-8 border-t border-gray-100 text-center">
-          <p className="text-gray-400 text-sm">
-            © 2025 META INFINIUM. All rights reserved.
-          </p>
         </div>
       </div>
 
