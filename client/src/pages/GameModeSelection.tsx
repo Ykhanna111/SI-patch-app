@@ -428,7 +428,6 @@ export default function GameModeSelection() {
           <HowToPlayDialog mode="killer" />
         </div>
       </div>
-      <Footer />
     </div>
   );
 }

@@ -738,7 +738,6 @@ export default function GamePage() {
           </ScrollArea>
         </DialogContent>
       </Dialog>
-      <Footer />
     </div>
   );
 }

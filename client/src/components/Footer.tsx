@@ -1,5 +1,6 @@
 import { SiLinkedin, SiInstagram } from "react-icons/si";
 import { Globe, Mail } from "lucide-react";
+import logoImage from "@assets/ChatGPT Image Aug 26, 2025, 08_08_54 PM-Photoroom_1756219770081.png";
 
 export default function Footer() {
   return (
@@ -9,14 +10,27 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">🔢</span>
-              <span className="text-xl font-bold bg-gradient-to-r from-sudoku-primary to-sudoku-accent bg-clip-text text-transparent">
-                Sudoku Infinium
-              </span>
+              <img 
+                src={logoImage} 
+                alt="Meta Infinium Logo" 
+                className="w-10 h-10 object-contain"
+              />
+              <div className="flex flex-col">
+                <span className="text-xl font-bold bg-gradient-to-r from-sudoku-primary to-sudoku-accent bg-clip-text text-transparent">
+                  Sudoku Infinium
+                </span>
+                <span className="text-xs text-gray-500 font-medium -mt-1">
+                  Meta infinium product
+                </span>
+              </div>
             </div>
             <p className="text-gray-500 text-sm">
-              A product of Meta Infinium. Bringing the best puzzle experiences to your screen.
+              Bringing the best puzzle experiences to your screen.
             </p>
+            <div className="flex flex-col gap-1">
+              <a href="#" className="text-xs text-gray-400 hover:text-sudoku-primary transition-colors">Privacy Policy</a>
+              <a href="#" className="text-xs text-gray-400 hover:text-sudoku-primary transition-colors">Terms and Conditions</a>
+            </div>
           </div>
 
           {/* Contact Section */}
