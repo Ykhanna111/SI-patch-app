@@ -466,7 +466,7 @@ export default function Footer() {
       // Match section headers like "1. Definitions" or "A. Identifiers"
       const isSectionHeading = /^\d+\.\s+[A-Z\s&/]+$|^[A-Z]\.\s+[A-Z\s&/]+$/i.test(trimmedLine);
       // Match specific sub-headings like "Advertising", "Analytics", etc.
-      const isSubHeading = /^(Advertising|Analytics|G\. Media & Files \(Optional\)|4\. COOKIES, SDKs & TRACKING TECHNOLOGIES|10\. CROSS-BORDER DATA TRANSFERS|12\. CHILDREN’S PRIVACY)$/i.test(trimmedLine);
+      const isSubHeading = /^(Advertising|Analytics|G\. Media & Files \(Optional\)|4\. COOKIES, SDKs & TRACKING TECHNOLOGIES|10\. CROSS-BORDER DATA TRANSFERS|12\. CHILDREN’S PRIVACY|15\. THIRD-PARTY LINKS)$/i.test(trimmedLine);
       // Match the main document title at the top
       const isMainTitle = i < 10 && /^(END USER LICENSE AGREEMENT|PRIVACY POLICY)/i.test(trimmedLine);
       
