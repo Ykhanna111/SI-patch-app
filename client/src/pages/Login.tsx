@@ -29,28 +29,24 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginInput) => {
-      // 1. Get user by username from our database to get their email
-      const userRes = await fetch(`/api/auth/username/${data.username}`);
-      if (!userRes.ok) throw new Error("User not found");
-      const userData = await userRes.json();
-
-      if (!userData.email) throw new Error("No email associated with this account");
-
-      // 2. Sign in with Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: userData.email,
-        password: data.password,
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(data),
       });
 
-      if (authError) throw authError;
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Invalid username or password");
+      }
 
-      // 3. Create session in our backend
-      const response = await apiRequest('POST', '/api/auth/login', data);
       return await response.json();
     },
     onSuccess: (data) => {
-      updateCsrfFromResponse(data);
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      queryClient.setQueryData(['/api/auth/user'], data);
       toast({
         title: "Welcome back!",
         description: "Successfully logged in.",

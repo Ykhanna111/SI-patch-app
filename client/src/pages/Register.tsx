@@ -39,30 +39,27 @@ export default function Register() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: ClientRegisterInput) => {
-      if (!data.email) throw new Error("Email is required for registration");
-
-      // 1. Sign up with Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          ...data,
+          id: crypto.randomUUID(), // Generate a UUID on client for insertion
+        }),
       });
 
-      if (authError) throw authError;
-      if (!authData.user) throw new Error("No user returned from Supabase Auth");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to create account");
+      }
 
-      // 2. Create public profile in our database
-      const response = await apiRequest('POST', '/api/auth/register', {
-        id: authData.user.id,
-        username: data.username,
-        email: data.email,
-        firstName: data.firstName,
-        lastName: data.lastName,
-      });
       return await response.json();
     },
     onSuccess: (data) => {
-      updateCsrfFromResponse(data);
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      queryClient.setQueryData(['/api/auth/user'], data);
       toast({
         title: "Account created!",
         description: "Welcome to Sudoku Master! You're now logged in.",
