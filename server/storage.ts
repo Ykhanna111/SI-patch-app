@@ -64,6 +64,10 @@ export class MemStorage implements IStorage {
       firstName: userData.firstName || null,
       lastName: userData.lastName || null,
       avatarUrl: userData.avatarUrl || null,
+      bio: userData.bio || null,
+      phoneNumber: userData.phoneNumber || null,
+      location: userData.location || null,
+      preferences: userData.preferences || {},
       createdAt: new Date(),
       updatedAt: new Date(),
     };
