@@ -47,6 +47,7 @@ export default function Landing() {
               <Button variant="outline" size="lg" className="w-full" data-testid="button-guest">
                 Play as Guest
               </Button>
+              <p className="text-xs text-gray-500 mt-1 text-center">Guest games are temporary and not saved.</p>
             </Link>
             
             <Link href="/register">
