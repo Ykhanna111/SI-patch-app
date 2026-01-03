@@ -49,8 +49,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export const isAuthenticated: RequestHandler = (req, res, next) => {
-  const userId = (req.user as any)?.userId || (req.session as any)?.userId;
-  if (userId) {
+  if (req.session?.userId) {
     return next();
   }
   return res.status(401).json({ message: "Unauthorized" });
@@ -153,7 +152,11 @@ export async function setupAuth(app: Express) {
           console.error('Session save error during registration:', err);
           return res.status(500).json({ message: "Failed to save session" });
         }
-        res.status(201).json({ ...user, csrfToken: req.session.csrfToken });
+        res.status(201).json({
+          id: user.id,
+          username: user.username,
+          csrfToken: req.session.csrfToken,
+        });
       });
     } catch (error) {
       console.error('Registration error:', error);
@@ -190,8 +193,6 @@ export async function setupAuth(app: Express) {
         return res.status(401).json({ message: "Invalid username or password" });
       }
 
-      // NOTE: With Supabase Auth, login should happen on the frontend using Supabase Client.
-      // This is a placeholder for local development compatibility.
       req.session.userId = user.id;
       req.session.csrfToken = crypto.randomBytes(32).toString('hex');
       req.session.save((err) => {
@@ -199,7 +200,11 @@ export async function setupAuth(app: Express) {
           console.error('Session save error during login:', err);
           return res.status(500).json({ message: "Failed to save session" });
         }
-        res.json({ ...user, csrfToken: req.session.csrfToken });
+        res.json({
+          id: user.id,
+          username: user.username,
+          csrfToken: req.session.csrfToken,
+        });
       });
     } catch (error) {
       console.error('Login error:', error);
@@ -215,10 +220,7 @@ export async function setupAuth(app: Express) {
 
   app.get('/api/auth/user', isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.userId || (req.session as any)?.userId;
-      if (!userId) {
-        return res.status(401).json({ message: "No user session found" });
-      }
+      const userId = req.session.userId;
       const user = await storage.getUser(userId);
       
       if (!user) {
@@ -234,10 +236,7 @@ export async function setupAuth(app: Express) {
 
   app.put('/api/auth/profile', isAuthenticated, csrfProtectionForAuth(), async (req, res) => {
     try {
-      const userId = (req.user as any)?.userId || (req.session as any)?.userId;
-      if (!userId) {
-        return res.status(401).json({ message: "No user session found" });
-      }
+      const userId = req.session.userId;
 
       const allowedUpdates = ['firstName', 'lastName', 'email', 'bio'];
       const updates: any = {};
@@ -262,10 +261,7 @@ export async function setupAuth(app: Express) {
 
   app.get('/api/auth/stats', isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.userId || (req.session as any)?.userId;
-      if (!userId) {
-        return res.status(401).json({ message: "No user session found" });
-      }
+      const userId = req.session.userId;
 
       let stats = await storage.getUserStats(userId);
       
