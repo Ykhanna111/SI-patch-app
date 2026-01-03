@@ -27,34 +27,66 @@ export interface IStorage {
 }
 
 export class SupabaseStorage implements IStorage {
+  private mapUserData(data: any): User {
+    return {
+      id: data.id,
+      username: data.username,
+      email: data.email || null,
+      firstName: data.first_name || null,
+      lastName: data.last_name || null,
+      bio: data.bio || null,
+      preferences: data.preferences || {},
+      createdAt: data.created_at ? new Date(data.created_at) : new Date(),
+      updatedAt: data.updated_at ? new Date(data.updated_at) : new Date(),
+    };
+  }
+
   async getUser(id: string): Promise<User | undefined> {
     const { data } = await supabase.from('users').select().eq('id', id).single();
-    return data || undefined;
+    return data ? this.mapUserData(data) : undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     const { data } = await supabase.from('users').select().eq('username', username).single();
-    return data || undefined;
+    return data ? this.mapUserData(data) : undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     const { data } = await supabase.from('users').select().eq('email', email).single();
-    return data || undefined;
+    return data ? this.mapUserData(data) : undefined;
   }
 
   async createUser(userData: InsertUser): Promise<User> {
-    const { data, error } = await supabase.from('users').insert(userData).select().single();
+    const dbData = {
+      id: userData.id,
+      username: userData.username,
+      email: userData.email,
+      first_name: userData.firstName,
+      last_name: userData.lastName,
+      bio: userData.bio,
+      preferences: userData.preferences || {},
+    };
+
+    const { data, error } = await supabase.from('users').insert(dbData).select().single();
     if (error) {
       console.error('Error creating user:', error);
       throw error;
     }
-    return data;
+    return this.mapUserData(data);
   }
 
   async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const dbUpdates: any = {};
+    if (updates.username !== undefined) dbUpdates.username = updates.username;
+    if (updates.email !== undefined) dbUpdates.email = updates.email;
+    if (updates.firstName !== undefined) dbUpdates.first_name = updates.firstName;
+    if (updates.lastName !== undefined) dbUpdates.last_name = updates.lastName;
+    if (updates.bio !== undefined) dbUpdates.bio = updates.bio;
+    if (updates.preferences !== undefined) dbUpdates.preferences = updates.preferences;
+
     const { data, error } = await supabase
       .from('users')
-      .update(updates)
+      .update(dbUpdates)
       .eq('id', id)
       .select()
       .single();
@@ -62,7 +94,7 @@ export class SupabaseStorage implements IStorage {
       console.error('Error updating user:', error);
       return undefined;
     }
-    return data;
+    return this.mapUserData(data);
   }
 
   async createGame(game: InsertGame): Promise<Game> {
