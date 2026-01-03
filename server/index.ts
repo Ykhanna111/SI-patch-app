@@ -4,10 +4,10 @@ import { setupVite, serveStatic, log } from "./vite";
 import { getSession } from "./auth";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 app.set("trust proxy", 1);
 app.use(getSession());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
   const start = Date.now();

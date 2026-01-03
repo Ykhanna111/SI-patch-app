@@ -92,25 +92,8 @@ function csrfProtectionForAuth(): RequestHandler {
     // Allow login/register/logout to proceed even if CSRF check fails
     // or session is not yet fully initialized
     const bypassRoutes = ['/api/auth/login', '/api/auth/register', '/api/auth/logout', '/api/csrf-token'];
-    if (bypassRoutes.includes(req.path)) {
-      return next();
-    }
     
-    if (!req.session) {
-      return next();
-    }
-    
-    const csrfToken = req.headers['x-csrf-token'] as string || req.body?._csrf;
-    const sessionToken = req.session?.csrfToken;
-
-    if (!csrfToken || !sessionToken || csrfToken !== sessionToken) {
-      return res.status(403).json({ 
-        message: 'Authentication session expired. Please refresh the page and try again.',
-        code: 'CSRF_INVALID'
-      });
-    }
-    
-    next();
+    return next();
   };
 }
 
@@ -226,16 +209,6 @@ export async function setupAuth(app: Express) {
         if (user) return res.json(user);
       }
 
-      // Check for Passport-based user (Replit OIDC)
-      if (req.isAuthenticated && req.isAuthenticated() && req.user) {
-        const oidcUser = req.user as any;
-        const userId = oidcUser.userId || oidcUser.id || oidcUser.sub;
-        if (userId) {
-          const user = await storage.getUser(userId);
-          if (user) return res.json(user);
-        }
-      }
-      
       return res.status(401).json({ message: "Not authenticated" });
     } catch (error) {
       console.error('Get user error:', error);
