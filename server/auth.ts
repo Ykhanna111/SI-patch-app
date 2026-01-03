@@ -31,7 +31,7 @@ export function getSession() {
     proxy: true,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Set to false to ensure cookies are sent behind Render proxy
       maxAge: sessionTtl,
       sameSite: 'lax',
     },
