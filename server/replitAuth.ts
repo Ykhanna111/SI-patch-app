@@ -119,9 +119,20 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
-      successReturnToOrRedirect: "/",
-      failureRedirect: "/api/login",
+    passport.authenticate(`replitauth:${req.hostname}`, (err: any, user: any) => {
+      if (err || !user) {
+        return res.redirect("/api/login");
+      }
+      req.login(user, (loginErr) => {
+        if (loginErr) {
+          return next(loginErr);
+        }
+        // Explicitly map OIDC sub to session userId to match application expectations
+        req.session.userId = user.userId;
+        req.session.save(() => {
+          res.redirect("/");
+        });
+      });
     })(req, res, next);
   });
 

@@ -1,0 +1,170 @@
+1️⃣ Why you STILL cannot log in (exact reason)
+Root cause
+
+👉 You do not have any code that actually marks a user as “logged in” on the server.
+
+Right now:
+
+Sessions ✅ work
+
+CSRF ✅ works
+
+Guest mode ✅ creates games
+
+/api/auth/user ❌ always returns 401
+
+That can only happen if req.session.userId is never set.
+
+Your backend logic for “logged-in user” is:
+
+if (!req.session.userId) {
+  return 401;
+}
+
+
+But no login path ever does this:
+
+req.session.userId = user.id;
+
+
+So from the backend’s point of view:
+
+“There is a session, but nobody is logged in.”
+
+Why it looked like login worked earlier
+
+Earlier (locally):
+
+You likely relied on:
+
+temporary session state
+
+dev shortcuts
+
+memory persistence
+
+Or you mixed Replit OIDC and local auth
+
+In production:
+
+Those illusions are gone
+
+Only explicit session state counts
+
+The hard truth (important)
+
+Login is not “broken” — it is simply incomplete.
+
+You currently have:
+
+Guest flow ✔
+
+Session infrastructure ✔
+
+CSRF ✔
+
+But no completed login implementation.
+
+2️⃣ Why guest games show “invalid move” (exact reason)
+
+This is a design bug, not Sudoku logic.
+
+What’s happening
+
+Guest games store state only on the client
+
+Server-side /validate expects:
+
+stored puzzle
+
+solution
+
+constraints
+
+Guest mode does NOT have these server-side
+
+So server validates against undefined state → valid moves become invalid.
+
+3️⃣ The correct fixes (minimal, no refactor)
+✅ FIX A — Make login actually work (MANDATORY)
+
+Pick one approach. Don’t mix.
+
+🔹 Option A (recommended, fastest)
+
+Local session login only (ignore Replit OIDC for now)
+
+In your /api/auth/login handler, after you verify the user:
+
+req.session.userId = user.id;
+
+
+That’s it.
+
+After this:
+
+/api/auth/user will return the user
+
+CSRF will work for logged-in users
+
+Stats/profile endpoints will work
+
+🔹 Option B (Replit OIDC)
+
+If using /api/login → /api/callback with Passport:
+
+You MUST explicitly map OIDC → session:
+
+req.session.userId = claims.sub;
+
+
+If you don’t do this, /api/auth/user will always return 401.
+
+Right now, this mapping does not exist in your code.
+
+✅ FIX B — Fix guest game validation (MANDATORY)
+
+Skip server validation for guests.
+
+At the top of /api/games/:id/validate:
+
+if (!req.session?.userId) {
+  // Guest mode: trust client-side validation
+  return res.json({
+    isValid: true,
+    isCorrect: null,
+  });
+}
+
+
+This immediately fixes:
+
+“valid move marked invalid”
+
+guest gameplay breaking
+
+4️⃣ Why both problems appeared together
+
+Because earlier you had:
+
+loose auth enforcement
+
+implicit state
+
+forgiving dev environment
+
+Now you have:
+
+strict production behavior
+
+explicit session checks
+
+So two hidden bugs surfaced at once:
+
+Login never completed
+
+Guest validation assumed server state
+
+5️⃣ One-line summary (remember this)
+
+Login doesn’t work because you never set session.userId; guest moves are invalid because you validate them on the server without server-side game state.

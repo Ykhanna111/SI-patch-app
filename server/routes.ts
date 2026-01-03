@@ -172,6 +172,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/games/:id/validate', async (req: Request, res: Response) => {
     try {
+      const isAuth = isUserAuthenticated(req);
+      
+      // Guest mode: trust client-side validation as we don't persist state on server
+      if (!isAuth) {
+        return res.json({ 
+          isValid: true,
+          isCorrect: null 
+        });
+      }
+
       const { row, col, value, currentState, solution, gameMode = 'standard', constraints } = req.body;
       
       if (typeof row !== 'number' || typeof col !== 'number' || typeof value !== 'number') {
