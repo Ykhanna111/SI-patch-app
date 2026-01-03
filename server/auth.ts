@@ -49,7 +49,8 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export const isAuthenticated: RequestHandler = (req, res, next) => {
-  if (req.session?.userId) {
+  const userId = (req.user as any)?.userId || (req.session as any)?.userId;
+  if (userId) {
     return next();
   }
   return res.status(401).json({ message: "Unauthorized" });
@@ -214,7 +215,7 @@ export async function setupAuth(app: Express) {
 
   app.get('/api/auth/user', isAuthenticated, async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.user as any)?.userId || (req.session as any)?.userId;
       if (!userId) {
         return res.status(401).json({ message: "No user session found" });
       }
@@ -233,7 +234,7 @@ export async function setupAuth(app: Express) {
 
   app.put('/api/auth/profile', isAuthenticated, csrfProtectionForAuth(), async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.user as any)?.userId || (req.session as any)?.userId;
       if (!userId) {
         return res.status(401).json({ message: "No user session found" });
       }
@@ -261,7 +262,7 @@ export async function setupAuth(app: Express) {
 
   app.get('/api/auth/stats', isAuthenticated, async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = (req.user as any)?.userId || (req.session as any)?.userId;
       if (!userId) {
         return res.status(401).json({ message: "No user session found" });
       }

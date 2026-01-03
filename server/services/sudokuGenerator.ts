@@ -134,6 +134,11 @@ export function isValidMove(
   originalPuzzle: SudokuGrid,
   gameMode: GameMode = 'standard'
 ): boolean {
+  // Safety check for grid and parameters
+  if (!currentGrid || !originalPuzzle || !currentGrid[row] || !originalPuzzle[row]) {
+    return false;
+  }
+  
   // Can't modify pre-filled cells
   if (originalPuzzle[row][col] !== 0) {
     return false;
