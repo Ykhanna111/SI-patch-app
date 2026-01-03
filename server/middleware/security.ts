@@ -63,6 +63,12 @@ export function csrfProtection(): RequestHandler {
       return next();
     }
     
+    // Skip CSRF for routes that establish sessions or are public
+    const bypassRoutes = ['/api/csrf-token', '/api/auth/login', '/api/auth/register', '/api/games'];
+    if (bypassRoutes.some(route => req.path.startsWith(route))) {
+      return next();
+    }
+    
     const origin = req.get('origin');
     const host = req.get('host');
     

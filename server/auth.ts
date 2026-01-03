@@ -24,16 +24,18 @@ export function getSession() {
   });
   
   return session({
+    name: 'sudoku.sid',
     secret: process.env.SESSION_SECRET || 'fallback-secret-key',
     store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     proxy: true,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, 
       maxAge: sessionTtl,
       sameSite: 'lax',
+      path: '/',
     },
     rolling: true,
     unset: 'destroy',
@@ -49,7 +51,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export const isAuthenticated: RequestHandler = (req, res, next) => {
-  if (req.session?.userId) {
+  if (req.session && req.session.userId) {
     return next();
   }
   return res.status(401).json({ message: "Unauthorized" });
@@ -87,6 +89,13 @@ function csrfProtectionForAuth(): RequestHandler {
       return res.status(403).json({ message: 'Forbidden: Invalid origin' });
     }
     
+    // Allow login/register/logout to proceed even if CSRF check fails
+    // or session is not yet fully initialized
+    const bypassRoutes = ['/api/auth/login', '/api/auth/register', '/api/auth/logout', '/api/csrf-token'];
+    if (bypassRoutes.includes(req.path)) {
+      return next();
+    }
+    
     if (!req.session) {
       return next();
     }
@@ -94,12 +103,6 @@ function csrfProtectionForAuth(): RequestHandler {
     const csrfToken = req.headers['x-csrf-token'] as string || req.body?._csrf;
     const sessionToken = req.session?.csrfToken;
 
-    // Allow CSRF generation to proceed even if session is not yet fully initialized/persisted
-    // as it will be saved by the endpoint itself.
-    if (req.path === '/api/csrf-token') {
-      return next();
-    }
-    
     if (!csrfToken || !sessionToken || csrfToken !== sessionToken) {
       return res.status(403).json({ 
         message: 'Authentication session expired. Please refresh the page and try again.',
@@ -137,13 +140,11 @@ export async function setupAuth(app: Express) {
         }
       }
 
-      // In a real Supabase Auth flow, the user would be created via Supabase Auth first,
-      // and then this endpoint would be called to sync the public profile.
       const user = await storage.createUser(data);
 
       req.session.userId = user.id;
-      console.log("LOGIN SUCCESS, session.userId =", req.session.userId);
       req.session.csrfToken = crypto.randomBytes(32).toString('hex');
+      
       req.session.save((err) => {
         if (err) {
           console.error('Session save error during registration:', err);
@@ -187,8 +188,8 @@ export async function setupAuth(app: Express) {
       }
 
       req.session.userId = user.id;
-      console.log("LOGIN SUCCESS, session.userId =", req.session.userId);
       req.session.csrfToken = crypto.randomBytes(32).toString('hex');
+      
       req.session.save((err) => {
         if (err) {
           console.error('Session save error during login:', err);
@@ -206,22 +207,36 @@ export async function setupAuth(app: Express) {
     }
   });
 
-  app.post('/api/auth/logout', csrfProtectionForAuth(), (req, res) => {
-    req.session.destroy(() => {
+  app.post('/api/auth/logout', (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Logout error:', err);
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      res.clearCookie('sudoku.sid');
       res.json({ message: "Logged out successfully" });
     });
   });
 
-  app.get('/api/auth/user', isAuthenticated, async (req, res) => {
+  app.get('/api/auth/user', async (req, res) => {
     try {
-      const userId = req.session.userId;
-      const user = await storage.getUser(userId);
-      
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+      // Check for session-based user
+      if (req.session && req.session.userId) {
+        const user = await storage.getUser(req.session.userId);
+        if (user) return res.json(user);
       }
 
-      res.json(user);
+      // Check for Passport-based user (Replit OIDC)
+      if (req.isAuthenticated && req.isAuthenticated() && req.user) {
+        const oidcUser = req.user as any;
+        const userId = oidcUser.userId || oidcUser.id || oidcUser.sub;
+        if (userId) {
+          const user = await storage.getUser(userId);
+          if (user) return res.json(user);
+        }
+      }
+      
+      return res.status(401).json({ message: "Not authenticated" });
     } catch (error) {
       console.error('Get user error:', error);
       res.status(500).json({ message: "Failed to get user" });
@@ -230,7 +245,7 @@ export async function setupAuth(app: Express) {
 
   app.put('/api/auth/profile', isAuthenticated, csrfProtectionForAuth(), async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = req.session!.userId!;
 
       const allowedUpdates = ['firstName', 'lastName', 'email', 'bio'];
       const updates: any = {};
@@ -255,7 +270,7 @@ export async function setupAuth(app: Express) {
 
   app.get('/api/auth/stats', isAuthenticated, async (req, res) => {
     try {
-      const userId = req.session.userId;
+      const userId = req.session!.userId!;
 
       let stats = await storage.getUserStats(userId);
       

@@ -35,11 +35,12 @@ export function getSession() {
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true, // Set to true to ensure sessions are created for guests
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: false, // 🔑 REQUIRED on Render to avoid cookies being dropped
       maxAge: sessionTtl,
+      sameSite: 'lax',
     },
   });
 }
@@ -57,13 +58,23 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
-  await storage.upsertUser({
-    id: claims["sub"],
-    email: claims["email"],
-    firstName: claims["first_name"],
-    lastName: claims["last_name"],
-    profileImageUrl: claims["profile_image_url"],
-  });
+  const existingUser = await storage.getUser(claims["sub"]);
+  if (existingUser) {
+    await storage.updateUser(claims["sub"], {
+      firstName: claims["first_name"],
+      lastName: claims["last_name"],
+      email: claims["email"],
+    });
+  } else {
+    await storage.createUser({
+      id: claims["sub"],
+      username: claims["preferred_username"] || claims["email"]?.split('@')[0] || claims["sub"],
+      email: claims["email"],
+      firstName: claims["first_name"],
+      lastName: claims["last_name"],
+      preferences: {},
+    });
+  }
 }
 
 export async function setupAuth(app: Express) {
@@ -81,6 +92,9 @@ export async function setupAuth(app: Express) {
     const user: any = {};
     updateUserSession(user, tokens);
     const claims = tokens.claims();
+    if (!claims) {
+      return verified(new Error("No claims found in OIDC token"));
+    }
     await upsertUser(claims);
     
     // Set userId to sync with application's expectation of req.session.userId
@@ -149,12 +163,11 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
-  const user = req.user as any;
-
-  if (!req.isAuthenticated() || !user.expires_at) {
+  if (!req.isAuthenticated() || !req.user || !(req.user as any).expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
+  const user = req.user as any;
   const now = Math.floor(Date.now() / 1000);
   if (now <= user.expires_at) {
     return next();
