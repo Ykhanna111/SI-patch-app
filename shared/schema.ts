@@ -33,6 +33,11 @@ export const users = pgTable("users", {
   firstName: varchar("first_name", { length: 50 }),
   lastName: varchar("last_name", { length: 50 }),
   avatarUrl: varchar("avatar_url", { length: 500 }),
+  // Additional user details
+  bio: text("bio"),
+  phoneNumber: varchar("phone_number", { length: 20 }),
+  location: varchar("location", { length: 100 }),
+  preferences: jsonb("preferences").default({}),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -106,6 +111,10 @@ export const registerSchema = z.object({
   password: passwordSchema,
   firstName: z.string().min(1, "First name is required").max(50),
   lastName: z.string().min(1, "Last name is required").max(50),
+  bio: z.string().max(500).optional(),
+  phoneNumber: z.string().max(20).optional(),
+  location: z.string().max(100).optional(),
+  preferences: z.record(z.any()).optional(),
 }).refine((data) => {
   return data.password !== data.username && 
          (!data.email || data.email === "" || data.password !== data.email);
