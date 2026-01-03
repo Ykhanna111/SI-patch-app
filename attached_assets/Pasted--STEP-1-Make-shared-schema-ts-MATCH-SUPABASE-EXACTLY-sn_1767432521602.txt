@@ -1,0 +1,205 @@
+✅ STEP 1: Make shared/schema.ts MATCH SUPABASE EXACTLY (snake_case)
+
+This file should describe the database schema, not app preferences.
+
+shared/schema.ts
+// shared/schema.ts
+export interface DBUser {
+  id: string;
+  username: string;
+  email: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  bio: string | null;
+  preferences: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DBGame {
+  id: string;
+  user_id: string;
+  game_mode: string;
+  grid_size: number;
+  difficulty: string;
+  puzzle: string;
+  current_state: string;
+  solution: string;
+  constraints: string | null;
+  time_elapsed: number;
+  mistakes: number;
+  hints_used: number;
+  is_completed: boolean;
+  moves: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DBUserStats {
+  id: string;
+  user_id: string;
+  total_puzzles_played: number;
+  total_puzzles_solved: number;
+  current_streak: number;
+  longest_streak: number;
+  total_mistakes: number;
+  total_time_spent: number;
+  best_time_easy: number | null;
+  best_time_medium: number | null;
+  best_time_hard: number | null;
+  best_time_expert: number | null;
+  last_played_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+
+🚨 No camelCase here. This mirrors Supabase tables 1:1.
+
+✅ STEP 2: Define APP MODELS (camelCase)
+
+These are what your frontend / services actually use.
+
+types/models.ts
+export interface User {
+  id: string;
+  username: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  bio?: string;
+  preferences: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Game {
+  id: string;
+  userId: string;
+  gameMode: string;
+  gridSize: number;
+  difficulty: string;
+  puzzle: string;
+  currentState: string;
+  constraints?: string;
+  timeElapsed: number;
+  mistakes: number;
+  hintsUsed: number;
+  isCompleted: boolean;
+  moves?: string;
+  completedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserStats {
+  userId: string;
+  totalPuzzlesPlayed: number;
+  totalPuzzlesSolved: number;
+  currentStreak: number;
+  longestStreak: number;
+  totalMistakes: number;
+  totalTimeSpent: number;
+  lastPlayedAt?: string;
+}
+
+✅ STEP 3: Refactor SupabaseStorage (THIS FIXES YOUR ERRORS)
+
+This class is the only place mapping happens.
+
+server/storage/SupabaseStorage.ts
+import { supabase } from "../supabaseClient";
+import { DBGame, DBUser, DBUserStats } from "../../shared/schema";
+import { Game, User, UserStats } from "../../types/models";
+
+export class SupabaseStorage {
+  /* ---------------- USERS ---------------- */
+
+  private mapUser(db: DBUser): User {
+    return {
+      id: db.id,
+      username: db.username,
+      email: db.email ?? undefined,
+      firstName: db.first_name ?? undefined,
+      lastName: db.last_name ?? undefined,
+      bio: db.bio ?? undefined,
+      preferences: db.preferences,
+      createdAt: db.created_at,
+      updatedAt: db.updated_at,
+    };
+  }
+
+  async getUser(id: string): Promise<User | null> {
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) return null;
+    return this.mapUser(data);
+  }
+
+  /* ---------------- GAMES ---------------- */
+
+  private mapGame(db: DBGame): Game {
+    return {
+      id: db.id,
+      userId: db.user_id,
+      gameMode: db.game_mode,
+      gridSize: db.grid_size,
+      difficulty: db.difficulty,
+      puzzle: db.puzzle,
+      currentState: db.current_state,
+      constraints: db.constraints ?? undefined,
+      timeElapsed: db.time_elapsed,
+      mistakes: db.mistakes,
+      hintsUsed: db.hints_used,
+      isCompleted: db.is_completed,
+      moves: db.moves ?? undefined,
+      completedAt: db.completed_at ?? undefined,
+      createdAt: db.created_at,
+      updatedAt: db.updated_at,
+    };
+  }
+
+  async createGame(game: Omit<Game, "id" | "createdAt" | "updatedAt">) {
+    const { data, error } = await supabase
+      .from("games")
+      .insert({
+        user_id: game.userId,
+        game_mode: game.gameMode,
+        grid_size: game.gridSize,
+        difficulty: game.difficulty,
+        puzzle: game.puzzle,
+        current_state: game.currentState,
+        constraints: game.constraints ?? null,
+        time_elapsed: game.timeElapsed,
+        mistakes: game.mistakes,
+        hints_used: game.hintsUsed,
+        is_completed: game.isCompleted,
+        moves: game.moves ?? null,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return this.mapGame(data);
+  }
+
+  /* ---------------- STATS ---------------- */
+
+  private mapStats(db: DBUserStats): UserStats {
+    return {
+      userId: db.user_id,
+      totalPuzzlesPlayed: db.total_puzzles_played,
+      totalPuzzlesSolved: db.total_puzzles_solved,
+      currentStreak: db.current_streak,
+      longestStreak: db.longest_streak,
+      totalMistakes: db.total_mistakes,
+      totalTimeSpent: db.total_time_spent,
+      lastPlayedAt: db.last_played_at ?? undefined,
+    };
+  }
+}
