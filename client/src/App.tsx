@@ -26,7 +26,9 @@ function Router() {
         <Route path="/" component={() => <div className="min-h-screen flex items-center justify-center">Loading...</div>} />
       ) : (
         <>
-          <Route path="/" component={isAuthenticated ? GameModeSelection : Landing} />
+          <Route path="/">
+            {isAuthenticated ? <GameModeSelection /> : <Landing />}
+          </Route>
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="/profile" component={Profile} />
