@@ -33,7 +33,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   app.use(rateLimit());
   
-  app.get('/api/csrf-token', csrfTokenEndpoint());
+  app.get('/api/csrf-token', (req, res) => res.json({ csrfToken: 'disabled' }));
   
   app.get('/api/guest/status', (req: Request, res: Response) => {
     const isAuth = isUserAuthenticated(req);
