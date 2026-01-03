@@ -1,0 +1,138 @@
+You currently have multiple competing authentication systems in the same codebase:
+
+server/auth.ts → session-based auth
+
+server/replitAuth.ts → Replit OIDC / Passport-based auth
+
+server/middleware/security.ts → CSRF + origin logic
+
+Frontend + routes expecting one single source of truth, but backend has two
+
+This causes:
+
+sessions being set in one place
+
+overwritten or ignored in another
+
+/api/auth/user returning 401 even after login
+
+inconsistent behavior between guest and logged-in users
+
+This is not a Supabase issue and not a cookie issue anymore.
+It’s auth duplication.
+
+🎯 The rule going forward (non-negotiable)
+
+You must have ONE auth system. Not two.
+
+Since you already chose Option 1 (local session auth), we will fully remove Replit OIDC auth.
+
+🧹 STEP 1 — Disable Replit OIDC completely (5 minutes)
+Do this manually in Replit UI:
+
+Delete this file:
+
+server/replitAuth.ts
+
+
+Open any file that imports it (likely routes.ts or index.ts)
+and remove:
+
+import { setupReplitAuth } from "./replitAuth";
+
+
+or similar
+
+Remove any call like:
+
+setupReplitAuth(app);
+
+
+👉 After this, Replit OIDC is gone.
+
+🧹 STEP 2 — Simplify security middleware
+
+Open:
+
+server/middleware/security.ts
+
+
+Do NOT delete the file, but:
+
+Remove any auth checks from it
+
+Keep it only for:
+
+headers
+
+CSP
+
+rate limiting (if any)
+
+❌ No session checks
+❌ No CSRF auth enforcement
+❌ No origin blocking for login
+
+Auth must live only in auth.ts.
+
+🔐 STEP 3 — Keep ONLY this auth flow
+
+Your only auth file should now be:
+
+server/auth.ts
+
+
+It should define:
+
+getSession()
+
+/api/auth/register
+
+/api/auth/login
+
+/api/auth/logout
+
+/api/auth/user
+
+isAuthenticated
+
+No Passport
+No OIDC
+No second auth middleware
+
+🧩 STEP 4 — Confirm server wiring (important)
+
+Open:
+
+server/index.ts
+
+
+It must be in this order:
+
+app.set("trust proxy", 1);
+app.use(getSession());           // FIRST
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+registerRoutes(app);             // auth routes included here
+
+
+❌ No replitAuth
+❌ No duplicate session setup
+
+🌐 STEP 5 — Frontend (very important)
+
+Every authenticated request must include:
+
+credentials: "include"
+
+
+Specifically check:
+
+/api/auth/user
+
+/api/auth/stats
+
+/api/auth/logout
+
+If even one is missing → login appears broken.
