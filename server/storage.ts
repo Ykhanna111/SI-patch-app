@@ -44,35 +44,47 @@ export class SupabaseStorage implements IStorage {
 
   async createUser(userData: InsertUser): Promise<User> {
     const { data, error } = await supabase.from('users').insert(userData).select().single();
-    if (error) throw error;
+    if (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
     return data;
   }
 
   async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
     const { data, error } = await supabase
       .from('users')
-      .update({ ...updates, updatedAt: new Date().toISOString() })
+      .update(updates)
       .eq('id', id)
       .select()
       .single();
-    if (error) return undefined;
+    if (error) {
+      console.error('Error updating user:', error);
+      return undefined;
+    }
     return data;
   }
 
   async createGame(game: InsertGame): Promise<Game> {
     const { data, error } = await supabase.from('games').insert(game).select().single();
-    if (error) throw error;
+    if (error) {
+      console.error('Error creating game:', error);
+      throw error;
+    }
     return data;
   }
 
   async updateGame(id: string, updates: Partial<Game>): Promise<Game | undefined> {
     const { data, error } = await supabase
       .from('games')
-      .update({ ...updates, updatedAt: new Date().toISOString() })
+      .update(updates)
       .eq('id', id)
       .select()
       .single();
-    if (error) return undefined;
+    if (error) {
+      console.error('Error updating game:', error);
+      return undefined;
+    }
     return data;
   }
 
@@ -109,18 +121,24 @@ export class SupabaseStorage implements IStorage {
 
   async createUserStats(stats: InsertUserStats): Promise<UserStats> {
     const { data, error } = await supabase.from('user_stats').insert(stats).select().single();
-    if (error) throw error;
+    if (error) {
+      console.error('Error creating user stats:', error);
+      throw error;
+    }
     return data;
   }
 
   async updateUserStats(userId: string, updates: Partial<UserStats>): Promise<UserStats | undefined> {
     const { data, error } = await supabase
       .from('user_stats')
-      .update({ ...updates, updatedAt: new Date().toISOString() })
+      .update(updates)
       .eq('user_id', userId)
       .select()
       .single();
-    if (error) return undefined;
+    if (error) {
+      console.error('Error updating user stats:', error);
+      return undefined;
+    }
     return data;
   }
 }

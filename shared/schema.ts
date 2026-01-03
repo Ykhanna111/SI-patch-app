@@ -26,37 +26,33 @@ export const sessions = pgTable(
 
 // User storage table for custom authentication
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: varchar("id").primaryKey(), // UUID from Supabase Auth
   username: varchar("username", { length: 50 }).notNull().unique(),
   email: varchar("email", { length: 100 }).unique(),
-  password: varchar("password", { length: 255 }).notNull(),
+  // password removed as auth is handled by Supabase
   firstName: varchar("first_name", { length: 50 }),
   lastName: varchar("last_name", { length: 50 }),
-  avatarUrl: varchar("avatar_url", { length: 500 }),
-  // Additional user details
   bio: text("bio"),
-  phoneNumber: varchar("phone_number", { length: 20 }),
-  location: varchar("location", { length: 100 }),
-  preferences: jsonb("preferences").default({}),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  preferences: jsonb("preferences").notNull().default({}),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const games = pgTable("games", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id),
-  gameMode: varchar("game_mode").notNull().default("standard"), // 'standard', 'mini-4x4', 'mini-6x6', 'hexadoku', 'jigsaw', 'diagonal', 'killer', 'hyper', 'odd-even', 'inequality', 'consecutive'
-  gridSize: integer("grid_size").notNull().default(9), // 4, 6, or 9
-  difficulty: varchar("difficulty").notNull(), // 'easy', 'medium', 'hard', 'expert'
-  puzzle: text("puzzle").notNull(), // JSON string of the initial puzzle
-  currentState: text("current_state").notNull(), // JSON string of current state
-  solution: text("solution").notNull(), // JSON string of the solution
-  constraints: text("constraints"), // JSON string of mode-specific constraints (cages, inequalities, etc.)
-  timeElapsed: integer("time_elapsed").default(0), // in seconds
+  gameMode: varchar("game_mode").notNull().default("standard"),
+  gridSize: integer("grid_size").notNull().default(9),
+  difficulty: varchar("difficulty").notNull(),
+  puzzle: text("puzzle").notNull(),
+  currentState: text("current_state").notNull(),
+  solution: text("solution").notNull(),
+  constraints: text("constraints"),
+  timeElapsed: integer("time_elapsed").default(0),
   mistakes: integer("mistakes").default(0),
   hintsUsed: integer("hints_used").default(0),
   isCompleted: boolean("is_completed").default(false),
-  moves: text("moves"), // JSON string of move history for undo
+  moves: text("moves"),
   completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -71,8 +67,8 @@ export const userStats = pgTable("user_stats", {
   currentStreak: integer("current_streak").default(0),
   longestStreak: integer("longest_streak").default(0),
   totalMistakes: integer("total_mistakes").default(0),
-  totalTimeSpent: integer("total_time_spent").default(0), // in seconds
-  bestTimeEasy: integer("best_time_easy"), // in seconds
+  totalTimeSpent: integer("total_time_spent").default(0),
+  bestTimeEasy: integer("best_time_easy"),
   bestTimeMedium: integer("best_time_medium"),
   bestTimeHard: integer("best_time_hard"),
   bestTimeExpert: integer("best_time_expert"),
@@ -81,46 +77,17 @@ export const userStats = pgTable("user_stats", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Password validation schema
-export const passwordSchema = z.string()
-  .min(8, "Password must be at least 8 characters")
-  .max(128, "Password must be less than 128 characters")
-  .refine((password) => {
-    if (password.includes(' ')) return false;
-    
-    const categories = [
-      /[a-z]/.test(password), // lowercase
-      /[A-Z]/.test(password), // uppercase
-      /[0-9]/.test(password), // numbers
-      /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) // special chars
-    ];
-    
-    return categories.filter(Boolean).length >= 3;
-  }, "Password must include at least 3 of: lowercase, uppercase, numbers, special characters")
-  .refine((password) => {
-    const commonPasswords = ['123456', 'password', 'qwerty', 'abc123', 'password123'];
-    return !commonPasswords.includes(password.toLowerCase());
-  }, "Password is too common");
-
 export const registerSchema = z.object({
+  id: z.string().uuid(),
   username: z.string()
     .min(3, "Username must be at least 3 characters")
     .max(50, "Username must be less than 50 characters")
     .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
-  email: z.string().email("Invalid email address").or(z.literal("")).optional(),
-  password: passwordSchema,
-  firstName: z.string().min(1, "First name is required").max(50),
-  lastName: z.string().min(1, "Last name is required").max(50),
+  email: z.string().email("Invalid email address").optional(),
+  firstName: z.string().min(1, "First name is required").max(50).optional(),
+  lastName: z.string().min(1, "Last name is required").max(50).optional(),
   bio: z.string().max(500).optional(),
-  phoneNumber: z.string().max(20).optional(),
-  location: z.string().max(100).optional(),
   preferences: z.record(z.any()).optional(),
-}).refine((data) => {
-  return data.password !== data.username && 
-         (!data.email || data.email === "" || data.password !== data.email);
-}, {
-  message: "Password cannot match username or email",
-  path: ["password"]
 });
 
 export const loginSchema = z.object({
@@ -128,7 +95,7 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-export type InsertUser = typeof users.$inferInsert;
+export type InsertUser = z.infer<typeof registerSchema>;
 export type User = typeof users.$inferSelect;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
