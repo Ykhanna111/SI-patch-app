@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { registerSchema, type RegisterInput } from '@shared/schema';
+import { registerSchema } from '@shared/schema';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -12,14 +12,22 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest, updateCsrfFromResponse } from '@/lib/queryClient';
 import { Link } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { z } from 'zod';
+
+const clientRegisterSchema = registerSchema.omit({ id: true }).extend({
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+type ClientRegisterInput = z.infer<typeof clientRegisterSchema>;
 
 export default function Register() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  const form = useForm<RegisterInput>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<ClientRegisterInput>({
+    resolver: zodResolver(clientRegisterSchema),
     defaultValues: {
       username: '',
       email: '',
@@ -30,8 +38,26 @@ export default function Register() {
   });
 
   const registerMutation = useMutation({
-    mutationFn: async (data: RegisterInput) => {
-      const response = await apiRequest('POST', '/api/auth/register', data);
+    mutationFn: async (data: ClientRegisterInput) => {
+      if (!data.email) throw new Error("Email is required for registration");
+
+      // 1. Sign up with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (authError) throw authError;
+      if (!authData.user) throw new Error("No user returned from Supabase Auth");
+
+      // 2. Create public profile in our database
+      const response = await apiRequest('POST', '/api/auth/register', {
+        id: authData.user.id,
+        username: data.username,
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+      });
       return await response.json();
     },
     onSuccess: (data) => {
@@ -52,7 +78,7 @@ export default function Register() {
     },
   });
 
-  const onSubmit = (data: RegisterInput) => {
+  const onSubmit = (data: ClientRegisterInput) => {
     registerMutation.mutate(data);
   };
 
@@ -136,7 +162,7 @@ export default function Register() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email (Optional)</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
@@ -166,7 +192,7 @@ export default function Register() {
                     </FormControl>
                     <FormMessage />
                     <div className="text-xs text-gray-500 mt-1">
-                      Minimum 8 characters with at least 3 of: lowercase, uppercase, numbers, special characters
+                      Minimum 8 characters
                     </div>
                   </FormItem>
                 )}
@@ -188,12 +214,6 @@ export default function Register() {
               Already have an account?{' '}
               <Link href="/login" className="text-sudoku-primary hover:underline" data-testid="link-login">
                 Sign in here
-              </Link>
-            </p>
-            <p className="mt-2 text-sm text-gray-600">
-              Or{' '}
-              <Link href="/select-game" className="text-sudoku-primary hover:underline" data-testid="link-guest">
-                play as guest
               </Link>
             </p>
           </div>

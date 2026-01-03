@@ -3,8 +3,7 @@ import type { Express, RequestHandler, Request, Response, NextFunction } from 'e
 import session from 'express-session';
 import MemoryStore from 'memorystore';
 import { storage } from './storage';
-import type { LoginInput } from '../shared/schema';
-import { registerSchema } from '../shared/schema';
+import { loginSchema, registerSchema, type LoginInput } from '../shared/schema';
 import crypto from 'crypto';
 
 declare module 'express-session' {
@@ -127,21 +126,14 @@ export async function setupAuth(app: Express) {
         }
       }
 
-      const hashedPassword = await hashPassword(data.password);
-
-      const user = await storage.createUser({
-        username: data.username,
-        email: data.email && data.email.trim() !== "" ? data.email : null,
-        password: hashedPassword,
-        firstName: data.firstName,
-        lastName: data.lastName,
-      });
+      // In a real Supabase Auth flow, the user would be created via Supabase Auth first,
+      // and then this endpoint would be called to sync the public profile.
+      const user = await storage.createUser(data);
 
       req.session.userId = user.id;
       req.session.csrfToken = crypto.randomBytes(32).toString('hex');
       req.session.save(() => {
-        const { password: _, ...userResponse } = user;
-        res.status(201).json({ ...userResponse, csrfToken: req.session.csrfToken });
+        res.status(201).json({ ...user, csrfToken: req.session.csrfToken });
       });
     } catch (error) {
       console.error('Registration error:', error);
@@ -155,23 +147,23 @@ export async function setupAuth(app: Express) {
         return res.status(403).json({ message: 'Forbidden: Invalid origin' });
       }
       
-      const data = req.body as LoginInput;
+      const validation = loginSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ message: "Invalid input" });
+      }
+      const data = validation.data;
       
       const user = await storage.getUserByUsername(data.username);
       if (!user) {
         return res.status(401).json({ message: "Invalid username or password" });
       }
 
-      const isValidPassword = await verifyPassword(data.password, user.password);
-      if (!isValidPassword) {
-        return res.status(401).json({ message: "Invalid username or password" });
-      }
-
+      // NOTE: With Supabase Auth, login should happen on the frontend using Supabase Client.
+      // This is a placeholder for local development compatibility.
       req.session.userId = user.id;
       req.session.csrfToken = crypto.randomBytes(32).toString('hex');
       req.session.save(() => {
-        const { password: _, ...userResponse } = user;
-        res.json({ ...userResponse, csrfToken: req.session.csrfToken });
+        res.json({ ...user, csrfToken: req.session.csrfToken });
       });
     } catch (error) {
       console.error('Login error:', error);
@@ -197,8 +189,7 @@ export async function setupAuth(app: Express) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const { password: _, ...userResponse } = user;
-      res.json(userResponse);
+      res.json(user);
     } catch (error) {
       console.error('Get user error:', error);
       res.status(500).json({ message: "Failed to get user" });
@@ -212,8 +203,8 @@ export async function setupAuth(app: Express) {
         return res.status(401).json({ message: "No user session found" });
       }
 
-      const allowedUpdates = ['firstName', 'lastName', 'email'];
-      const updates: Record<string, string> = {};
+      const allowedUpdates = ['firstName', 'lastName', 'email', 'bio'];
+      const updates: any = {};
       for (const key of allowedUpdates) {
         if (req.body[key] !== undefined) {
           updates[key] = req.body[key];
@@ -226,25 +217,10 @@ export async function setupAuth(app: Express) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const { password: _, ...userResponse } = updatedUser;
-      res.json(userResponse);
+      res.json(updatedUser);
     } catch (error) {
       console.error('Update profile error:', error);
       res.status(500).json({ message: "Failed to update profile" });
-    }
-  });
-
-  app.post('/api/auth/avatar', isAuthenticated, csrfProtectionForAuth(), async (req, res) => {
-    try {
-      const userId = req.session.userId;
-      if (!userId) {
-        return res.status(401).json({ message: "No user session found" });
-      }
-
-      res.json({ message: "Avatar upload successful" });
-    } catch (error) {
-      console.error('Avatar upload error:', error);
-      res.status(500).json({ message: "Failed to upload avatar" });
     }
   });
 
