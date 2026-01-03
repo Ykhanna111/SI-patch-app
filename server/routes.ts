@@ -49,7 +49,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.post('/api/games', csrfProtection(), async (req: Request, res: Response) => {
+  app.post('/api/games', async (req: Request, res: Response) => {
     try {
       const { difficulty, gameMode = 'standard' } = req.body;
       const isAuth = isUserAuthenticated(req);
@@ -158,7 +158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(404).json({ message: "Game persistence is disabled. Game state is managed on the client." });
   });
 
-  app.put('/api/games/:id', csrfProtection(), async (req: Request, res: Response) => {
+  app.put('/api/games/:id', async (req: Request, res: Response) => {
     // Game update logic is now primarily handled on the client
     // We could implement state sync here if needed, but per requirements we just track stats
     res.json({ success: true, message: "Stats will be updated upon completion" });
@@ -170,7 +170,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
 
-  app.post('/api/games/:id/validate', csrfProtection(), async (req: Request, res: Response) => {
+  app.post('/api/games/:id/validate', async (req: Request, res: Response) => {
     try {
       const { row, col, value, currentState, solution, gameMode = 'standard', constraints } = req.body;
       
@@ -197,7 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/games/:id/check-completion', csrfProtection(), async (req: Request, res: Response) => {
+  app.post('/api/games/:id/check-completion', async (req: Request, res: Response) => {
     try {
       const { currentState } = req.body;
       
@@ -218,7 +218,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/games/:id/hint', csrfProtection(), async (req: Request, res: Response) => {
+  app.post('/api/games/:id/hint', async (req: Request, res: Response) => {
     try {
       const { currentState, solution, hintsUsed = 0 } = req.body;
       
