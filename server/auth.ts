@@ -32,7 +32,7 @@ export function getSession() {
     proxy: true,
     cookie: {
       httpOnly: true,
-      secure: false, 
+      secure: false, // 🔑 REQUIRED on Render
       maxAge: sessionTtl,
       sameSite: 'lax',
       path: '/',
