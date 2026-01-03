@@ -3,8 +3,25 @@ import { fetchCsrfToken, setCsrfToken, getCachedCsrfToken } from "@/hooks/useCsr
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    let message = res.statusText;
+    let code: string | undefined;
+    
+    try {
+      const data = await res.json();
+      message = data.message || message;
+      code = data.code;
+    } catch (e) {
+      // Fallback to text if not JSON
+      try {
+        const text = await res.text();
+        if (text) message = text;
+      } catch (e2) {}
+    }
+    
+    const error = new Error(`${res.status}: ${message}`) as any;
+    error.status = res.status;
+    error.code = code;
+    throw error;
   }
 }
 
@@ -22,6 +39,15 @@ export async function apiRequest(
   const skipCsrfEndpoints = ['/api/auth/login', '/api/auth/register'];
   const requiresCsrf = method !== "GET" && method !== "HEAD" && !skipCsrfEndpoints.includes(url);
   
+  const performRequest = async (currentHeaders: Record<string, string>) => {
+    return await fetch(url, {
+      method,
+      headers: currentHeaders,
+      body: data ? JSON.stringify(data) : undefined,
+      credentials: "include",
+    });
+  };
+
   if (requiresCsrf) {
     try {
       let csrfToken = getCachedCsrfToken();
@@ -34,12 +60,23 @@ export async function apiRequest(
     }
   }
   
-  const res = await fetch(url, {
-    method,
-    headers,
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
+  let res = await performRequest(headers);
+
+  // Auto-recovery for CSRF errors
+  if (res.status === 403 && requiresCsrf) {
+    try {
+      const clone = res.clone();
+      const body = await clone.json();
+      if (body.code === 'CSRF_INVALID') {
+        console.log("CSRF token expired, attempting recovery...");
+        const newToken = await fetchCsrfToken();
+        headers["X-CSRF-Token"] = newToken;
+        res = await performRequest(headers);
+      }
+    } catch (e) {
+      // Not a CSRF JSON error, proceed with original response
+    }
+  }
 
   await throwIfResNotOk(res);
   return res;

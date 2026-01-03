@@ -88,7 +88,10 @@ function csrfProtectionForAuth(): RequestHandler {
     const sessionToken = req.session?.csrfToken;
     
     if (!csrfToken || !sessionToken || csrfToken !== sessionToken) {
-      return res.status(403).json({ message: 'Forbidden: Invalid CSRF token' });
+      return res.status(403).json({ 
+        message: 'Authentication session expired. Please refresh the page and try again.',
+        code: 'CSRF_INVALID'
+      });
     }
     
     next();
