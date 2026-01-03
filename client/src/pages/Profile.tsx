@@ -193,7 +193,7 @@ export default function Profile() {
               <div className="flex flex-col items-center space-y-4">
                 <Avatar className="h-24 w-24">
                   <AvatarImage 
-                    src={avatarPreview || typedUser?.avatarUrl || undefined} 
+                    src={avatarPreview || undefined} 
                     alt={typedUser?.username || undefined} 
                   />
                   <AvatarFallback className="text-xl bg-primary text-primary-foreground">
