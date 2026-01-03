@@ -27,8 +27,8 @@ export function getSession() {
     name: 'sudoku.sid',
     secret: process.env.SESSION_SECRET || 'fallback-secret-key',
     store: sessionStore,
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
     proxy: true,
     cookie: {
       httpOnly: true,
@@ -57,41 +57,7 @@ export const isAuthenticated: RequestHandler = (req, res, next) => {
   return res.status(401).json({ message: "Unauthorized" });
 };
 
-function validateOrigin(req: Request): boolean {
-  const origin = req.get('origin');
-  const host = req.get('host');
-  
-  if (!origin) {
-    return true;
-  }
-  
-  if (!host) {
-    return false;
-  }
-  
-  try {
-    const originUrl = new URL(origin);
-    const hostHostname = host.split(':')[0];
-    
-    if (originUrl.hostname === hostHostname) {
-      return true;
-    }
-    
-    return false;
-  } catch {
-    return false;
-  }
-}
-
-function csrfProtectionForAuth(): RequestHandler {
-  return (req: Request, res: Response, next: NextFunction) => {
-    next();
-  };
-}
-
 export async function setupAuth(app: Express) {
-  // Session is handled in index.ts for correct ordering with trust proxy
-  
   app.post('/api/auth/register', async (req, res) => {
     try {
       const validation = registerSchema.safeParse(req.body);
@@ -118,34 +84,17 @@ export async function setupAuth(app: Express) {
       const user = await storage.createUser(data);
 
       req.session.userId = user.id;
-      req.session.csrfToken = crypto.randomBytes(32).toString('hex');
       
       req.session.save((err) => {
         if (err) {
           console.error('Session save error during registration:', err);
           return res.status(500).json({ message: "Failed to save session" });
         }
-        res.status(201).json({
-          id: user.id,
-          username: user.username,
-          csrfToken: req.session.csrfToken,
-        });
+        res.status(201).json(user);
       });
     } catch (error) {
       console.error('Registration error:', error);
       res.status(500).json({ message: "Registration failed" });
-    }
-  });
-
-  app.get('/api/auth/username/:username', async (req, res) => {
-    try {
-      const user = await storage.getUserByUsername(req.params.username);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.json({ email: user.email });
-    } catch (error) {
-      res.status(500).json({ message: "Internal server error" });
     }
   });
 
@@ -162,19 +111,19 @@ export async function setupAuth(app: Express) {
         return res.status(401).json({ message: "Invalid username or password" });
       }
 
+      const isValid = await verifyPassword(data.password, user.password);
+      if (!isValid) {
+        return res.status(401).json({ message: "Invalid username or password" });
+      }
+
       req.session.userId = user.id;
-      req.session.csrfToken = crypto.randomBytes(32).toString('hex');
       
       req.session.save((err) => {
         if (err) {
           console.error('Session save error during login:', err);
           return res.status(500).json({ message: "Failed to save session" });
         }
-        res.json({
-          id: user.id,
-          username: user.username,
-          csrfToken: req.session.csrfToken,
-        });
+        res.json(user);
       });
     } catch (error) {
       console.error('Login error:', error);
@@ -195,58 +144,16 @@ export async function setupAuth(app: Express) {
 
   app.get('/api/auth/user', async (req, res) => {
     try {
-      // Check for session-based user
       if (req.session && req.session.userId) {
         const user = await storage.getUser(req.session.userId);
         if (user) return res.json(user);
       }
-
+      
       return res.status(401).json({ message: "Not authenticated" });
     } catch (error) {
       console.error('Get user error:', error);
       res.status(500).json({ message: "Failed to get user" });
     }
   });
-
-  app.put('/api/auth/profile', isAuthenticated, csrfProtectionForAuth(), async (req, res) => {
-    try {
-      const userId = req.session!.userId!;
-
-      const allowedUpdates = ['firstName', 'lastName', 'email', 'bio'];
-      const updates: any = {};
-      for (const key of allowedUpdates) {
-        if (req.body[key] !== undefined) {
-          updates[key] = req.body[key];
-        }
-      }
-      
-      const updatedUser = await storage.updateUser(userId, updates);
-      
-      if (!updatedUser) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      res.json(updatedUser);
-    } catch (error) {
-      console.error('Update profile error:', error);
-      res.status(500).json({ message: "Failed to update profile" });
-    }
-  });
-
-  app.get('/api/auth/stats', isAuthenticated, async (req, res) => {
-    try {
-      const userId = req.session!.userId!;
-
-      let stats = await storage.getUserStats(userId);
-      
-      if (!stats) {
-        stats = await storage.createUserStats({ userId });
-      }
-
-      res.json(stats);
-    } catch (error) {
-      console.error('Get user stats error:', error);
-      res.status(500).json({ message: "Failed to get user statistics" });
-    }
-  });
 }
+
