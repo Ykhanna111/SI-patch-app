@@ -5,6 +5,7 @@ import { setupVite, serveStatic, log } from "./vite";
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.set("trust proxy", 1);
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -37,7 +38,6 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  app.set("trust proxy", 1);
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
