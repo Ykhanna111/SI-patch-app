@@ -146,6 +146,7 @@ export async function setupAuth(app: Express) {
       const user = await storage.createUser(data);
 
       req.session.userId = user.id;
+      console.log("LOGIN SUCCESS, session.userId =", req.session.userId);
       req.session.csrfToken = crypto.randomBytes(32).toString('hex');
       req.session.save((err) => {
         if (err) {
@@ -194,6 +195,7 @@ export async function setupAuth(app: Express) {
       }
 
       req.session.userId = user.id;
+      console.log("LOGIN SUCCESS, session.userId =", req.session.userId);
       req.session.csrfToken = crypto.randomBytes(32).toString('hex');
       req.session.save((err) => {
         if (err) {
