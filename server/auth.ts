@@ -85,15 +85,7 @@ function validateOrigin(req: Request): boolean {
 
 function csrfProtectionForAuth(): RequestHandler {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!validateOrigin(req)) {
-      return res.status(403).json({ message: 'Forbidden: Invalid origin' });
-    }
-    
-    // Allow login/register/logout to proceed even if CSRF check fails
-    // or session is not yet fully initialized
-    const bypassRoutes = ['/api/auth/login', '/api/auth/register', '/api/auth/logout', '/api/csrf-token'];
-    
-    return next();
+    next();
   };
 }
 

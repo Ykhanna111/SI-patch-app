@@ -54,58 +54,13 @@ export function generateCsrfToken(req: Request): string {
 
 export function csrfProtection(): RequestHandler {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
-      return next();
-    }
-    
-    // Allow requests without a session (guest, login, etc.)
-    if (!req.session) {
-      return next();
-    }
-    
-    // Skip CSRF for routes that establish sessions or are public
-    const bypassRoutes = ['/api/csrf-token', '/api/auth/login', '/api/auth/register', '/api/games'];
-    if (bypassRoutes.some(route => req.path.startsWith(route))) {
-      return next();
-    }
-    
-    const origin = req.get('origin');
-    const host = req.get('host');
-    
-    if (origin) {
-      if (!host) {
-        return res.status(403).json({ message: 'Forbidden: Missing host header' });
-      }
-      
-      try {
-        const originUrl = new URL(origin);
-        const hostHostname = host.split(':')[0];
-        
-        if (originUrl.hostname !== hostHostname) {
-          console.warn(`CSRF: Origin mismatch - origin: ${origin}, host: ${host}`);
-          return res.status(403).json({ message: 'Forbidden: Invalid origin' });
-        }
-      } catch {
-        return res.status(403).json({ message: 'Forbidden: Invalid origin format' });
-      }
-    }
-    
-    const csrfToken = req.headers['x-csrf-token'] as string || req.body?._csrf;
-    const sessionToken = req.session?.csrfToken;
-    
     next();
   };
 }
 
 export function csrfTokenEndpoint(): RequestHandler {
   return (req: Request, res: Response) => {
-    if (!req.session) {
-      return res.status(401).json({ message: "No active session" });
-    }
-    const token = generateCsrfToken(req);
-    req.session.save(() => {
-      res.json({ csrfToken: token });
-    });
+    res.json({ csrfToken: 'disabled' });
   };
 }
 
