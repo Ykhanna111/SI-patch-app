@@ -15,12 +15,6 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: string, updates: Partial<User>): Promise<User | undefined>;
   
-  createGame(game: InsertGame): Promise<Game>;
-  updateGame(id: string, updates: Partial<Game>): Promise<Game | undefined>;
-  getGame(id: string): Promise<Game | undefined>;
-  getUserGames(userId: string): Promise<Game[]>;
-  getActiveGame(userId: string): Promise<Game | undefined>;
-  
   getUserStats(userId: string): Promise<UserStats | undefined>;
   createUserStats(stats: InsertUserStats): Promise<UserStats>;
   updateUserStats(userId: string, updates: Partial<UserStats>): Promise<UserStats | undefined>;
@@ -95,55 +89,6 @@ export class SupabaseStorage implements IStorage {
       return undefined;
     }
     return this.mapUserData(data);
-  }
-
-  async createGame(game: InsertGame): Promise<Game> {
-    const { data, error } = await supabase.from('games').insert(game).select().single();
-    if (error) {
-      console.error('Error creating game:', error);
-      throw error;
-    }
-    return data;
-  }
-
-  async updateGame(id: string, updates: Partial<Game>): Promise<Game | undefined> {
-    const { data, error } = await supabase
-      .from('games')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-    if (error) {
-      console.error('Error updating game:', error);
-      return undefined;
-    }
-    return data;
-  }
-
-  async getGame(id: string): Promise<Game | undefined> {
-    const { data } = await supabase.from('games').select().eq('id', id).single();
-    return data || undefined;
-  }
-
-  async getUserGames(userId: string): Promise<Game[]> {
-    const { data } = await supabase
-      .from('games')
-      .select()
-      .eq('user_id', userId)
-      .order('updated_at', { ascending: false });
-    return data || [];
-  }
-
-  async getActiveGame(userId: string): Promise<Game | undefined> {
-    const { data } = await supabase
-      .from('games')
-      .select()
-      .eq('user_id', userId)
-      .eq('is_completed', false)
-      .order('updated_at', { ascending: false })
-      .limit(1)
-      .single();
-    return data || undefined;
   }
 
   async getUserStats(userId: string): Promise<UserStats | undefined> {

@@ -29,33 +29,12 @@ export const users = pgTable("users", {
   id: varchar("id").primaryKey(), // UUID from Supabase Auth
   username: varchar("username", { length: 50 }).notNull().unique(),
   email: varchar("email", { length: 100 }).unique(),
-  // password removed as auth is handled by Supabase
   firstName: varchar("first_name", { length: 50 }),
   lastName: varchar("last_name", { length: 50 }),
   bio: text("bio"),
   preferences: jsonb("preferences").notNull().default({}),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
-
-export const games = pgTable("games", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id),
-  gameMode: varchar("game_mode").notNull().default("standard"),
-  gridSize: integer("grid_size").notNull().default(9),
-  difficulty: varchar("difficulty").notNull(),
-  puzzle: text("puzzle").notNull(),
-  currentState: text("current_state").notNull(),
-  solution: text("solution").notNull(),
-  constraints: text("constraints"),
-  timeElapsed: integer("time_elapsed").default(0),
-  mistakes: integer("mistakes").default(0),
-  hintsUsed: integer("hints_used").default(0),
-  isCompleted: boolean("is_completed").default(false),
-  moves: text("moves"),
-  completedAt: timestamp("completed_at"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // User statistics table
@@ -99,15 +78,6 @@ export type InsertUser = z.infer<typeof registerSchema>;
 export type User = typeof users.$inferSelect;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
-
-export const insertGameSchema = createInsertSchema(games).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
-
-export type InsertGame = z.infer<typeof insertGameSchema>;
-export type Game = typeof games.$inferSelect;
 
 export const insertUserStatsSchema = createInsertSchema(userStats).omit({
   id: true,
