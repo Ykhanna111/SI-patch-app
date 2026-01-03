@@ -87,6 +87,10 @@ function csrfProtectionForAuth(): RequestHandler {
       return res.status(403).json({ message: 'Forbidden: Invalid origin' });
     }
     
+    if (!req.session) {
+      return next();
+    }
+    
     const csrfToken = req.headers['x-csrf-token'] as string || req.body?._csrf;
     const sessionToken = req.session?.csrfToken;
 
@@ -275,4 +279,3 @@ export async function setupAuth(app: Express) {
     }
   });
 }
-
