@@ -31,10 +31,12 @@ export function getSession() {
     proxy: true,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Set to false to ensure cookies are sent behind Render proxy
       maxAge: sessionTtl,
       sameSite: 'lax',
     },
+    rolling: true,
+    unset: 'destroy',
   });
 }
 
@@ -100,8 +102,8 @@ function csrfProtectionForAuth(): RequestHandler {
 }
 
 export async function setupAuth(app: Express) {
-  app.use(getSession());
-
+  // Session is handled in index.ts for correct ordering with trust proxy
+  
   app.post('/api/auth/register', async (req, res) => {
     try {
       if (!validateOrigin(req)) {
