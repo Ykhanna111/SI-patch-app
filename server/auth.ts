@@ -111,7 +111,10 @@ export async function setupAuth(app: Express) {
         return res.status(401).json({ message: "Invalid username or password" });
       }
 
-      const isValid = await verifyPassword(data.password, user.password);
+      // We need to cast or access the password from the underlying storage result
+      // since the select schema might omit it but the database object has it
+      const dbUser = user as any;
+      const isValid = await verifyPassword(data.password, dbUser.password);
       if (!isValid) {
         return res.status(401).json({ message: "Invalid username or password" });
       }
