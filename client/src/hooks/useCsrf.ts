@@ -10,6 +10,9 @@ export function useCsrf() {
     queryFn: async () => {
       const res = await fetch("/api/csrf-token", {
         credentials: "include",
+        headers: {
+          'Accept': 'application/json'
+        }
       });
       if (!res.ok) {
         throw new Error("Failed to fetch CSRF token");
@@ -36,6 +39,9 @@ export async function fetchCsrfToken(): Promise<string> {
   
   const res = await fetch("/api/csrf-token", {
     credentials: "include",
+    headers: {
+      'Accept': 'application/json'
+    }
   });
   
   if (!res.ok) {
