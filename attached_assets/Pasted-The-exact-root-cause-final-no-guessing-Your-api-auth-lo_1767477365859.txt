@@ -1,0 +1,131 @@
+The exact root cause (final, no guessing)
+
+Your /api/auth/login route is NOT completing — it is exiting early before the session is set.
+
+That is why:
+
+req.session.userId is never set
+
+/api/auth/user is always 401
+
+Login appears to do something, but nothing actually happens server-side
+
+This is not cookies, not Supabase, not CSRF anymore.
+
+WHY the login route exits early (the real reason)
+
+From the auth.ts code you shared earlier, there are three early-exit guards in /api/auth/login:
+
+1️⃣ validateOrigin(req) ❌ (MOST COMMON CULPRIT)
+if (!validateOrigin(req)) {
+  return res.status(403).json({ message: "Forbidden: Invalid origin" });
+}
+
+
+In production (Render):
+
+Origin header is often missing or different
+
+Reverse proxy changes host/origin
+
+This function returns false
+
+Login route exits immediately
+
+Your log is never printed
+
+👉 This is exactly why login never completes.
+
+2️⃣ loginSchema.safeParse(req.body) ❌
+
+If frontend sends:
+
+wrong field names
+
+empty body
+
+wrong Content-Type
+
+Then validation fails and login exits.
+
+3️⃣ storage.getUserByUsername() returns null
+
+If the user does not exist, login exits.
+
+BUT we know which one it is
+
+Because:
+
+You said no log prints
+
+You see no server crash
+
+You didn’t mention a 400/401 error message in frontend
+
+This exact issue is extremely common on Render
+
+➡️ validateOrigin(req) is blocking login.
+
+✅ THE FIX (DO THIS NOW — SIMPLE & FINAL)
+🔧 Fix #1 — Disable origin validation for login (recommended)
+
+In auth.ts, change this:
+
+❌ Current
+
+if (!validateOrigin(req)) {
+  return res.status(403).json({ message: "Forbidden: Invalid origin" });
+}
+
+
+✅ Replace with
+
+// ❗ Disable origin validation for login
+// Origin validation breaks behind proxies
+
+
+👉 Remove this check entirely from /api/auth/login and /api/auth/register.
+
+You already have:
+
+CSRF protection
+
+Session cookies
+
+Same-origin deployment
+
+This check is doing more harm than good.
+
+🔧 Fix #2 — Ensure login actually sets session
+
+Your login route must contain this (unchanged):
+
+req.session.userId = user.id;
+console.log("LOGIN OK, session.userId =", req.session.userId);
+
+
+After removing validateOrigin, this log WILL print.
+
+Why this worked locally but not on Render
+
+Locally:
+
+Origin and Host match
+
+validateOrigin() returns true
+
+On Render:
+
+Requests come through a reverse proxy
+
+Origin may be missing or rewritten
+
+Your validation rejects legitimate requests
+
+This is a classic production-only bug.
+
+One-line final truth (memorize this)
+
+Login never worked because your validateOrigin() check was rejecting all production login requests before the session could be set.
+
+That’s it. Nothing else.

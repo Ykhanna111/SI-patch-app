@@ -116,10 +116,6 @@ export async function setupAuth(app: Express) {
   
   app.post('/api/auth/register', async (req, res) => {
     try {
-      if (!validateOrigin(req)) {
-        return res.status(403).json({ message: 'Forbidden: Invalid origin' });
-      }
-      
       const validation = registerSchema.safeParse(req.body);
       if (!validation.success) {
         return res.status(400).json({ 
@@ -179,10 +175,6 @@ export async function setupAuth(app: Express) {
 
   app.post('/api/auth/login', async (req, res) => {
     try {
-      if (!validateOrigin(req)) {
-        return res.status(403).json({ message: 'Forbidden: Invalid origin' });
-      }
-      
       const validation = loginSchema.safeParse(req.body);
       if (!validation.success) {
         return res.status(400).json({ message: "Invalid input" });
