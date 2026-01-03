@@ -10,14 +10,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { Settings, Upload, Palette, Moon, Sun, ArrowLeft } from 'lucide-react';
+import { Settings, Upload, ArrowLeft } from 'lucide-react';
 import Header from '@/components/Header';
-import { useTheme } from '@/hooks/useTheme';
 import { Link } from 'wouter';
 
 const profileUpdateSchema = z.object({
@@ -37,7 +34,6 @@ export default function Profile() {
   const typedUser = user as User;
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { theme, setTheme } = useTheme();
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
@@ -180,7 +176,7 @@ export default function Profile() {
           </div>
           <h1 className="text-3xl font-bold text-foreground">Profile Settings</h1>
           <p className="text-muted-foreground mt-2">
-            Manage your account settings and preferences
+            Manage your account settings
           </p>
         </div>
 
@@ -192,9 +188,6 @@ export default function Profile() {
                 <Settings className="h-5 w-5" />
                 Profile Picture
               </CardTitle>
-              <CardDescription>
-                Upload a profile picture to personalize your account
-              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-col items-center space-y-4">
@@ -250,9 +243,6 @@ export default function Profile() {
                 <Settings className="h-5 w-5" />
                 Basic Information
               </CardTitle>
-              <CardDescription>
-                Update your basic account information
-              </CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -309,9 +299,6 @@ export default function Profile() {
                           />
                         </FormControl>
                         <FormMessage />
-                        <p className="text-xs text-muted-foreground">
-                          Username can be changed once per month
-                        </p>
                       </FormItem>
                     )}
                   />
@@ -331,9 +318,6 @@ export default function Profile() {
                           />
                         </FormControl>
                         <FormMessage />
-                        <p className="text-xs text-muted-foreground">
-                          Email is private and not shown to other users
-                        </p>
                       </FormItem>
                     )}
                   />
@@ -357,9 +341,6 @@ export default function Profile() {
             <CardTitle className="flex items-center gap-2">
               📊 Game Statistics
             </CardTitle>
-            <CardDescription>
-              Track your Sudoku progress and performance
-            </CardDescription>
           </CardHeader>
           <CardContent>
             {statsLoading ? (
@@ -375,15 +356,15 @@ export default function Profile() {
                   <div className="text-sm text-muted-foreground">Total Puzzles</div>
                 </div>
                 
-                <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-2xl font-bold text-green-600">
                     {userStats.totalPuzzlesSolved || 0}
                   </div>
                   <div className="text-sm text-muted-foreground">Completed</div>
                 </div>
                 
-                <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-600">
                     {(userStats.totalPuzzlesPlayed || 0) > 0 
                       ? Math.round(((userStats.totalPuzzlesSolved || 0) / (userStats.totalPuzzlesPlayed || 1)) * 100)
                       : 0
@@ -392,71 +373,18 @@ export default function Profile() {
                   <div className="text-sm text-muted-foreground">Success Rate</div>
                 </div>
                 
-                <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                  <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                <div className="text-center p-4 bg-orange-50 rounded-lg">
+                  <div className="text-2xl font-bold text-orange-600">
                     {userStats.currentStreak || 0}
                   </div>
                   <div className="text-sm text-muted-foreground">Current Streak</div>
                 </div>
-                
-                <div className="md:col-span-2 lg:col-span-4 mt-4">
-                  <h4 className="font-semibold mb-3 text-foreground">Best Times by Difficulty</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {['easy', 'medium', 'hard', 'expert'].map(difficulty => {
-                      const timeKey = `best${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}Time` as keyof typeof userStats;
-                      const time = userStats[timeKey] as number | null;
-                      return (
-                        <div key={difficulty} className="text-center p-3 border rounded-lg">
-                          <div className="font-semibold text-sm text-muted-foreground uppercase">
-                            {difficulty}
-                          </div>
-                          <div className="text-lg font-bold text-foreground">
-                            {time ? `${Math.floor(time / 60)}:${(time % 60).toString().padStart(2, '0')}` : 'N/A'}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
               </div>
             ) : (
               <div className="text-center py-6">
-                <p className="text-muted-foreground">No statistics available yet. Start playing to track your progress!</p>
+                <p className="text-muted-foreground">No statistics available yet.</p>
               </div>
             )}
-          </CardContent>
-        </Card>
-
-        {/* Theme & Customization Section */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Palette className="h-5 w-5" />
-              Theme & Customization
-            </CardTitle>
-            <CardDescription>
-              Customize your app experience with theme preferences
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Dark/Light Mode Toggle */}
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label className="text-sm font-medium">Dark Mode</Label>
-                <p className="text-xs text-muted-foreground">
-                  Switch between light and dark themes
-                </p>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Sun className="h-4 w-4" />
-                <Switch
-                  checked={theme === 'dark'}
-                  onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-                  data-testid="toggle-dark-mode"
-                />
-                <Moon className="h-4 w-4" />
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
