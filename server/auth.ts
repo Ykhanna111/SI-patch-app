@@ -28,11 +28,12 @@ export function getSession() {
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: sessionTtl,
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     },
   });
 }
@@ -99,7 +100,6 @@ function csrfProtectionForAuth(): RequestHandler {
 }
 
 export async function setupAuth(app: Express) {
-  app.set("trust proxy", 1);
   app.use(getSession());
 
   app.post('/api/auth/register', async (req, res) => {
