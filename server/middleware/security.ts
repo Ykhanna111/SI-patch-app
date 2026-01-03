@@ -81,6 +81,12 @@ export function csrfProtection(): RequestHandler {
     
     const csrfToken = req.headers['x-csrf-token'] as string || req.body?._csrf;
     const sessionToken = req.session?.csrfToken;
+
+    // Allow CSRF token endpoint and login/register to bypass strict token check if they generate it
+    const bypassRoutes = ['/api/csrf-token', '/api/auth/login', '/api/auth/register'];
+    if (bypassRoutes.includes(req.path)) {
+      return next();
+    }
     
     if (!csrfToken || !sessionToken || csrfToken !== sessionToken) {
       console.warn(`CSRF: Token mismatch or missing - provided: ${!!csrfToken}, session: ${!!sessionToken}`);
