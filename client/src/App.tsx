@@ -17,7 +17,8 @@ import HowToPlay from "@/pages/HowToPlay";
 import NotFound from "@/pages/not-found";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
+  const isAuthenticated = !!user;
 
   return (
     <Switch>
