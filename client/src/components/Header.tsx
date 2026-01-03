@@ -46,6 +46,10 @@ export default function Header() {
   };
 
   const handlePlayAsGuest = () => {
+    toast({
+      title: "Guest Mode",
+      description: "Guest games are temporary and not saved.",
+    });
     setLocation('/select-game');
   };
 
@@ -131,29 +135,26 @@ export default function Header() {
                 </Button>
               </>
             ) : (
-              <div className="flex flex-col items-center">
-                <div className="flex items-center gap-1 sm:gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handlePlayAsGuest}
-                    className="text-gray-600 hover:text-gray-800 px-1 sm:px-2 text-xs sm:text-sm"
-                    data-testid="button-play-guest"
-                  >
-                    <User className="h-4 w-4 sm:mr-1" />
-                    <span className="hidden sm:inline">Guest</span>
-                  </Button>
-                  
-                  <Button
-                    onClick={handleLogin}
-                    className="bg-sudoku-primary text-white hover:bg-indigo-700 px-2 sm:px-3 text-xs sm:text-sm"
-                    size="sm"
-                    data-testid="button-login"
-                  >
-                    Login
-                  </Button>
-                </div>
-                <p className="text-[10px] text-gray-400 mt-0.5 hidden sm:block">Guest games are temporary and not saved.</p>
+              <div className="flex items-center gap-1 sm:gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handlePlayAsGuest}
+                  className="text-gray-600 hover:text-gray-800 px-1 sm:px-2 text-xs sm:text-sm"
+                  data-testid="button-play-guest"
+                >
+                  <User className="h-4 w-4 sm:mr-1" />
+                  <span className="hidden sm:inline">Guest</span>
+                </Button>
+                
+                <Button
+                  onClick={handleLogin}
+                  className="bg-sudoku-primary text-white hover:bg-indigo-700 px-2 sm:px-3 text-xs sm:text-sm"
+                  size="sm"
+                  data-testid="button-login"
+                >
+                  Login
+                </Button>
               </div>
             )}
           </div>

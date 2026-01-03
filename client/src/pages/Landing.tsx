@@ -6,10 +6,12 @@ import Footer from "@/components/Footer";
 import { Gamepad2, Trophy, Clock, Target } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Landing() {
   const { isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -43,12 +45,21 @@ export default function Landing() {
               </Button>
             </Link>
             
-            <Link href="/select-game">
-              <Button variant="outline" size="lg" className="w-full" data-testid="button-guest">
-                Play as Guest
-              </Button>
-              <p className="text-xs text-gray-500 mt-1 text-center">Guest games are temporary and not saved.</p>
-            </Link>
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="w-full" 
+              data-testid="button-guest"
+              onClick={() => {
+                toast({
+                  title: "Guest Mode",
+                  description: "Guest games are temporary and not saved.",
+                });
+                setLocation('/select-game');
+              }}
+            >
+              Play as Guest
+            </Button>
             
             <Link href="/register">
               <Button variant="secondary" size="lg" className="w-full" data-testid="button-register">
