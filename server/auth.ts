@@ -31,7 +31,7 @@ export function getSession() {
     proxy: true,
     cookie: {
       httpOnly: true,
-      secure: false, // Set to false to ensure cookies are sent behind Render proxy
+      secure: process.env.NODE_ENV === 'production',
       maxAge: sessionTtl,
       sameSite: 'lax',
     },
@@ -89,6 +89,12 @@ function csrfProtectionForAuth(): RequestHandler {
     
     const csrfToken = req.headers['x-csrf-token'] as string || req.body?._csrf;
     const sessionToken = req.session?.csrfToken;
+
+    // Allow CSRF generation to proceed even if session is not yet fully initialized/persisted
+    // as it will be saved by the endpoint itself.
+    if (req.path === '/api/csrf-token') {
+      return next();
+    }
     
     if (!csrfToken || !sessionToken || csrfToken !== sessionToken) {
       return res.status(403).json({ 
@@ -137,7 +143,11 @@ export async function setupAuth(app: Express) {
 
       req.session.userId = user.id;
       req.session.csrfToken = crypto.randomBytes(32).toString('hex');
-      req.session.save(() => {
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error during registration:', err);
+          return res.status(500).json({ message: "Failed to save session" });
+        }
         res.status(201).json({ ...user, csrfToken: req.session.csrfToken });
       });
     } catch (error) {
@@ -179,7 +189,11 @@ export async function setupAuth(app: Express) {
       // This is a placeholder for local development compatibility.
       req.session.userId = user.id;
       req.session.csrfToken = crypto.randomBytes(32).toString('hex');
-      req.session.save(() => {
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error during login:', err);
+          return res.status(500).json({ message: "Failed to save session" });
+        }
         res.json({ ...user, csrfToken: req.session.csrfToken });
       });
     } catch (error) {
@@ -261,3 +275,4 @@ export async function setupAuth(app: Express) {
     }
   });
 }
+
