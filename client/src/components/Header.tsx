@@ -51,7 +51,7 @@ export default function Header() {
 
   const handleHowToPlay = () => {
     // Show popup if user is in game (/, /guest, /game routes when game is active)
-    const isInGame = location === '/' && isAuthenticated || location === '/guest' || location === '/game';
+    const isInGame = (location === '/' && isAuthenticated) || location === '/guest' || location === '/game';
     
     if (isInGame) {
       setShowHowToPlayDialog(true);
@@ -69,7 +69,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20">
           <div className="flex items-center space-x-1 sm:space-x-2 min-w-0 flex-shrink">
-            <div className="flex items-center space-x-1 sm:space-x-2">
+            <Link href="/" className="flex items-center space-x-1 sm:space-x-2">
               <img 
                 src={logoImage} 
                 alt="Sudoku Infinity Logo" 
@@ -81,7 +81,7 @@ export default function Header() {
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }}>Sudoku Infinium</h1>
-            </div>
+            </Link>
           </div>
           
           <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 flex-shrink-0">
