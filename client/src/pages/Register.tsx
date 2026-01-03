@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest, updateCsrfFromResponse } from '@/lib/queryClient';
 import { Link } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '../lib/supabase';
 import { z } from 'zod';
 
 const clientRegisterSchema = registerSchema.omit({ id: true }).extend({

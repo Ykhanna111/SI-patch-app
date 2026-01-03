@@ -141,6 +141,18 @@ export async function setupAuth(app: Express) {
     }
   });
 
+  app.get('/api/auth/username/:username', async (req, res) => {
+    try {
+      const user = await storage.getUserByUsername(req.params.username);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json({ email: user.email });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.post('/api/auth/login', async (req, res) => {
     try {
       if (!validateOrigin(req)) {

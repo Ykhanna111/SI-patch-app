@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest, updateCsrfFromResponse } from '@/lib/queryClient';
 import { Link } from 'wouter';
 import { ArrowLeft } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -28,6 +29,22 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginInput) => {
+      // 1. Get user by username from our database to get their email
+      const userRes = await fetch(`/api/auth/username/${data.username}`);
+      if (!userRes.ok) throw new Error("User not found");
+      const userData = await userRes.json();
+
+      if (!userData.email) throw new Error("No email associated with this account");
+
+      // 2. Sign in with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: userData.email,
+        password: data.password,
+      });
+
+      if (authError) throw authError;
+
+      // 3. Create session in our backend
       const response = await apiRequest('POST', '/api/auth/login', data);
       return await response.json();
     },
@@ -36,7 +53,7 @@ export default function Login() {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
       toast({
         title: "Welcome back!",
-        description: "You've been logged in successfully.",
+        description: "Successfully logged in.",
       });
       setLocation('/');
     },
@@ -64,10 +81,7 @@ export default function Login() {
         </div>
         <Card className="w-full">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-          <CardDescription>
-            Sign in to your account to continue playing
-          </CardDescription>
+          <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -80,7 +94,7 @@ export default function Login() {
                     <FormLabel>Username</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter your username"
+                        placeholder="johndoe123"
                         data-testid="input-username"
                         {...field}
                       />
@@ -124,18 +138,12 @@ export default function Login() {
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
               <Link href="/register" className="text-sudoku-primary hover:underline" data-testid="link-register">
-                Create one here
-              </Link>
-            </p>
-            <p className="mt-2 text-sm text-gray-600">
-              Or{' '}
-              <Link href="/select-game" className="text-sudoku-primary hover:underline" data-testid="link-guest">
-                play as guest
+                Sign up here
               </Link>
             </p>
           </div>
         </CardContent>
-        </Card>
+      </Card>
       </div>
     </div>
   );
