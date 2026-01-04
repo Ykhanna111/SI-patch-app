@@ -94,7 +94,9 @@ export async function setupAuth(app: Express) {
           console.error('Session save error during registration:', err);
           return res.status(500).json({ message: "Failed to save session" });
         }
-        res.status(201).json(user);
+        // Return user without password for frontend
+        const { password, ...safeUser } = user;
+        res.status(201).json(safeUser);
       });
     } catch (error) {
       console.error('Registration error:', error);
@@ -130,7 +132,9 @@ export async function setupAuth(app: Express) {
           console.error('Session save error during login:', err);
           return res.status(500).json({ message: "Failed to save session" });
         }
-        res.json(user);
+        // Return user without password for frontend
+        const { password, ...safeUser } = user;
+        res.json(safeUser);
       });
     } catch (error) {
       console.error('Login error:', error);
@@ -153,7 +157,10 @@ export async function setupAuth(app: Express) {
     try {
       if (req.session && req.session.userId) {
         const user = await storage.getUser(req.session.userId);
-        if (user) return res.json(user);
+        if (user) {
+          const { password, ...safeUser } = user;
+          return res.json(safeUser);
+        }
       }
       
       return res.status(401).json({ message: "Not authenticated" });

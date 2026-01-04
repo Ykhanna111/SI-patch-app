@@ -73,6 +73,7 @@ export class SupabaseStorage implements IStorage {
     const dbUpdates: any = {};
     if (updates.username !== undefined) dbUpdates.username = updates.username;
     if (updates.email !== undefined) dbUpdates.email = updates.email;
+    if (updates.password !== undefined) dbUpdates.password = updates.password;
     if (updates.firstName !== undefined) dbUpdates.first_name = updates.firstName;
     if (updates.lastName !== undefined) dbUpdates.last_name = updates.lastName;
     if (updates.bio !== undefined) dbUpdates.bio = updates.bio;
@@ -82,7 +83,7 @@ export class SupabaseStorage implements IStorage {
       .from('users')
       .update(dbUpdates)
       .eq('id', id)
-      .select()
+      .select('*')
       .single();
     if (error) {
       console.error('Error updating user:', error);
