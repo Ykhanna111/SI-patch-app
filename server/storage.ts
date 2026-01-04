@@ -32,21 +32,22 @@ export class SupabaseStorage implements IStorage {
       preferences: data.preferences || {},
       createdAt: data.created_at ? new Date(data.created_at) : new Date(),
       updatedAt: data.updated_at ? new Date(data.updated_at) : new Date(),
+      password: data.password || null, // Include password if available for auth
     };
   }
 
   async getUser(id: string): Promise<User | undefined> {
-    const { data } = await supabase.from('users').select().eq('id', id).single();
+    const { data } = await supabase.from('users').select('*').eq('id', id).single();
     return data ? this.mapUserData(data) : undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const { data } = await supabase.from('users').select().eq('username', username).single();
+    const { data } = await supabase.from('users').select('*').eq('username', username).single();
     return data ? this.mapUserData(data) : undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const { data } = await supabase.from('users').select().eq('email', email).single();
+    const { data } = await supabase.from('users').select('*').eq('email', email).single();
     return data ? this.mapUserData(data) : undefined;
   }
 
@@ -55,13 +56,14 @@ export class SupabaseStorage implements IStorage {
       id: userData.id,
       username: userData.username,
       email: userData.email,
+      password: userData.password,
       first_name: userData.firstName,
       last_name: userData.lastName,
       bio: userData.bio,
       preferences: userData.preferences || {},
     };
 
-    const { data, error } = await supabase.from('users').insert(dbData).select().single();
+    const { data, error } = await supabase.from('users').insert(dbData).select('*').single();
     if (error) {
       console.error('Error creating user:', error);
       throw error;

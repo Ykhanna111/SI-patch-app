@@ -81,7 +81,11 @@ export async function setupAuth(app: Express) {
         }
       }
 
-      const user = await storage.createUser(data);
+      const hashedPassword = await hashPassword(data.password);
+      const user = await storage.createUser({
+        ...data,
+        password: hashedPassword,
+      });
 
       req.session.userId = user.id;
       
