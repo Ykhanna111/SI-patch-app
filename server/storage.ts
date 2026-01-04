@@ -1,8 +1,6 @@
 import {
   type User,
   type InsertUser,
-  type Game,
-  type InsertGame,
   type UserStats,
   type InsertUserStats,
 } from "@shared/schema";

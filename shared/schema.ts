@@ -32,6 +32,7 @@ export const users = pgTable("users", {
   firstName: varchar("first_name", { length: 50 }),
   lastName: varchar("last_name", { length: 50 }),
   bio: text("bio"),
+  password: text("password"),
   preferences: jsonb("preferences").notNull().default({}),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -66,6 +67,7 @@ export const registerSchema = z.object({
   firstName: z.string().min(1, "First name is required").max(50).optional(),
   lastName: z.string().min(1, "Last name is required").max(50).optional(),
   bio: z.string().max(500).optional(),
+  password: z.string().min(8, "Password must be at least 8 characters"),
   preferences: z.record(z.any()).optional(),
 });
 
