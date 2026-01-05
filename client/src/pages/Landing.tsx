@@ -24,8 +24,9 @@ export default function Landing() {
       <Header />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4" style={{
+        <div className="text-center mb-16 relative">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-sudoku-primary/5 blur-3xl rounded-full -z-10" />
+          <h1 className="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight" style={{
             background: 'linear-gradient(135deg, hsl(35 100% 60%), hsl(50 100% 65%), hsl(320 85% 65%))',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -33,7 +34,7 @@ export default function Landing() {
           }}>
             Welcome to Sudoku Infinium
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed font-medium">
             Challenge your mind with our beautiful Sudoku puzzles. Multiple difficulty levels, 
             progress tracking, and endless entertainment await!
           </p>
