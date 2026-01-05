@@ -4,7 +4,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GameControls from "@/components/GameControls";
@@ -16,8 +16,9 @@ import { ArrowLeft, RotateCcw, Home, HelpCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import type { Game } from "@shared/schema";
-import { GameMode, GAME_MODES, GameConstraints, getGridDimensions, getValidNumbers } from "@shared/gameTypes";
+import type { User } from "@shared/schema";
+import type { Game, Move } from "@shared/gameTypes";
+import { type GameMode, type GameConstraints, GAME_MODES, getGridDimensions, getValidNumbers } from "@shared/gameTypes";
 
 type SudokuGrid = number[][];
 type Move = {
