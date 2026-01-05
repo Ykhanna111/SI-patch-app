@@ -39,8 +39,6 @@ export default function SudokuGrid({
       {
         "border-l-2 border-gray-600": col % 3 === 0,
         "border-t-2 border-gray-600": row % 3 === 0,
-        "border-r-2 border-gray-600": col === 2 || col === 5 || col === 8,
-        "border-b-2 border-gray-600": row === 2 || row === 5 || row === 8,
       },
       // Cell states
       {
