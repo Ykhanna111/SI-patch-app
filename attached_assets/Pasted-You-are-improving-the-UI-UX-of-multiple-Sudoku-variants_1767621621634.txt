@@ -1,0 +1,127 @@
+You are improving the UI/UX of multiple Sudoku variants in a Sudoku web application. The goal is to enhance visual clarity, distinguishability, and gameplay readability while keeping the design clean and modern.
+
+1️⃣ Standard Sudoku (9×9) – Grid Line Refinement
+
+Current issue:
+
+Every 3rd row and column is rendered with very dark/heavy borders
+
+This makes the grid feel visually heavy and distracting
+
+Required fix:
+
+Make 3×3 sub-grid separators more subtle
+
+Reduce border thickness and/or contrast
+
+Maintain clear block separation without overpowering the UI
+
+Outcome:
+
+Clean, balanced, modern grid appearance
+
+2️⃣ Hexadoku (16×16) – Grid Line Refinement
+
+Same issue as Standard Sudoku:
+
+4×4 sub-grid separators are too dark and dominant
+
+Required fix:
+
+Apply the same refined grid styling approach used for Standard Sudoku
+
+Softer borders, consistent visual language
+
+Ensure:
+
+Hexadoku does not feel cluttered despite higher density
+
+3️⃣ Diagonal Sudoku & Hyper Sudoku – Region Visibility
+
+Current issue:
+
+Special regions (diagonals / hyper boxes) are highlighted with colors that are too light
+
+These regions are hard to see during actual gameplay
+
+Required fix:
+
+Increase contrast of these highlighted regions
+
+Make them clearly visible at a glance
+
+Keep highlights:
+
+Subtle
+
+Non-distracting
+
+Consistent with overall UI
+
+Must not interfere with:
+
+Cell selection highlight
+
+Error states
+
+Hint indicators
+
+4️⃣ Killer Sudoku – Cage Distinguishability
+
+Current issues:
+
+Cages are hard to visually distinguish
+
+Dashed borders + cluttered layout reduce clarity
+
+Required fix (preferred approach):
+
+Give each cage a distinct, bold border color
+
+Colors should:
+
+Be clearly different from adjacent cages
+
+Not be overly bright or distracting
+
+Fit the app’s theme
+
+Ensure:
+
+Cage sum numbers remain readable
+
+Styling does not conflict with selection, error, or hint states
+
+Alternative acceptable enhancements:
+
+Optional subtle background shading per cage
+
+Solid or improved dashed borders if needed
+
+5️⃣ Odd–Even Sudoku – Cell Color Contrast
+
+Current issue:
+
+Gray (odd) and blue (even) cell backgrounds are too light
+
+Hard to distinguish during gameplay without opening the rules modal
+
+Required fix:
+
+Increase contrast of odd/even cell colors
+
+Make restrictions immediately obvious from the grid
+
+Ensure:
+
+Numbers remain readable
+
+Colors do not conflict with:
+
+Selected cell highlight
+
+Error/conflict states
+
+Hint indicators
+
+Visuals in the grid must match the explanation shown in the “How to Play” modal

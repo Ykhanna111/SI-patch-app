@@ -210,6 +210,16 @@ export default function EnhancedSudokuGrid({
         );
 
         // Render cage borders
+        const cageColors = [
+          'rgba(239, 68, 68, 0.6)', // red
+          'rgba(59, 130, 246, 0.6)', // blue
+          'rgba(16, 185, 129, 0.6)', // green
+          'rgba(245, 158, 11, 0.6)', // orange
+          'rgba(139, 92, 246, 0.6)', // purple
+          'rgba(236, 72, 153, 0.6)', // pink
+        ];
+        const cageColor = cageColors[cageIndex % cageColors.length];
+
         cage.cells.forEach((cell, cellIndex) => {
           const cageSet = new Set(cage.cells.map(c => `${c.row},${c.col}`));
           
@@ -228,10 +238,11 @@ export default function EnhancedSudokuGrid({
                   top: `${(cell.row * (100 / size))}%`,
                   width: `${100 / size}%`,
                   height: `${100 / size}%`,
-                  borderTop: hasBorderTop ? '2px dashed rgba(0,0,0,0.4)' : 'none',
-                  borderBottom: hasBorderBottom ? '2px dashed rgba(0,0,0,0.4)' : 'none',
-                  borderLeft: hasBorderLeft ? '2px dashed rgba(0,0,0,0.4)' : 'none',
-                  borderRight: hasBorderRight ? '2px dashed rgba(0,0,0,0.4)' : 'none',
+                  borderTop: hasBorderTop ? `2px solid ${cageColor}` : 'none',
+                  borderBottom: hasBorderBottom ? `2px solid ${cageColor}` : 'none',
+                  borderLeft: hasBorderLeft ? `2px solid ${cageColor}` : 'none',
+                  borderRight: hasBorderRight ? `2px solid ${cageColor}` : 'none',
+                  backgroundColor: `${cageColor.replace('0.6', '0.05')}`,
                   zIndex: 3
                 }}
               />
@@ -317,11 +328,11 @@ function getGameSpecificBorders(
 
   // Standard box borders
   if (size === 16) {
-    if (col === 3 || col === 7 || col === 11) classes.push("border-r-2 border-gray-800 dark:border-gray-600");
-    if (row === 3 || row === 7 || row === 11) classes.push("border-b-2 border-gray-800 dark:border-gray-600");
+    if (col === 3 || col === 7 || col === 11) classes.push("border-r-[1.5px] border-gray-400 dark:border-gray-500");
+    if (row === 3 || row === 7 || row === 11) classes.push("border-b-[1.5px] border-gray-400 dark:border-gray-500");
   } else if (size === 9) {
-    if (col === 2 || col === 5) classes.push("border-r-2 border-gray-800 dark:border-gray-600");
-    if (row === 2 || row === 5) classes.push("border-b-2 border-gray-800 dark:border-gray-600");
+    if (col === 2 || col === 5) classes.push("border-r-[1.5px] border-gray-400 dark:border-gray-500");
+    if (row === 2 || row === 5) classes.push("border-b-[1.5px] border-gray-400 dark:border-gray-500");
   } else if (size === 6) {
     if (col === 2) classes.push("border-r-2 border-gray-800 dark:border-gray-600");
     if (row === 1 || row === 3) classes.push("border-b-2 border-gray-800 dark:border-gray-600");
@@ -342,7 +353,7 @@ function getGameSpecificBackground(
   if (gameMode === 'diagonal') {
     // Highlight diagonal cells
     if (row === col || row + col === 8) {
-      return "bg-purple-50";
+      return "bg-purple-100/50 border-purple-200/50";
     }
   }
 
@@ -350,7 +361,7 @@ function getGameSpecificBackground(
     // Highlight hyper regions
     for (const region of constraints.hyperRegions) {
       if (region.cells.some(cell => cell.row === row && cell.col === col)) {
-        return "bg-orange-50";
+        return "bg-orange-100/50 border-orange-200/50";
       }
     }
   }
@@ -358,7 +369,7 @@ function getGameSpecificBackground(
   if (gameMode === 'odd-even' && constraints?.oddEvenCells) {
     const constraint = constraints.oddEvenCells.find(c => c.row === row && c.col === col);
     if (constraint) {
-      return constraint.type === 'odd' ? "bg-gray-100" : "bg-blue-50";
+      return constraint.type === 'odd' ? "bg-gray-200" : "bg-blue-200";
     }
   }
 
