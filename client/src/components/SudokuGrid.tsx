@@ -82,7 +82,7 @@ export default function SudokuGrid({
 
   return (
     <div className="flex justify-center mb-6">
-      <div className="grid grid-cols-9 gap-0 border-0 rounded-lg overflow-hidden bg-white" style={{ width: 'fit-content' }}>
+      <div className="grid grid-cols-9 gap-0 border-2 border-gray-800 rounded-lg overflow-hidden bg-white" style={{ width: 'fit-content' }}>
         {Array.from({ length: 9 }, (_, row) =>
           Array.from({ length: 9 }, (_, col) => (
             <div

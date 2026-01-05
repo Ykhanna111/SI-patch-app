@@ -276,7 +276,7 @@ export default function EnhancedSudokuGrid({
       <div className="relative w-full h-full max-w-full max-h-full flex items-center justify-center">
         <div 
           className={cn(
-            "grid gap-0 border-0 rounded-sm overflow-hidden bg-white",
+            "grid gap-0 border-2 border-gray-800 rounded-sm overflow-hidden bg-white",
             "w-full h-full max-w-[min(100%,100vh-12rem)]",
             `grid-cols-${size}`
           )} 
