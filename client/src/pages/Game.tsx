@@ -181,6 +181,10 @@ export default function GamePage() {
         col,
         value,
         currentState: currentGrid,
+        solution: JSON.parse(currentGame.solution),
+        puzzle: JSON.parse(currentGame.puzzle),
+        gameMode: currentGame.gameMode,
+        constraints: currentGame.constraints ? JSON.parse(currentGame.constraints) : undefined
       });
       return await response.json();
     },

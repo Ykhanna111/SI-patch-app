@@ -172,17 +172,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/games/:id/validate', async (req: Request, res: Response) => {
     try {
-      const isAuth = isUserAuthenticated(req);
-      
-      // Guest mode: trust client-side validation as we don't persist state on server
-      if (!isAuth) {
-        return res.json({ 
-          isValid: true,
-          isCorrect: null 
-        });
-      }
-
-      const { row, col, value, currentState, solution, gameMode = 'standard', constraints } = req.body;
+      const { row, col, value, currentState, solution, gameMode = 'standard', constraints, puzzle } = req.body;
       
       if (typeof row !== 'number' || typeof col !== 'number' || typeof value !== 'number') {
         return res.status(400).json({ message: "Invalid input parameters" });
@@ -192,13 +182,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let isValidPlacement: boolean;
       if (gameMode === 'standard' || gameMode === 'diagonal') {
-        isValidPlacement = isValidMove(currentState, row, col, value, req.body.puzzle, gameMode);
+        isValidPlacement = isValidMove(currentState, row, col, value, puzzle, gameMode);
       } else {
-        isValidPlacement = isValidMoveForMode(gameMode as GameMode, currentState, row, col, value, req.body.puzzle, constraints);
+        isValidPlacement = isValidMoveForMode(gameMode as GameMode, currentState, row, col, value, puzzle, constraints);
       }
       
       res.json({ 
-        isValid: isValidPlacement,
+        isValid: isCorrect, // Use isCorrect for strict validation against the unique solution
+        isPlacementValid: isValidPlacement,
         isCorrect: isCorrect
       });
     } catch (error) {
