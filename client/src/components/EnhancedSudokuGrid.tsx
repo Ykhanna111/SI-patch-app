@@ -330,11 +330,11 @@ function getGameSpecificBorders(
 
   // Standard box borders
   if (size === 16) {
-    if (col === 3 || col === 7 || col === 11) classes.push("border-r-[1px] border-gray-300 dark:border-gray-500");
-    if (row === 3 || row === 7 || row === 11) classes.push("border-b-[1px] border-gray-300 dark:border-gray-500");
+    if (col === 3 || col === 7 || col === 11) classes.push("border-r-2 border-gray-800 dark:border-gray-500");
+    if (row === 3 || row === 7 || row === 11) classes.push("border-b-2 border-gray-800 dark:border-gray-500");
   } else if (size === 9) {
-    if (col === 2 || col === 5) classes.push("border-r-[1px] border-gray-300 dark:border-gray-500");
-    if (row === 2 || row === 5) classes.push("border-b-[1px] border-gray-300 dark:border-gray-500");
+    if (col === 2 || col === 5) classes.push("border-r-2 border-gray-800 dark:border-gray-500");
+    if (row === 2 || row === 5) classes.push("border-b-2 border-gray-800 dark:border-gray-500");
   } else if (size === 6) {
     if (col === 2) classes.push("border-r-2 border-gray-800 dark:border-gray-600");
     if (row === 1 || row === 3) classes.push("border-b-2 border-gray-800 dark:border-gray-600");
