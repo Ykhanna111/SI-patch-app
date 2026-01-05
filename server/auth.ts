@@ -95,7 +95,8 @@ export async function setupAuth(app: Express) {
           return res.status(500).json({ message: "Failed to save session" });
         }
         // Return user without password for frontend
-        const { password, ...safeUser } = user;
+        const safeUser = { ...user };
+        delete (safeUser as any).password;
         res.status(201).json(safeUser);
       });
     } catch (error) {
@@ -139,7 +140,8 @@ export async function setupAuth(app: Express) {
           return res.status(500).json({ message: "Failed to save session" });
         }
         // Return user without password for frontend
-        const { password, ...safeUser } = user;
+        const safeUser = { ...user };
+        delete (safeUser as any).password;
         res.json(safeUser);
       });
     } catch (error) {
@@ -164,7 +166,8 @@ export async function setupAuth(app: Express) {
       if (req.session && req.session.userId) {
         const user = await storage.getUser(req.session.userId);
         if (user) {
-          const { password, ...safeUser } = user;
+          const safeUser = { ...user };
+          delete (safeUser as any).password;
           return res.json(safeUser);
         }
       }
