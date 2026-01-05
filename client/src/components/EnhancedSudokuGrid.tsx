@@ -330,17 +330,25 @@ function getGameSpecificBorders(
 
   // Standard box borders
   if (size === 16) {
-    if (col === 3 || col === 7 || col === 11) classes.push("border-r-2 border-gray-600 dark:border-gray-500");
-    if (row === 3 || row === 7 || row === 11) classes.push("border-b-2 border-gray-600 dark:border-gray-500");
+    if (col % 4 === 0) classes.push("border-l-2 border-gray-600 dark:border-gray-500");
+    if (row % 4 === 0) classes.push("border-t-2 border-gray-600 dark:border-gray-500");
+    if (col === 3 || col === 7 || col === 11 || col === 15) classes.push("border-r-2 border-gray-600 dark:border-gray-500");
+    if (row === 3 || row === 7 || row === 11 || row === 15) classes.push("border-b-2 border-gray-600 dark:border-gray-500");
   } else if (size === 9) {
-    if (col === 2 || col === 5) classes.push("border-r-2 border-gray-600 dark:border-gray-500");
-    if (row === 2 || row === 5) classes.push("border-b-2 border-gray-600 dark:border-gray-500");
+    if (col % 3 === 0) classes.push("border-l-2 border-gray-600 dark:border-gray-500");
+    if (row % 3 === 0) classes.push("border-t-2 border-gray-600 dark:border-gray-500");
+    if (col === 2 || col === 5 || col === 8) classes.push("border-r-2 border-gray-600 dark:border-gray-500");
+    if (row === 2 || row === 5 || row === 8) classes.push("border-b-2 border-gray-600 dark:border-gray-500");
   } else if (size === 6) {
-    if (col === 2) classes.push("border-r-2 border-gray-800 dark:border-gray-600");
-    if (row === 1 || row === 3) classes.push("border-b-2 border-gray-800 dark:border-gray-600");
+    if (col % 3 === 0) classes.push("border-l-2 border-gray-800 dark:border-gray-600");
+    if (row % 2 === 0) classes.push("border-t-2 border-gray-800 dark:border-gray-600");
+    if (col === 2 || col === 5) classes.push("border-r-2 border-gray-800 dark:border-gray-600");
+    if (row === 1 || row === 3 || row === 5) classes.push("border-b-2 border-gray-800 dark:border-gray-600");
   } else if (size === 4) {
-    if (col === 1) classes.push("border-r-2 border-gray-800 dark:border-gray-600");
-    if (row === 1) classes.push("border-b-2 border-gray-800 dark:border-gray-600");
+    if (col % 2 === 0) classes.push("border-l-2 border-gray-800 dark:border-gray-600");
+    if (row % 2 === 0) classes.push("border-t-2 border-gray-800 dark:border-gray-600");
+    if (col === 1 || col === 3) classes.push("border-r-2 border-gray-800 dark:border-gray-600");
+    if (row === 1 || row === 3) classes.push("border-b-2 border-gray-800 dark:border-gray-600");
   }
 
   return classes.join(" ");
