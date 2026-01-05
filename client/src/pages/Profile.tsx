@@ -183,8 +183,8 @@ export default function Profile() {
         </div>
 
         <div className="grid grid-cols-1 gap-8">
-          {/* Basic Info Section */}
-          <Card className="w-full">
+          {/* Basic Info Section (Disabled for now) */}
+          {/* <Card className="w-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="h-5 w-5" />
@@ -280,7 +280,7 @@ export default function Profile() {
                 </form>
               </Form>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Game Statistics Section */}

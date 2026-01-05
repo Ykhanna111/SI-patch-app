@@ -17,17 +17,25 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import type { User } from "@shared/schema";
-import type { Game, Move } from "@shared/gameTypes";
 import { type GameMode, type GameConstraints, GAME_MODES, getGridDimensions, getValidNumbers } from "@shared/gameTypes";
 
+interface Game {
+  id: string;
+  difficulty: string;
+  gameMode: string;
+  gridSize: number;
+  puzzle: string;
+  currentState: string;
+  solution: string;
+  constraints?: string;
+  moves: string;
+  isCompleted: boolean;
+  timeElapsed: number;
+  mistakes: number;
+  hintsUsed: number;
+}
+
 type SudokuGrid = number[][];
-type Move = {
-  row: number;
-  col: number;
-  oldValue: number;
-  newValue: number;
-  timestamp: number;
-};
 
 export default function GamePage() {
   const { user, isAuthenticated } = useAuth();
@@ -44,7 +52,7 @@ export default function GamePage() {
   const [hintsUsed, setHintsUsed] = useState(0);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [moves, setMoves] = useState<Move[]>([]);
+  const [moves, setMoves] = useState<any[]>([]);
   const [isPaused, setIsPaused] = useState(false);
   const [showGameComplete, setShowGameComplete] = useState(false);
   const [showGameFailed, setShowGameFailed] = useState(false);
@@ -122,7 +130,7 @@ export default function GamePage() {
       const response = await apiRequest('POST', '/api/games', { difficulty, gameMode });
       return await response.json();
     },
-    onSuccess: (game: Game) => {
+    onSuccess: (game: any) => {
       if (game && typeof game === 'object' && 'id' in game) {
         initializeGame(game);
         const modeName = game.gameMode === 'diagonal' ? 'Diagonal Sudoku' : 
@@ -136,7 +144,7 @@ export default function GamePage() {
       }
     },
     onError: (error: any) => {
-      if (error?.message?.includes("Daily limit exceeded")) {
+      if (error?.message?.includes("Daily limit exceeded") || error?.upgradeRequired) {
         toast({
           title: "Daily limit exceeded",
           description: (
@@ -216,7 +224,7 @@ export default function GamePage() {
       setHintsUsed(prev => prev + 1);
 
       // Add to moves history
-      const move: Move = {
+      const move = {
         row: hint.row,
         col: hint.col,
         oldValue: currentGrid[hint.row][hint.col],
@@ -358,7 +366,7 @@ export default function GamePage() {
     setCurrentGrid(newGrid);
 
     // Add to moves history
-    const move: Move = {
+    const move = {
       row,
       col,
       oldValue,
