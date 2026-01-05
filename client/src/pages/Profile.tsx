@@ -183,8 +183,7 @@ export default function Profile() {
         </div>
 
         <div className="grid grid-cols-1 gap-8">
-          {/* Basic Info Section (Disabled for now) */}
-          {/* <Card className="w-full">
+          <Card className="w-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="h-5 w-5" />
@@ -193,7 +192,7 @@ export default function Profile() {
             </CardHeader>
             <CardContent>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -206,6 +205,7 @@ export default function Profile() {
                               placeholder="Enter first name"
                               data-testid="input-profile-firstname"
                               {...field}
+                              readOnly
                             />
                           </FormControl>
                           <FormMessage />
@@ -224,6 +224,7 @@ export default function Profile() {
                               placeholder="Enter last name"
                               data-testid="input-profile-lastname"
                               {...field}
+                              readOnly
                             />
                           </FormControl>
                           <FormMessage />
@@ -243,6 +244,7 @@ export default function Profile() {
                             placeholder="Enter username"
                             data-testid="input-profile-username"
                             {...field}
+                            readOnly
                           />
                         </FormControl>
                         <FormMessage />
@@ -262,25 +264,17 @@ export default function Profile() {
                             placeholder="Enter email"
                             data-testid="input-profile-email"
                             {...field}
-                            readOnly={!!typedUser?.email}
+                            readOnly
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
-                  <Button
-                    type="submit"
-                    disabled={updateProfileMutation.isPending}
-                    data-testid="button-update-profile"
-                  >
-                    {updateProfileMutation.isPending ? 'Updating...' : 'Update Profile'}
-                  </Button>
-                </form>
+                </div>
               </Form>
             </CardContent>
-          </Card> */}
+          </Card>
         </div>
 
         {/* Game Statistics Section */}
