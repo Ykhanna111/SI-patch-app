@@ -19,10 +19,12 @@ import { Link } from 'wouter';
 
 const profileUpdateSchema = z.object({
   username: z.string()
-    .min(3, "Username must be at least 3 characters")
-    .max(50, "Username must be less than 50 characters")
-    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
-  email: z.string().email("Invalid email address").or(z.literal("")).optional(),
+    .min(5, "Username must be at least 5 characters")
+    .max(30, "Username must be less than 30 characters")
+    .regex(/^[a-zA-Z0-9._]+$/, "Username can only contain letters, numbers, underscores, and dots")
+    .refine(s => !s.startsWith('.') && !s.startsWith('_') && !s.endsWith('.') && !s.endsWith('_'), "Username cannot start or end with special characters")
+    .refine(s => !s.includes(' '), "Username cannot contain spaces"),
+  email: z.string().email("Invalid email address").min(1, "Email is required"),
   firstName: z.string().min(1, "First name is required").max(50),
   lastName: z.string().min(1, "Last name is required").max(50),
 });
@@ -167,10 +169,10 @@ export default function Profile() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
-            <Link href="/game">
+            <Link href="/select-game">
               <Button variant="ghost" size="sm" className="flex items-center gap-2">
                 <ArrowLeft className="h-4 w-4" />
-                Back to Game
+                Back to Sudoku Adventure
               </Button>
             </Link>
           </div>
@@ -180,64 +182,9 @@ export default function Profile() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Profile Picture Section */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
-                Profile Picture
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-col items-center space-y-4">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage 
-                    src={avatarPreview || undefined} 
-                    alt={typedUser?.username || undefined} 
-                  />
-                  <AvatarFallback className="text-xl bg-primary text-primary-foreground">
-                    {getInitials(typedUser?.firstName, typedUser?.lastName, typedUser?.username)}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div className="space-y-2 w-full">
-                  <Label htmlFor="avatar-upload" className="cursor-pointer">
-                    <div className="flex items-center justify-center w-full p-2 border-2 border-dashed border-border rounded-lg hover:border-primary transition-colors">
-                      <Upload className="h-4 w-4 mr-2" />
-                      Choose Image
-                    </div>
-                  </Label>
-                  <Input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarChange}
-                    className="hidden"
-                    data-testid="input-avatar"
-                  />
-                  
-                  {avatarFile && (
-                    <Button 
-                      onClick={handleAvatarUpload}
-                      disabled={uploadAvatarMutation.isPending}
-                      className="w-full"
-                      data-testid="button-upload-avatar"
-                    >
-                      {uploadAvatarMutation.isPending ? 'Uploading...' : 'Upload Avatar'}
-                    </Button>
-                  )}
-                </div>
-                
-                <p className="text-xs text-muted-foreground text-center">
-                  Recommended: Square image, max 5MB
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
+        <div className="grid grid-cols-1 gap-8">
           {/* Basic Info Section */}
-          <Card className="lg:col-span-2">
+          <Card className="w-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="h-5 w-5" />
@@ -256,7 +203,7 @@ export default function Profile() {
                           <FormLabel>First Name</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="John"
+                              placeholder="Enter first name"
                               data-testid="input-profile-firstname"
                               {...field}
                             />
@@ -274,7 +221,7 @@ export default function Profile() {
                           <FormLabel>Last Name</FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Doe"
+                              placeholder="Enter last name"
                               data-testid="input-profile-lastname"
                               {...field}
                             />
@@ -293,7 +240,7 @@ export default function Profile() {
                         <FormLabel>Username</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="johndoe123"
+                            placeholder="Enter username"
                             data-testid="input-profile-username"
                             {...field}
                           />
@@ -308,13 +255,14 @@ export default function Profile() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email (Optional)</FormLabel>
+                        <FormLabel>Email</FormLabel>
                         <FormControl>
                           <Input
                             type="email"
-                            placeholder="john@example.com"
+                            placeholder="Enter email"
                             data-testid="input-profile-email"
                             {...field}
+                            readOnly={!!typedUser?.email}
                           />
                         </FormControl>
                         <FormMessage />

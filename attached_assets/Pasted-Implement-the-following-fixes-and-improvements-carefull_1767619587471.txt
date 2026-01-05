@@ -1,0 +1,128 @@
+Implement the following fixes and improvements carefully, ensuring clean UX, correct logic, and consistency across the app.
+
+1️⃣ Profile Settings – Back Navigation Fix
+
+In Profile Settings, replace the current “Back to Game” navigation.
+
+It should instead say “Back to Sudoku Adventure”.
+
+Clicking it must redirect the user to the Sudoku Adventure screen, not an active or previous game.
+
+2️⃣ Remove Prefilled Demo Data (Register Page)
+
+On the Create Account / Register page:
+
+Remove all prefilled/example values such as:
+
+First Name, Last Name
+
+Username
+
+Email
+
+All input fields must be completely empty on initial load.
+
+No demo values should be visible to the user.
+
+Placeholders (if any) should be neutral (e.g., “Enter email”).
+
+3️⃣ Remove Prefilled Username (Sign In Page)
+
+On the Sign In page:
+
+The username input must not contain any default or example value.
+
+The field should always be empty on page load.
+
+4️⃣ Login Using Username OR Email
+
+Allow users to log in using either:
+
+Username or
+
+Email ID
+
+Use a single input field and detect automatically whether the input is an email or username.
+
+Authenticate accordingly without requiring the user to choose a mode.
+
+5️⃣ Profile Settings – Email Rules
+
+In Profile Settings:
+
+Email must be mandatory, not optional.
+
+Once an email is provided:
+
+It should be auto-filled
+
+Read-only / non-editable
+
+Always displayed exactly as saved in the user’s profile
+
+If a user somehow does not have an email yet:
+
+Force them to add one before saving profile changes.
+
+6️⃣ Daily Limit Handling (Guest Users)
+
+Current incorrect behavior:
+
+When a guest user exceeds the daily game limit, the app shows:
+“Failed to create game”
+
+Correct behavior:
+
+Detect this as a daily limit exceeded case (not an error).
+
+Show a clear message such as:
+
+“Daily limit exceeded. Sign up to play more games.”
+
+Display it as a toast, alert, or modal (not a system error).
+
+Include a CTA to Sign Up / Create Account.
+
+7️⃣ Remove Profile Picture from Profile Settings
+
+Completely remove the Profile Picture section from Profile Settings:
+
+Avatar / initials circle
+
+“Choose Image” button
+
+Image upload logic
+
+Profile Settings should only contain:
+
+First Name
+
+Last Name
+
+Username
+
+Email
+
+8️⃣ Username Validation & Security Constraints
+
+Add strict username validation, similar to password rules:
+
+Minimum length (e.g., 5–6 characters)
+
+Maximum length (e.g., 20–30 characters)
+
+Allowed characters:
+
+Letters (a–z, A–Z)
+
+Numbers (0–9)
+
+_ and . only
+
+No spaces
+
+Cannot start or end with special characters
+
+Must be unique
+
+Show inline validation errors explaining exactly why a username is invalid.

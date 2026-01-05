@@ -107,7 +107,7 @@ export default function Register() {
                       <FormLabel>First Name</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="John"
+                          placeholder="Enter first name"
                           data-testid="input-firstname"
                           {...field}
                         />
@@ -125,7 +125,7 @@ export default function Register() {
                       <FormLabel>Last Name</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="Doe"
+                          placeholder="Enter last name"
                           data-testid="input-lastname"
                           {...field}
                         />
@@ -144,7 +144,7 @@ export default function Register() {
                     <FormLabel>Username</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="johndoe123"
+                        placeholder="Enter username"
                         data-testid="input-username"
                         {...field}
                       />
@@ -163,7 +163,7 @@ export default function Register() {
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="john@example.com"
+                        placeholder="Enter email"
                         data-testid="input-email"
                         {...field}
                       />

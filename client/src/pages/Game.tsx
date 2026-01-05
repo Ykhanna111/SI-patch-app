@@ -134,12 +134,31 @@ export default function GamePage() {
         setCreatingDifficulty(null);
       }
     },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to create new game",
-        variant: "destructive",
-      });
+    onError: (error: any) => {
+      if (error?.message?.includes("Daily limit exceeded")) {
+        toast({
+          title: "Daily limit exceeded",
+          description: (
+            <div className="space-y-2">
+              <p>Sign up to play more games and access all features!</p>
+              <div className="flex gap-2">
+                <Link href="/register">
+                  <Button size="sm" variant="default" data-testid="button-register-toast">Sign Up</Button>
+                </Link>
+                <Link href="/login">
+                  <Button size="sm" variant="outline" data-testid="button-login-toast">Sign In</Button>
+                </Link>
+              </div>
+            </div>
+          ),
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to create new game",
+          variant: "destructive",
+        });
+      }
       setCreatingDifficulty(null);
     },
   });

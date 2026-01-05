@@ -58,7 +58,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const limitCheck = checkGuestLimit(req);
         if (!limitCheck.allowed) {
           return res.status(403).json({ 
-            message: limitCheck.message,
+            message: "Daily limit exceeded. Sign up to play more games.",
             upgradeRequired: true
           });
         }

@@ -112,7 +112,13 @@ export async function setupAuth(app: Express) {
       }
       const data = validation.data;
       
-      const user = await storage.getUserByUsername(data.username);
+      let user;
+      if (data.identifier.includes('@')) {
+        user = await storage.getUserByEmail(data.identifier);
+      } else {
+        user = await storage.getUserByUsername(data.identifier);
+      }
+
       if (!user) {
         return res.status(401).json({ message: "Invalid username or password" });
       }

@@ -60,10 +60,12 @@ export const userStats = pgTable("user_stats", {
 export const registerSchema = z.object({
   id: z.string().uuid(),
   username: z.string()
-    .min(3, "Username must be at least 3 characters")
-    .max(50, "Username must be less than 50 characters")
-    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
-  email: z.string().email("Invalid email address").optional(),
+    .min(5, "Username must be at least 5 characters")
+    .max(30, "Username must be less than 30 characters")
+    .regex(/^[a-zA-Z0-9._]+$/, "Username can only contain letters, numbers, underscores, and dots")
+    .refine(s => !s.startsWith('.') && !s.startsWith('_') && !s.endsWith('.') && !s.endsWith('_'), "Username cannot start or end with special characters")
+    .refine(s => !s.includes(' '), "Username cannot contain spaces"),
+  email: z.string().email("Invalid email address").min(1, "Email is required"),
   firstName: z.string().min(1, "First name is required").max(50).optional(),
   lastName: z.string().min(1, "Last name is required").max(50).optional(),
   bio: z.string().max(500).optional(),
@@ -72,7 +74,7 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
+  identifier: z.string().min(1, "Username or Email is required"),
   password: z.string().min(1, "Password is required"),
 });
 
