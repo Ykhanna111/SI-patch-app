@@ -320,47 +320,65 @@ export default function GamePage() {
     const oldValue = currentGrid[row][col];
     if (oldValue === value) return; // No change
 
-    // Validate the move if placing a number (not erasing)
-    if (value !== 0) {
-      try {
-        const validation = await validateMoveMutation.mutateAsync({ row, col, value });
-        if (!validation.isValid) {
-          setMistakes(prev => {
-            const newMistakes = prev + 1;
-            if (newMistakes >= 3) {
-              setShowGameFailed(true);
-              toast({
-                title: "Game Over!",
-                description: "You've made 3 mistakes. Returning to menu...",
-                variant: "destructive",
-              });
-              // Auto-redirect after 3 seconds
-              setTimeout(() => {
-                setCurrentGame(null);
-                setShowGameFailed(false);
-              }, 3000);
-            } else {
-              toast({
-                title: "Invalid move",
-                description: `This number conflicts with existing values. Mistakes: ${newMistakes}/3`,
-                variant: "destructive",
-              });
-            }
-            return newMistakes;
-          });
-          return;
-        }
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to validate move",
-          variant: "destructive",
-        });
-        return;
-      }
+    // Handle erasing
+    if (value === 0) {
+      const newGrid = [...currentGrid];
+      newGrid[row][col] = 0;
+      setCurrentGrid(newGrid);
+
+      // Add to moves history
+      const move = {
+        row,
+        col,
+        oldValue,
+        newValue: 0,
+        timestamp: Date.now(),
+      };
+      setMoves(prev => [...prev, move]);
+      return;
     }
 
-    // Make the move
+    // Validate the move for non-zero values
+    try {
+      const validation = await validateMoveMutation.mutateAsync({ row, col, value });
+      
+      if (!validation.isValid) {
+        setMistakes(prev => {
+          const newMistakes = prev + 1;
+          if (newMistakes >= 3) {
+            setShowGameFailed(true);
+            toast({
+              title: "Game Over!",
+              description: "You've made 3 mistakes. Returning to menu...",
+              variant: "destructive",
+            });
+            // Auto-redirect after 3 seconds
+            setTimeout(() => {
+              setCurrentGame(null);
+              setShowGameFailed(false);
+            }, 3000);
+          } else {
+            toast({
+              title: "Invalid move",
+              description: `This number conflicts with existing values. Mistakes: ${newMistakes}/3`,
+              variant: "destructive",
+            });
+          }
+          return newMistakes;
+        });
+        // ❌ RETURN IMMEDIATELY without updating the grid
+        return;
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to validate move",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // ✅ Valid move → apply to grid
     const newGrid = [...currentGrid];
     newGrid[row][col] = value;
     setCurrentGrid(newGrid);
