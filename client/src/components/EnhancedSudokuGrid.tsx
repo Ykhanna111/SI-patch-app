@@ -95,7 +95,7 @@ export default function EnhancedSudokuGrid({
     }
 
     return cn(
-      `${cellSize} border border-gray-300/40 flex items-center justify-center font-bold cursor-pointer transition-colors`,
+      `${cellSize} border border-gray-300 flex items-center justify-center font-bold cursor-pointer transition-colors`,
       // Game-specific borders
       getGameSpecificBorders(row, col, gameMode, size, boxWidth, boxHeight, constraints),
       // Cell states
@@ -276,7 +276,7 @@ export default function EnhancedSudokuGrid({
       <div className="relative w-full h-full max-w-full max-h-full flex items-center justify-center">
         <div 
           className={cn(
-            "grid gap-0 border-[3px] border-black rounded-sm overflow-hidden bg-white",
+            "grid gap-0 border-[3px] border-gray-800 rounded-sm overflow-hidden bg-white",
             "w-full h-full max-w-[min(100%,100vh-12rem)]",
             `grid-cols-${size}`
           )} 
@@ -330,11 +330,11 @@ function getGameSpecificBorders(
 
   // Standard box borders
   if (size === 16) {
-    if (col === 3 || col === 7 || col === 11) classes.push("border-r-[2.5px] border-black dark:border-gray-400");
-    if (row === 3 || row === 7 || row === 11) classes.push("border-b-[2.5px] border-black dark:border-gray-400");
+    if (col === 3 || col === 7 || col === 11) classes.push("border-r-2 border-gray-600 dark:border-gray-400");
+    if (row === 3 || row === 7 || row === 11) classes.push("border-b-2 border-gray-600 dark:border-gray-400");
   } else if (size === 9) {
-    if (col === 2 || col === 5) classes.push("border-r-[2.5px] border-black dark:border-gray-400");
-    if (row === 2 || row === 5) classes.push("border-b-[2.5px] border-black dark:border-gray-400");
+    if (col === 2 || col === 5) classes.push("border-r-2 border-gray-600 dark:border-gray-400");
+    if (row === 2 || row === 5) classes.push("border-b-2 border-gray-600 dark:border-gray-400");
   } else if (size === 6) {
     if (col === 2) classes.push("border-r-2 border-gray-800 dark:border-gray-600");
     if (row === 1 || row === 3) classes.push("border-b-2 border-gray-800 dark:border-gray-600");
