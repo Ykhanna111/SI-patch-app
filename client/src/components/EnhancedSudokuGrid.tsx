@@ -42,16 +42,16 @@ export default function EnhancedSudokuGrid({
       }
       
       // Box highlighting (varies by game mode)
-      if (gameMode === 'jigsaw') {
-        // Jigsaw highlighting based on regions
-        if (constraints?.jigsawRegions) {
-          const selectedRegion = constraints.jigsawRegions[selectedCell.row][selectedCell.col];
-          const currentRegion = constraints.jigsawRegions[row][col];
-          if (selectedRegion === currentRegion) {
-            isHighlighted = true;
-          }
+    if ((gameMode as string) === 'jigsaw') {
+      // Jigsaw highlighting based on regions
+      if (constraints?.jigsawRegions) {
+        const selectedRegion = constraints.jigsawRegions[selectedCell.row][selectedCell.col];
+        const currentRegion = constraints.jigsawRegions[row][col];
+        if (selectedRegion === currentRegion) {
+          isHighlighted = true;
         }
-      } else {
+      }
+    } else {
         // Standard box highlighting
         const selectedBoxRow = Math.floor(selectedCell.row / boxHeight);
         const selectedBoxCol = Math.floor(selectedCell.col / boxWidth);
@@ -63,14 +63,14 @@ export default function EnhancedSudokuGrid({
         }
       }
       
-      // Diagonal highlighting for Sudoku X
-      if (gameMode === 'diagonal') {
-        const onMainDiagonal = selectedCell.row === selectedCell.col && row === col;
-        const onAntiDiagonal = selectedCell.row + selectedCell.col === size - 1 && row + col === size - 1;
-        if (onMainDiagonal || onAntiDiagonal) {
-          isHighlighted = true;
-        }
+    // Diagonal highlighting for Sudoku X
+    if ((gameMode as string) === 'diagonal') {
+      const onMainDiagonal = selectedCell.row === selectedCell.col && row === col;
+      const onAntiDiagonal = selectedCell.row + selectedCell.col === size - 1 && row + col === size - 1;
+      if (onMainDiagonal || onAntiDiagonal) {
+        isHighlighted = true;
       }
+    }
       
       // Hyper region highlighting
       if (gameMode === 'hyper' && constraints?.hyperRegions) {
@@ -138,7 +138,7 @@ export default function EnhancedSudokuGrid({
     const markers: JSX.Element[] = [];
 
     // Inequality markers
-    if (constraints.inequalities && gameMode === 'inequality') {
+    if (constraints.inequalities && (gameMode as string) === 'inequality') {
       constraints.inequalities.forEach((ineq, index) => {
         const isHorizontal = ineq.cell1.row === ineq.cell2.row;
         const centerRow = ineq.cell1.row + (isHorizontal ? 0 : 0.5);
@@ -162,7 +162,7 @@ export default function EnhancedSudokuGrid({
     }
 
     // Consecutive markers
-    if (constraints.consecutiveMarkers && gameMode === 'consecutive') {
+    if (constraints.consecutiveMarkers && (gameMode as string) === 'consecutive') {
       constraints.consecutiveMarkers.forEach((marker, index) => {
         const isHorizontal = marker.cell1.row === marker.cell2.row;
         const centerRow = marker.cell1.row + (isHorizontal ? 0 : 0.5);
@@ -184,7 +184,7 @@ export default function EnhancedSudokuGrid({
     }
 
     // Killer Sudoku cages
-    if (constraints.killerCages && gameMode === 'killer') {
+    if (constraints.killerCages && (gameMode as string) === 'killer') {
       constraints.killerCages.forEach((cage, cageIndex) => {
         // Find the top-left cell of the cage for the sum label
         const topLeftCell = cage.cells.reduce((min, cell) => {
@@ -322,7 +322,7 @@ function getGameSpecificBorders(
 ): string {
   const classes: string[] = [];
 
-  if (gameMode === 'jigsaw') {
+  if ((gameMode as string) === 'jigsaw') {
     // Jigsaw regions have custom borders based on region shapes
     // This would need actual region data to implement properly
     return "border-gray-400";
