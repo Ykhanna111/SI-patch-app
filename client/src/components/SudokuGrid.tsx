@@ -34,11 +34,11 @@ export default function SudokuGrid({
     const hasValue = currentValue !== 0;
 
     return cn(
-      "w-10 h-10 sm:w-12 sm:h-12 border border-gray-400/30 flex items-center justify-center text-lg font-bold cursor-pointer transition-colors",
+      "w-10 h-10 sm:w-12 sm:h-12 border border-gray-300/40 flex items-center justify-center text-lg font-bold cursor-pointer transition-colors",
       // Grid borders
       {
-        "border-r-2 border-black": col === 2 || col === 5,
-        "border-b-2 border-black": row === 2 || row === 5,
+        "border-r-[2.5px] border-black": col === 2 || col === 5,
+        "border-b-[2.5px] border-black": row === 2 || row === 5,
       },
       // Cell states
       {
@@ -80,7 +80,7 @@ export default function SudokuGrid({
 
   return (
     <div className="flex justify-center mb-6">
-      <div className="grid grid-cols-9 gap-0 border-2 border-black rounded-lg overflow-hidden bg-white" style={{ width: 'fit-content' }}>
+      <div className="grid grid-cols-9 gap-0 border-[3px] border-black rounded-sm overflow-hidden bg-white" style={{ width: 'fit-content' }}>
         {Array.from({ length: 9 }, (_, row) =>
           Array.from({ length: 9 }, (_, col) => (
             <div
