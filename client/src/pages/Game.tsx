@@ -199,6 +199,7 @@ export default function GamePage() {
       
       const response = await apiRequest('POST', `/api/games/${currentGame.id}/hint`, {
         currentState: currentGrid,
+        solution: JSON.parse(currentGame.solution),
       });
       return await response.json();
     },
