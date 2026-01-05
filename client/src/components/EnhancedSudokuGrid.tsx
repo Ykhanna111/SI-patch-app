@@ -352,14 +352,14 @@ function getGameSpecificBackground(
   gameMode: GameMode,
   constraints?: GameConstraints
 ): string {
-  if (gameMode === 'diagonal') {
+  if (gameMode as string === 'diagonal') {
     // Highlight diagonal cells
     if (row === col || row + col === 8) {
       return "bg-purple-200/60 border-purple-300";
     }
   }
 
-  if (gameMode === 'hyper' && constraints?.hyperRegions) {
+  if (gameMode as string === 'hyper' && constraints?.hyperRegions) {
     // Highlight hyper regions
     for (const region of constraints.hyperRegions) {
       if (region.cells.some(cell => cell.row === row && cell.col === col)) {
@@ -368,14 +368,14 @@ function getGameSpecificBackground(
     }
   }
 
-  if (gameMode === 'odd-even' && constraints?.oddEvenCells) {
+  if (gameMode as string === 'odd-even' && constraints?.oddEvenCells) {
     const constraint = constraints.oddEvenCells.find(c => c.row === row && c.col === col);
     if (constraint) {
       return constraint.type === 'odd' ? "bg-gray-300" : "bg-blue-300";
     }
   }
 
-  if (gameMode === 'jigsaw' && constraints?.jigsawRegions) {
+  if (gameMode as string === 'jigsaw' && constraints?.jigsawRegions) {
     const regionId = constraints.jigsawRegions[row][col];
     const colors = [
       "bg-red-50", "bg-blue-50", "bg-green-50", "bg-yellow-50", 
