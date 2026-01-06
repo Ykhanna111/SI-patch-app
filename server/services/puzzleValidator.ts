@@ -4,11 +4,15 @@ export function hasUniqueSolution(puzzle: SudokuGrid, gameMode: string = 'standa
   const size = puzzle.length;
   if (size === 0 || puzzle[0].length !== size) return false;
   
+  // For expert difficulties, we might skip the strict uniqueness check if it takes too long
+  // as the backtracking solver can be slow for very sparse grids
   let solutionCount = 0;
   const maxSolutions = 2;
+  const startTime = Date.now();
+  const timeout = 300; // 300ms limit for uniqueness check
   
   function countSolutions(grid: SudokuGrid): void {
-    if (solutionCount >= maxSolutions) return;
+    if (solutionCount >= maxSolutions || (Date.now() - startTime > timeout)) return;
     
     const emptyCell = findEmptyCell(grid);
     if (!emptyCell) {

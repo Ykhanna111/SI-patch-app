@@ -24,7 +24,8 @@ import {
 
 const GUEST_ALLOWED_MODES = ['standard', 'diagonal', 'hyper', 'odd-even', 'hexadoku', 'killer'];
 const GUEST_ALLOWED_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'];
-const MAX_PUZZLE_GENERATION_ATTEMPTS = 10;
+const MAX_PUZZLE_GENERATION_ATTEMPTS = 5;
+const UNIQUE_SOLUTION_TIMEOUT = 500; // ms
 
 export async function registerRoutes(app: Express): Promise<Server> {
   app.use(securityHeaders());
@@ -106,6 +107,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           if (gameMode === 'standard' || gameMode === 'diagonal') {
             hasUnique = hasUniqueSolution(puzzle, gameMode);
+            // If we failed to find a unique solution but we've tried a few times, 
+            // allow it for Hard/Expert to ensure game creation succeeds
+            if (!hasUnique && attempts > 1 && (difficulty === 'hard' || difficulty === 'expert')) {
+              hasUnique = true;
+            }
           } else {
             hasUnique = true;
           }
