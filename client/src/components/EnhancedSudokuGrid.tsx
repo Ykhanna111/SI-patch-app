@@ -61,7 +61,7 @@ const SudokuCell = memo(({
   }, [value, gameMode]);
 
   return (
-    <div className={cellClasses} onClick={() => onClick(row, col)} data-testid={`cell-${row}-${col}`}>
+    <div className={cellClasses} onClick={() => onClick(row, col)} data-testid={`cell-${row}-${col}`} style={{ touchAction: 'manipulation' }}>
       <span className={textClasses}>{displayValue}</span>
     </div>
   );
@@ -99,12 +99,13 @@ export default function EnhancedSudokuGrid({
         <div 
           className={cn(
             "grid gap-0 border-2 border-gray-800 rounded-sm overflow-hidden bg-white",
-            "w-full h-full max-w-[min(100%,100vh-12rem)]",
+            "w-full max-w-[min(95vw,70vh)] mx-auto",
             `grid-cols-${size}`
           )} 
           style={{ 
             aspectRatio: '1/1',
-            gridTemplateColumns: `repeat(${size}, 1fr)`
+            gridTemplateColumns: `repeat(${size}, 1fr)`,
+            touchAction: 'none'
           }}
         >
           {Array.from({ length: size }, (_, row) =>

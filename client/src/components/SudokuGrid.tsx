@@ -34,7 +34,7 @@ export default function SudokuGrid({
     const hasValue = currentValue !== 0;
 
     return cn(
-      "w-10 h-10 sm:w-12 sm:h-12 border border-gray-300 flex items-center justify-center text-lg font-bold cursor-pointer transition-colors",
+      "aspect-square border border-gray-300 flex items-center justify-center font-bold cursor-pointer transition-colors",
       // Grid borders
       {
         "border-l-2 border-gray-600": col % 3 === 0,
@@ -81,15 +81,25 @@ export default function SudokuGrid({
   }
 
   return (
-    <div className="flex justify-center mb-6">
-      <div className="grid grid-cols-9 gap-0 border-2 border-gray-800 rounded-lg overflow-hidden bg-white" style={{ width: 'fit-content' }}>
+    <div className="flex justify-center mb-4 px-2">
+      <div 
+        className={cn(
+          "grid grid-cols-9 gap-0 border-2 border-gray-800 rounded-lg overflow-hidden bg-white w-full max-w-[min(95vw,70vh)] mx-auto"
+        )}
+        style={{ 
+          aspectRatio: '1/1',
+          gridTemplateColumns: `repeat(9, 1fr)`,
+          touchAction: 'none'
+        }}
+      >
         {Array.from({ length: 9 }, (_, row) =>
           Array.from({ length: 9 }, (_, col) => (
             <div
               key={`${row}-${col}`}
-              className={getCellClasses(row, col)}
+              className={cn(getCellClasses(row, col), "w-full h-full text-base sm:text-lg lg:text-xl")}
               onClick={() => onCellClick(row, col)}
               data-testid={`cell-${row}-${col}`}
+              style={{ touchAction: 'manipulation' }}
             >
               <span className={getTextClasses(row, col)}>
                 {currentGrid && currentGrid[row] && currentGrid[row][col] ? currentGrid[row][col] : ''}
