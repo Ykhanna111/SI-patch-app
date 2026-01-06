@@ -1,3 +1,4 @@
+import { memo, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { GameMode, GameConstraints, getGridDimensions } from "@shared/gameTypes";
 
@@ -14,6 +15,58 @@ interface EnhancedSudokuGridProps {
   constraints?: GameConstraints;
 }
 
+const SudokuCell = memo(({ 
+  row, 
+  col, 
+  value, 
+  isPrefilled, 
+  isSelected, 
+  isHighlighted, 
+  isNumberHighlighted, 
+  isPaused,
+  gameMode,
+  size,
+  boxWidth,
+  boxHeight,
+  constraints,
+  onClick,
+}: any) => {
+  const cellClasses = useMemo(() => {
+    return cn(
+      "aspect-square flex items-center justify-center font-bold cursor-pointer transition-colors border border-gray-300",
+      size === 16 ? "text-[0.5rem] sm:text-xs" : size === 9 ? "text-sm sm:text-base lg:text-lg" : "text-sm sm:text-base",
+      getGameSpecificBorders(row, col, gameMode, size, boxWidth, boxHeight, constraints),
+      {
+        "bg-blue-50 border-2 border-sudoku-primary": isSelected,
+        "bg-blue-25": isHighlighted && !isSelected,
+        "bg-yellow-50": isNumberHighlighted && !isSelected,
+        "hover:bg-blue-50": !isSelected && !isPaused,
+      },
+      getGameSpecificBackground(row, col, gameMode, constraints)
+    );
+  }, [row, col, gameMode, size, boxWidth, boxHeight, constraints, isSelected, isHighlighted, isNumberHighlighted, isPaused]);
+
+  const textClasses = useMemo(() => {
+    return cn("select-none", {
+      "text-gray-400 dark:text-gray-500": isPrefilled,
+      "text-sudoku-primary dark:text-blue-400": !isPrefilled && value !== 0,
+    });
+  }, [isPrefilled, value]);
+
+  const displayValue = useMemo(() => {
+    if (gameMode === 'hexadoku' && value > 9) {
+      return String.fromCharCode(65 + value - 10);
+    }
+    return value > 0 ? value.toString() : '';
+  }, [value, gameMode]);
+
+  return (
+    <div className={cellClasses} onClick={() => onClick(row, col)} data-testid={`cell-${row}-${col}`}>
+      <span className={textClasses}>{displayValue}</span>
+    </div>
+  );
+});
+
 export default function EnhancedSudokuGrid({
   gameMode,
   currentGrid,
@@ -25,237 +78,6 @@ export default function EnhancedSudokuGrid({
   constraints,
 }: EnhancedSudokuGridProps) {
   const { size, boxWidth, boxHeight } = getGridDimensions(gameMode);
-
-  const getCellClasses = (row: number, col: number) => {
-    const isSelected = selectedCell?.row === row && selectedCell?.col === col;
-    const currentValue = currentGrid?.[row]?.[col] || 0;
-    const originalValue = originalPuzzle?.[row]?.[col] || 0;
-    const isNumberHighlighted = selectedNumber && currentValue === selectedNumber && currentValue !== 0;
-    const isPrefilled = originalValue !== 0;
-    
-    // Highlighting logic based on game mode
-    let isHighlighted = false;
-    if (selectedCell) {
-      // Row and column highlighting
-      if (selectedCell.row === row || selectedCell.col === col) {
-        isHighlighted = true;
-      }
-      
-      // Box highlighting (varies by game mode)
-    if ((gameMode as string) === 'jigsaw') {
-      // Jigsaw highlighting based on regions
-      if (constraints?.jigsawRegions) {
-        const selectedRegion = constraints.jigsawRegions[selectedCell.row][selectedCell.col];
-        const currentRegion = constraints.jigsawRegions[row][col];
-        if (selectedRegion === currentRegion) {
-          isHighlighted = true;
-        }
-      }
-    } else {
-        // Standard box highlighting
-        const selectedBoxRow = Math.floor(selectedCell.row / boxHeight);
-        const selectedBoxCol = Math.floor(selectedCell.col / boxWidth);
-        const currentBoxRow = Math.floor(row / boxHeight);
-        const currentBoxCol = Math.floor(col / boxWidth);
-        
-        if (selectedBoxRow === currentBoxRow && selectedBoxCol === currentBoxCol) {
-          isHighlighted = true;
-        }
-      }
-      
-    // Diagonal highlighting for Sudoku X
-    if ((gameMode as string) === 'diagonal') {
-      const onMainDiagonal = selectedCell.row === selectedCell.col && row === col;
-      const onAntiDiagonal = selectedCell.row + selectedCell.col === size - 1 && row + col === size - 1;
-      if (onMainDiagonal || onAntiDiagonal) {
-        isHighlighted = true;
-      }
-    }
-      
-      // Hyper region highlighting
-      if (gameMode === 'hyper' && constraints?.hyperRegions) {
-        for (const region of constraints.hyperRegions) {
-          const selectedInRegion = region.cells.some(cell => cell.row === selectedCell.row && cell.col === selectedCell.col);
-          const currentInRegion = region.cells.some(cell => cell.row === row && cell.col === col);
-          if (selectedInRegion && currentInRegion) {
-            isHighlighted = true;
-          }
-        }
-      }
-    }
-
-    // Base cell styling - responsive sizing
-    let cellSize = "aspect-square text-xs sm:text-sm";
-    if (size === 16) {
-      cellSize = "aspect-square text-[0.5rem] sm:text-xs";
-    } else if (size === 9) {
-      cellSize = "aspect-square text-sm sm:text-base lg:text-lg";
-    } else if (size === 6) {
-      cellSize = "aspect-square text-sm sm:text-base";
-    }
-
-    return cn(
-      `${cellSize} border border-gray-300 flex items-center justify-center font-bold cursor-pointer transition-colors`,
-      // Game-specific borders
-      getGameSpecificBorders(row, col, gameMode, size, boxWidth, boxHeight, constraints),
-      // Cell states
-      {
-        "bg-blue-50 border-2 border-sudoku-primary": isSelected,
-        "bg-blue-25": isHighlighted && !isSelected,
-        "bg-yellow-50": isNumberHighlighted && !isSelected,
-        "hover:bg-blue-50": !isSelected && !isPaused,
-      },
-      // Game mode specific backgrounds
-      getGameSpecificBackground(row, col, gameMode, constraints)
-    );
-  };
-
-  const getTextClasses = (row: number, col: number) => {
-    const originalValue = originalPuzzle?.[row]?.[col] || 0;
-    const currentValue = currentGrid?.[row]?.[col] || 0;
-    const isPrefilled = originalValue !== 0;
-    
-    return cn(
-      "select-none",
-      {
-        "text-gray-400 dark:text-gray-500": isPrefilled,
-        "text-sudoku-primary dark:text-blue-400": !isPrefilled && currentValue !== 0,
-      }
-    );
-  };
-
-  // Convert number to display format (1-9,A-F for hexadoku)
-  const numberToDisplay = (num: number) => {
-    if (gameMode === 'hexadoku' && num > 9) {
-      return String.fromCharCode(65 + num - 10); // A-F
-    }
-    return num > 0 ? num.toString() : '';
-  };
-
-  const renderConstraintMarkers = () => {
-    if (!constraints) return null;
-
-    const markers: JSX.Element[] = [];
-
-    // Inequality markers
-    if (constraints.inequalities && (gameMode as string) === 'inequality') {
-      constraints.inequalities.forEach((ineq, index) => {
-        const isHorizontal = ineq.cell1.row === ineq.cell2.row;
-        const centerRow = ineq.cell1.row + (isHorizontal ? 0 : 0.5);
-        const centerCol = ineq.cell1.col + (isHorizontal ? 0.5 : 0);
-        
-        markers.push(
-          <div
-            key={`inequality-${index}`}
-            className="absolute text-lg font-bold text-purple-600 pointer-events-none"
-            style={{
-              left: `${(centerCol * (100 / size))}%`,
-              top: `${(centerRow * (100 / size))}%`,
-              transform: 'translate(-50%, -50%)',
-              zIndex: 10
-            }}
-          >
-            {ineq.operator}
-          </div>
-        );
-      });
-    }
-
-    // Consecutive markers
-    if (constraints.consecutiveMarkers && (gameMode as string) === 'consecutive') {
-      constraints.consecutiveMarkers.forEach((marker, index) => {
-        const isHorizontal = marker.cell1.row === marker.cell2.row;
-        const centerRow = marker.cell1.row + (isHorizontal ? 0 : 0.5);
-        const centerCol = marker.cell1.col + (isHorizontal ? 0.5 : 0);
-        
-        markers.push(
-          <div
-            key={`consecutive-${index}`}
-            className="absolute w-2 h-2 bg-white border-2 border-gray-600 rounded-full pointer-events-none"
-            style={{
-              left: `${(centerCol * (100 / size))}%`,
-              top: `${(centerRow * (100 / size))}%`,
-              transform: 'translate(-50%, -50%)',
-              zIndex: 10
-            }}
-          />
-        );
-      });
-    }
-
-    // Killer Sudoku cages
-    if (constraints.killerCages && (gameMode as string) === 'killer') {
-      constraints.killerCages.forEach((cage, cageIndex) => {
-        // Find the top-left cell of the cage for the sum label
-        const topLeftCell = cage.cells.reduce((min, cell) => {
-          if (cell.row < min.row || (cell.row === min.row && cell.col < min.col)) {
-            return cell;
-          }
-          return min;
-        }, cage.cells[0]);
-
-        // Render sum label
-        markers.push(
-          <div
-            key={`cage-sum-${cageIndex}`}
-            className="absolute text-[0.65rem] font-bold text-gray-700 dark:text-gray-300 bg-white/80 dark:bg-gray-800/80 px-0.5 rounded pointer-events-none"
-            style={{
-              left: `${(topLeftCell.col * (100 / size)) + 0.5}%`,
-              top: `${(topLeftCell.row * (100 / size)) + 0.5}%`,
-              zIndex: 5
-            }}
-          >
-            {cage.sum}
-          </div>
-        );
-
-        // Render cage borders
-        const cageColors = [
-          '#ef4444', // red-500
-          '#3b82f6', // blue-500
-          '#10b981', // green-500
-          '#f59e0b', // orange-500
-          '#8b5cf6', // purple-500
-          '#ec4899', // pink-500
-          '#06b6d4', // cyan-500
-          '#84cc16', // lime-500
-        ];
-        const cageColor = cageColors[cageIndex % cageColors.length];
-
-        cage.cells.forEach((cell, cellIndex) => {
-          const cageSet = new Set(cage.cells.map(c => `${c.row},${c.col}`));
-          
-          const hasBorderTop = !cageSet.has(`${cell.row - 1},${cell.col}`);
-          const hasBorderBottom = !cageSet.has(`${cell.row + 1},${cell.col}`);
-          const hasBorderLeft = !cageSet.has(`${cell.row},${cell.col - 1}`);
-          const hasBorderRight = !cageSet.has(`${cell.row},${cell.col + 1}`);
-
-          if (hasBorderTop || hasBorderBottom || hasBorderLeft || hasBorderRight) {
-            markers.push(
-              <div
-                key={`cage-border-${cageIndex}-${cellIndex}`}
-                className="absolute pointer-events-none"
-                style={{
-                  left: `${(cell.col * (100 / size))}%`,
-                  top: `${(cell.row * (100 / size))}%`,
-                  width: `${100 / size}%`,
-                  height: `${100 / size}%`,
-                  borderTop: hasBorderTop ? `2.5px solid ${cageColor}` : 'none',
-                  borderBottom: hasBorderBottom ? `2.5px solid ${cageColor}` : 'none',
-                  borderLeft: hasBorderLeft ? `2.5px solid ${cageColor}` : 'none',
-                  borderRight: hasBorderRight ? `2.5px solid ${cageColor}` : 'none',
-                  backgroundColor: `${cageColor}10`, // 10 opacity hex
-                  zIndex: 3
-                }}
-              />
-            );
-          }
-        });
-      });
-    }
-
-    return markers;
-  };
 
   if (isPaused) {
     return (
@@ -286,28 +108,110 @@ export default function EnhancedSudokuGrid({
           }}
         >
           {Array.from({ length: size }, (_, row) =>
-            Array.from({ length: size }, (_, col) => (
-              <div
-                key={`${row}-${col}`}
-                className={getCellClasses(row, col)}
-                onClick={() => onCellClick(row, col)}
-                data-testid={`cell-${row}-${col}`}
-              >
-                <span className={getTextClasses(row, col)}>
-                  {numberToDisplay(currentGrid?.[row]?.[col] || 0)}
-                </span>
-              </div>
-            ))
+            Array.from({ length: size }, (_, col) => {
+              const originalValue = originalPuzzle?.[row]?.[col] || 0;
+              const currentValue = currentGrid?.[row]?.[col] || 0;
+              const isSelected = selectedCell?.row === row && selectedCell?.col === col;
+              const isNumberHighlighted = selectedNumber && currentValue === selectedNumber && currentValue !== 0;
+              
+              let isHighlighted = false;
+              if (selectedCell) {
+                if (selectedCell.row === row || selectedCell.col === col) isHighlighted = true;
+                if (!isHighlighted) {
+                  const selectedBoxRow = Math.floor(selectedCell.row / boxHeight);
+                  const selectedBoxCol = Math.floor(selectedCell.col / boxWidth);
+                  const currentBoxRow = Math.floor(row / boxHeight);
+                  const currentBoxCol = Math.floor(col / boxWidth);
+                  if (selectedBoxRow === currentBoxRow && selectedBoxCol === currentBoxCol) isHighlighted = true;
+                }
+              }
+
+              return (
+                <SudokuCell
+                  key={`${row}-${col}`}
+                  row={row}
+                  col={col}
+                  value={currentValue}
+                  isPrefilled={originalValue !== 0}
+                  isSelected={isSelected}
+                  isHighlighted={isHighlighted}
+                  isNumberHighlighted={isNumberHighlighted}
+                  isPaused={isPaused}
+                  gameMode={gameMode}
+                  size={size}
+                  boxWidth={boxWidth}
+                  boxHeight={boxHeight}
+                  constraints={constraints}
+                  onClick={onCellClick}
+                />
+              );
+            })
           )}
         </div>
         
-        {/* Constraint markers overlay */}
         <div className="absolute inset-0 pointer-events-none">
-          {renderConstraintMarkers()}
+          {renderConstraintMarkers(constraints, size, gameMode)}
         </div>
       </div>
     </div>
   );
+}
+
+function renderConstraintMarkers(constraints: any, size: number, gameMode: string) {
+  if (!constraints) return null;
+  const markers: JSX.Element[] = [];
+
+  // Inequality markers
+  if (constraints.inequalities && gameMode === 'inequality') {
+    constraints.inequalities.forEach((ineq: any, index: number) => {
+      const isHorizontal = ineq.cell1.row === ineq.cell2.row;
+      const centerRow = ineq.cell1.row + (isHorizontal ? 0 : 0.5);
+      const centerCol = ineq.cell1.col + (isHorizontal ? 0.5 : 0);
+      markers.push(
+        <div key={`ineq-${index}`} className="absolute text-lg font-bold text-purple-600 pointer-events-none" style={{ left: `${(centerCol * (100 / size))}%`, top: `${(centerRow * (100 / size))}%`, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
+          {ineq.operator}
+        </div>
+      );
+    });
+  }
+
+  // Consecutive markers
+  if (constraints.consecutiveMarkers && gameMode === 'consecutive') {
+    constraints.consecutiveMarkers.forEach((marker: any, index: number) => {
+      const isHorizontal = marker.cell1.row === marker.cell2.row;
+      const centerRow = marker.cell1.row + (isHorizontal ? 0 : 0.5);
+      const centerCol = marker.cell1.col + (isHorizontal ? 0.5 : 0);
+      markers.push(
+        <div key={`cons-${index}`} className="absolute w-2 h-2 bg-white border-2 border-gray-600 rounded-full pointer-events-none" style={{ left: `${(centerCol * (100 / size))}%`, top: `${(centerRow * (100 / size))}%`, transform: 'translate(-50%, -50%)', zIndex: 10 }} />
+      );
+    });
+  }
+
+  // Killer Sudoku cages
+  if (constraints.killerCages && gameMode === 'killer') {
+    constraints.killerCages.forEach((cage: any, cageIndex: number) => {
+      const topLeftCell = cage.cells.reduce((min: any, cell: any) => (cell.row < min.row || (cell.row === min.row && cell.col < min.col)) ? cell : min, cage.cells[0]);
+      markers.push(
+        <div key={`sum-${cageIndex}`} className="absolute text-[0.65rem] font-bold text-gray-700 bg-white/80 px-0.5 rounded pointer-events-none" style={{ left: `${(topLeftCell.col * (100 / size)) + 0.5}%`, top: `${(topLeftCell.row * (100 / size)) + 0.5}%`, zIndex: 5 }}>
+          {cage.sum}
+        </div>
+      );
+      const cageColor = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'][cageIndex % 8];
+      cage.cells.forEach((cell: any, cellIndex: number) => {
+        const cageSet = new Set(cage.cells.map((c: any) => `${c.row},${c.col}`));
+        const hasT = !cageSet.has(`${cell.row - 1},${cell.col}`);
+        const hasB = !cageSet.has(`${cell.row + 1},${cell.col}`);
+        const hasL = !cageSet.has(`${cell.row},${cell.col - 1}`);
+        const hasR = !cageSet.has(`${cell.row},${cell.col + 1}`);
+        if (hasT || hasB || hasL || hasR) {
+          markers.push(
+            <div key={`brd-${cageIndex}-${cellIndex}`} className="absolute pointer-events-none" style={{ left: `${(cell.col * (100 / size))}%`, top: `${(cell.row * (100 / size))}%`, width: `${100 / size}%`, height: `${100 / size}%`, borderTop: hasT ? `2.5px solid ${cageColor}` : 'none', borderBottom: hasB ? `2.5px solid ${cageColor}` : 'none', borderLeft: hasL ? `2.5px solid ${cageColor}` : 'none', borderRight: hasR ? `2.5px solid ${cageColor}` : 'none', backgroundColor: `${cageColor}10`, zIndex: 3 }} />
+          );
+        }
+      });
+    });
+  }
+  return markers;
 }
 
 // Helper functions for game-specific styling
@@ -323,8 +227,6 @@ function getGameSpecificBorders(
   const classes: string[] = [];
 
   if ((gameMode as string) === 'jigsaw') {
-    // Jigsaw regions have custom borders based on region shapes
-    // This would need actual region data to implement properly
     return "border-gray-400";
   }
 
@@ -360,15 +262,13 @@ function getGameSpecificBackground(
   gameMode: GameMode,
   constraints?: GameConstraints
 ): string {
-  if (gameMode as string === 'diagonal') {
-    // Highlight diagonal cells
+  if ((gameMode as string) === 'diagonal') {
     if (row === col || row + col === 8) {
       return "bg-purple-200/60 border-purple-300";
     }
   }
 
-  if (gameMode as string === 'hyper' && constraints?.hyperRegions) {
-    // Highlight hyper regions
+  if ((gameMode as string) === 'hyper' && constraints?.hyperRegions) {
     for (const region of constraints.hyperRegions) {
       if (region.cells.some(cell => cell.row === row && cell.col === col)) {
         return "bg-orange-200/60 border-orange-300";
@@ -376,14 +276,14 @@ function getGameSpecificBackground(
     }
   }
 
-  if (gameMode as string === 'odd-even' && constraints?.oddEvenCells) {
+  if ((gameMode as string) === 'odd-even' && constraints?.oddEvenCells) {
     const constraint = constraints.oddEvenCells.find(c => c.row === row && c.col === col);
     if (constraint) {
       return constraint.type === 'odd' ? "bg-gray-300" : "bg-blue-300";
     }
   }
 
-  if (gameMode as string === 'jigsaw' && constraints?.jigsawRegions) {
+  if ((gameMode as string) === 'jigsaw' && constraints?.jigsawRegions) {
     const regionId = constraints.jigsawRegions[row][col];
     const colors = [
       "bg-red-50", "bg-blue-50", "bg-green-50", "bg-yellow-50", 
