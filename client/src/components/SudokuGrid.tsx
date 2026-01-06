@@ -84,12 +84,14 @@ export default function SudokuGrid({
     <div className="flex justify-center mb-4 px-2">
       <div 
         className={cn(
-          "grid grid-cols-9 gap-0 border-2 border-gray-800 rounded-lg overflow-hidden bg-white w-full max-w-[min(95vw,70vh)] mx-auto"
+          "grid grid-cols-9 gap-0 border-2 border-gray-800 rounded-lg overflow-hidden bg-white w-full mx-auto"
         )}
         style={{ 
           aspectRatio: '1/1',
           gridTemplateColumns: `repeat(9, 1fr)`,
-          touchAction: 'none'
+          touchAction: 'none',
+          minWidth: '280px',
+          maxWidth: 'min(95vw, 70vh, 500px)'
         }}
       >
         {Array.from({ length: 9 }, (_, row) =>

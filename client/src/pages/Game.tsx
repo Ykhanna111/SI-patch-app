@@ -608,6 +608,7 @@ export default function GamePage() {
 
   return (
     <div className="min-h-screen bg-sudoku-bg flex flex-col overflow-x-hidden">
+      <Header />
       <div className="flex-1 w-full max-w-7xl mx-auto px-2 sm:px-4 py-2">
         <div className="h-full grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-2 lg:gap-3">
           {/* Sidebar */}

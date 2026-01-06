@@ -99,13 +99,15 @@ export default function EnhancedSudokuGrid({
         <div 
           className={cn(
             "grid gap-0 border-2 border-gray-800 rounded-sm overflow-hidden bg-white",
-            "w-full max-w-[min(95vw,70vh)] mx-auto",
+            "w-full mx-auto",
             `grid-cols-${size}`
           )} 
           style={{ 
             aspectRatio: '1/1',
             gridTemplateColumns: `repeat(${size}, 1fr)`,
-            touchAction: 'none'
+            touchAction: 'none',
+            minWidth: '280px',
+            maxWidth: 'min(95vw, 70vh, 500px)'
           }}
         >
           {Array.from({ length: size }, (_, row) =>
