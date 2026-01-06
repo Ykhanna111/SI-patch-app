@@ -94,11 +94,11 @@ export default function EnhancedSudokuGrid({
   }
 
   return (
-    <div className="flex justify-center w-full h-full">
-      <div className="relative w-full h-full max-w-full max-h-full flex items-center justify-center">
+    <div className="flex justify-center w-full">
+      <div className="relative w-full flex items-center justify-center py-2 sm:py-4">
         <div 
           className={cn(
-            "grid gap-0 border-2 border-gray-800 rounded-sm overflow-hidden bg-white",
+            "grid gap-0 border-2 border-gray-800 rounded-sm overflow-hidden bg-white shadow-xl",
             "w-full mx-auto",
             `grid-cols-${size}`
           )} 
@@ -107,7 +107,7 @@ export default function EnhancedSudokuGrid({
             gridTemplateColumns: `repeat(${size}, 1fr)`,
             touchAction: 'none',
             minWidth: '280px',
-            maxWidth: 'min(95vw, 70vh, 500px)'
+            maxWidth: 'min(95vw, 500px)'
           }}
         >
           {Array.from({ length: size }, (_, row) =>

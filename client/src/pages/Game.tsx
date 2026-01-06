@@ -609,8 +609,8 @@ export default function GamePage() {
   return (
     <div className="min-h-screen bg-sudoku-bg flex flex-col overflow-x-hidden">
       <Header />
-      <div className="flex-1 w-full max-w-7xl mx-auto px-2 sm:px-4 py-2">
-        <div className="h-full grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-2 lg:gap-3">
+      <div className="flex-1 w-full max-w-7xl mx-auto px-2 sm:px-4 py-2 overflow-y-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-2 lg:gap-3">
           {/* Sidebar */}
           <div className="hidden lg:flex lg:flex-col gap-2 overflow-hidden">
             <GameControls
@@ -631,10 +631,10 @@ export default function GamePage() {
           </div>
 
           {/* Main Game Panel */}
-          <div className="flex flex-col min-h-[calc(100vh-5rem)] lg:min-h-0 overflow-hidden">
-            <div className="flex-1 bg-white rounded-lg shadow-lg border border-gray-100 flex flex-col overflow-hidden">
+          <div className="flex flex-col min-h-0">
+            <div className="bg-white rounded-lg shadow-lg border border-gray-100 flex flex-col mb-4">
               {/* Compact Header */}
-              <div className="flex items-center justify-between px-2 sm:px-3 py-1.5 sm:py-2 border-b shrink-0">
+              <div className="flex items-center justify-between px-2 sm:px-3 py-1.5 sm:py-2 border-b shrink-0 bg-white sticky top-0 z-10">
                 <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
                   <Button
                     variant="ghost"
