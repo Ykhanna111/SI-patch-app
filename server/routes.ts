@@ -92,21 +92,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let hasUnique = false;
       
       while (attempts < MAX_PUZZLE_GENERATION_ATTEMPTS && !hasUnique) {
-        if (gameMode === 'standard' || gameMode === 'diagonal') {
-          const result = generateSudoku(difficulty, gameMode);
-          puzzle = result.puzzle;
-          solution = result.solution;
-        } else {
-          const result = generatePuzzleForMode(gameMode as GameMode, difficulty as Difficulty);
-          puzzle = result.puzzle;
-          solution = result.solution;
-          constraints = result.constraints;
-        }
-        
-        if (gameMode === 'standard' || gameMode === 'diagonal') {
-          hasUnique = hasUniqueSolution(puzzle, gameMode);
-        } else {
-          hasUnique = true;
+        try {
+          if (gameMode === 'standard' || gameMode === 'diagonal') {
+            const result = generateSudoku(difficulty, gameMode);
+            puzzle = result.puzzle;
+            solution = result.solution;
+          } else {
+            const result = generatePuzzleForMode(gameMode as GameMode, difficulty as Difficulty);
+            puzzle = result.puzzle;
+            solution = result.solution;
+            constraints = result.constraints;
+          }
+          
+          if (gameMode === 'standard' || gameMode === 'diagonal') {
+            hasUnique = hasUniqueSolution(puzzle, gameMode);
+          } else {
+            hasUnique = true;
+          }
+        } catch (genError) {
+          console.error(`Generation attempt ${attempts} failed:`, genError);
         }
         
         attempts++;

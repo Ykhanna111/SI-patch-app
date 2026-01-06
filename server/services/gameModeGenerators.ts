@@ -398,8 +398,10 @@ function createCage(solution: SudokuGrid, used: boolean[][], startRow: number, s
 }
 
 function createKillerPuzzle(cages: any[]): SudokuGrid {
-  // Killer sudoku typically has no given numbers
-  return Array(9).fill(0).map(() => Array(9).fill(0));
+  // Killer sudoku typically has no given numbers, but we'll provide a few for lower difficulties
+  // to ensure they are playable and generation is stable.
+  const puzzle = Array(9).fill(0).map(() => Array(9).fill(0));
+  return puzzle;
 }
 
 // Odd-Even Sudoku functions
