@@ -156,3 +156,13 @@
     background-color: hsl(210 100% 97%);
   }
 }
+
+/* ✅ Hide SEO-only content visually but keep it indexable */
+.seo-content {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
