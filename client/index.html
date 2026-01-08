@@ -19,6 +19,19 @@
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://sudokuinfinium.xyz/" />
 
+    <!-- ✅ INLINE STYLE (THIS FIXES THE ISSUE) -->
+    <style>
+      /* SEO-only content: hidden visually, readable by Google */
+      .seo-content {
+        position: absolute;
+        left: -9999px;
+        top: auto;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+      }
+    </style>
+
     <!-- ✅ Theme Color -->
     <meta name="theme-color" content="#0A0A0A" />
 
@@ -61,56 +74,11 @@
       name="twitter:image"
       content="https://sudokuinfinium.xyz/assets/logo_si.png"
     />
-
-    <!-- ✅ Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=DM+Sans:wght@100..900&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- ✅ Organization Schema -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Sudoku Infinium",
-        "url": "https://sudokuinfinium.xyz",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://sudokuinfinium.xyz/assets/logo_si.png",
-          "width": 512,
-          "height": 512
-        },
-        "description": "A smart Sudoku platform delivering modern puzzle experiences."
-      }
-    </script>
-
-    <!-- ✅ WebSite Schema -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "url": "https://sudokuinfinium.xyz/",
-        "name": "Sudoku Infinium",
-        "publisher": {
-          "@type": "Organization",
-          "name": "Sudoku Infinium",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://sudokuinfinium.xyz/assets/logo_si.png",
-            "width": 512,
-            "height": 512
-          }
-        }
-      }
-    </script>
   </head>
 
   <body>
-    <!-- ✅ STATIC SEO CONTENT (Google indexes this) -->
-    <main>
+    <!-- ✅ SEO CONTENT (INVISIBLE TO USERS, VISIBLE TO GOOGLE) -->
+    <main class="seo-content">
       <h1>Sudoku Infinium</h1>
 
       <p>
@@ -124,7 +92,7 @@
       </p>
     </main>
 
-    <!-- ✅ React App -->
+    <!-- ✅ REACT APP -->
     <div id="root"></div>
 
     <script type="module" src="/src/main.tsx"></script>
