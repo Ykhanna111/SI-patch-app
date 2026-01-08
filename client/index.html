@@ -15,10 +15,6 @@
       name="description"
       content="Sudoku Infinium is a modern, intelligent Sudoku platform offering adaptive difficulty, clean design, and endless logical challenges."
     />
-    <meta
-      name="keywords"
-      content="Sudoku, online sudoku, puzzle game, brain games, logic puzzles, Sudoku Infinium, smart sudoku"
-    />
     <meta name="author" content="Sudoku Infinium" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://sudokuinfinium.xyz/" />
@@ -66,10 +62,9 @@
       content="https://sudokuinfinium.xyz/assets/logo_si.png"
     />
 
-    <!-- ✅ Fonts (clean & optimized) -->
+    <!-- ✅ Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=DM+Sans:wght@100..900&display=swap"
       rel="stylesheet"
@@ -88,8 +83,7 @@
           "width": 512,
           "height": 512
         },
-        "description": "A smart Sudoku platform delivering modern puzzle experiences.",
-        "sameAs": []
+        "description": "A smart Sudoku platform delivering modern puzzle experiences."
       }
     </script>
 
@@ -115,14 +109,24 @@
   </head>
 
   <body>
+    <!-- ✅ STATIC SEO CONTENT (Google indexes this) -->
+    <main>
+      <h1>Sudoku Infinium</h1>
+
+      <p>
+        Sudoku Infinium is a modern online Sudoku platform offering smart puzzles,
+        clean design, and infinite logical challenges for players of all skill levels.
+      </p>
+
+      <p>
+        Play Sudoku across multiple difficulty levels, enjoy smooth gameplay,
+        and sharpen your problem-solving skills anytime, anywhere.
+      </p>
+    </main>
+
+    <!-- ✅ React App -->
     <div id="root"></div>
 
     <script type="module" src="/src/main.tsx"></script>
-
-    <!-- Replit dev banner (safe to remove in production) -->
-    <script
-      type="text/javascript"
-      src="https://replit.com/public/js/replit-dev-banner.js"
-    ></script>
   </body>
 </html>
