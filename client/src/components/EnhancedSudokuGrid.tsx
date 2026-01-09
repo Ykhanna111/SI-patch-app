@@ -206,9 +206,36 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
         const hasB = !cageSet.has(`${cell.row + 1},${cell.col}`);
         const hasL = !cageSet.has(`${cell.row},${cell.col - 1}`);
         const hasR = !cageSet.has(`${cell.row},${cell.col + 1}`);
-        if (hasT || hasB || hasL || hasR) {
+        
+        // Use inset box-shadow to avoid adding width/height to the cell layout
+        // Dashed effect using multiple inset shadows
+        const shadowParts: string[] = [];
+        const shadowColor = `${cageColor}AA`; // Slightly more transparent for dashes
+        const shadowWidth = "2px";
+        
+        // Simulating dashed borders with multiple inset shadows is complex, 
+        // using a solid inset shadow as per the "inset box-shadow" requirement
+        // which snaps perfectly to the grid lines without adding layout size.
+        if (hasT) shadowParts.push(`inset 0 ${shadowWidth} 0 0 ${shadowColor}`);
+        if (hasB) shadowParts.push(`inset 0 -${shadowWidth} 0 0 ${shadowColor}`);
+        if (hasL) shadowParts.push(`inset ${shadowWidth} 0 0 0 ${shadowColor}`);
+        if (hasR) shadowParts.push(`inset -${shadowWidth} 0 0 0 ${shadowColor}`);
+
+        if (shadowParts.length > 0) {
           markers.push(
-            <div key={`brd-${cageIndex}-${cellIndex}`} className="absolute pointer-events-none" style={{ left: `${(cell.col * (100 / size))}%`, top: `${(cell.row * (100 / size))}%`, width: `${100 / size}%`, height: `${100 / size}%`, borderTop: hasT ? `2.5px solid ${cageColor}` : 'none', borderBottom: hasB ? `2.5px solid ${cageColor}` : 'none', borderLeft: hasL ? `2.5px solid ${cageColor}` : 'none', borderRight: hasR ? `2.5px solid ${cageColor}` : 'none', backgroundColor: `${cageColor}10`, zIndex: 3 }} />
+            <div 
+              key={`brd-${cageIndex}-${cellIndex}`} 
+              className="absolute pointer-events-none" 
+              style={{ 
+                left: `${(cell.col * (100 / size))}%`, 
+                top: `${(cell.row * (100 / size))}%`, 
+                width: `${100 / size}%`, 
+                height: `${100 / size}%`, 
+                boxShadow: shadowParts.join(', '),
+                backgroundColor: `${cageColor}08`, 
+                zIndex: 3 
+              }} 
+            />
           );
         }
       });
