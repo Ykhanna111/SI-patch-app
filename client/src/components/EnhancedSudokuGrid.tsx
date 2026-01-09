@@ -207,15 +207,11 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
         const hasL = !cageSet.has(`${cell.row},${cell.col - 1}`);
         const hasR = !cageSet.has(`${cell.row},${cell.col + 1}`);
         
-        // Use inset box-shadow to avoid adding width/height to the cell layout
-        // Dashed effect using multiple inset shadows
+        // Use inset box-shadow for cage outlines to stay within grid lines
         const shadowParts: string[] = [];
-        const shadowColor = `${cageColor}AA`; // Slightly more transparent for dashes
-        const shadowWidth = "2px";
+        const shadowWidth = "2.5px"; 
+        const shadowColor = `${cageColor}CC`; 
         
-        // Simulating dashed borders with multiple inset shadows is complex, 
-        // using a solid inset shadow as per the "inset box-shadow" requirement
-        // which snaps perfectly to the grid lines without adding layout size.
         if (hasT) shadowParts.push(`inset 0 ${shadowWidth} 0 0 ${shadowColor}`);
         if (hasB) shadowParts.push(`inset 0 -${shadowWidth} 0 0 ${shadowColor}`);
         if (hasL) shadowParts.push(`inset ${shadowWidth} 0 0 0 ${shadowColor}`);
@@ -227,13 +223,14 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
               key={`brd-${cageIndex}-${cellIndex}`} 
               className="absolute pointer-events-none" 
               style={{ 
-                left: `${(cell.col * (100 / size))}%`, 
-                top: `${(cell.row * (100 / size))}%`, 
-                width: `${100 / size}%`, 
-                height: `${100 / size}%`, 
+                left: `${(cell.col * 100) / size}%`, 
+                top: `${(cell.row * 100) / size}%`, 
+                width: `calc(${100 / size}% + 0.5px)`, // Handle rounding errors
+                height: `calc(${100 / size}% + 0.5px)`, 
                 boxShadow: shadowParts.join(', '),
                 backgroundColor: `${cageColor}08`, 
-                zIndex: 3 
+                zIndex: 4,
+                boxSizing: 'border-box'
               }} 
             />
           );
