@@ -98,16 +98,16 @@ export default function EnhancedSudokuGrid({
       <div className="relative w-full flex items-center justify-center py-2 sm:py-4">
         <div 
           className={cn(
-            "grid gap-0 border-2 border-gray-800 rounded-sm overflow-hidden bg-white shadow-xl",
+            "grid gap-0 border-2 border-gray-800 rounded-sm overflow-hidden bg-white shadow-xl relative",
             "w-full mx-auto",
+            gameMode === 'killer' ? "max-w-[min(95vw,75vh,500px)]" : "max-w-[min(95vw,500px)]",
             `grid-cols-${size}`
           )} 
           style={{ 
             aspectRatio: '1/1',
             gridTemplateColumns: `repeat(${size}, 1fr)`,
             touchAction: 'none',
-            minWidth: '280px',
-            maxWidth: 'min(95vw, 500px)'
+            minWidth: '280px'
           }}
         >
           {Array.from({ length: size }, (_, row) =>
@@ -195,7 +195,7 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
     constraints.killerCages.forEach((cage: any, cageIndex: number) => {
       const topLeftCell = cage.cells.reduce((min: any, cell: any) => (cell.row < min.row || (cell.row === min.row && cell.col < min.col)) ? cell : min, cage.cells[0]);
       markers.push(
-        <div key={`sum-${cageIndex}`} className="absolute text-[0.65rem] font-bold text-gray-700 bg-white/80 px-0.5 rounded pointer-events-none" style={{ left: `${(topLeftCell.col * (100 / size)) + 0.5}%`, top: `${(topLeftCell.row * (100 / size)) + 0.5}%`, zIndex: 5 }}>
+        <div key={`sum-${cageIndex}`} className="absolute text-[0.55rem] sm:text-[0.65rem] font-bold text-gray-700 bg-white/80 px-0.5 rounded pointer-events-none z-[5]" style={{ left: `${(topLeftCell.col * (100 / size)) + 0.5}%`, top: `${(topLeftCell.row * (100 / size)) + 0.5}%` }}>
           {cage.sum}
         </div>
       );
@@ -208,7 +208,7 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
         const hasR = !cageSet.has(`${cell.row},${cell.col + 1}`);
         if (hasT || hasB || hasL || hasR) {
           markers.push(
-            <div key={`brd-${cageIndex}-${cellIndex}`} className="absolute pointer-events-none" style={{ left: `${(cell.col * (100 / size))}%`, top: `${(cell.row * (100 / size))}%`, width: `${100 / size}%`, height: `${100 / size}%`, borderTop: hasT ? `2.5px solid ${cageColor}` : 'none', borderBottom: hasB ? `2.5px solid ${cageColor}` : 'none', borderLeft: hasL ? `2.5px solid ${cageColor}` : 'none', borderRight: hasR ? `2.5px solid ${cageColor}` : 'none', backgroundColor: `${cageColor}10`, zIndex: 3 }} />
+            <div key={`brd-${cageIndex}-${cellIndex}`} className="absolute pointer-events-none box-border z-[3]" style={{ left: `${(cell.col * (100 / size))}%`, top: `${(cell.row * (100 / size))}%`, width: `${100 / size}%`, height: `${100 / size}%`, borderTop: hasT ? `2px solid ${cageColor}` : 'none', borderBottom: hasB ? `2px solid ${cageColor}` : 'none', borderLeft: hasL ? `2px solid ${cageColor}` : 'none', borderRight: hasR ? `2px solid ${cageColor}` : 'none', backgroundColor: `${cageColor}08` }} />
           );
         }
       });
