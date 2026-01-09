@@ -33,7 +33,7 @@ const SudokuCell = memo(({
 }: any) => {
   const cellClasses = useMemo(() => {
     return cn(
-      "aspect-square flex items-center justify-center font-bold cursor-pointer transition-colors border border-gray-300",
+      "aspect-square flex items-center justify-center font-bold cursor-pointer transition-colors border border-gray-300 box-border",
       size === 16 ? "text-[0.5rem] sm:text-xs" : size === 9 ? "text-sm sm:text-base lg:text-lg" : "text-sm sm:text-base",
       getGameSpecificBorders(row, col, gameMode, size, boxWidth, boxHeight, constraints),
       {
@@ -95,19 +95,18 @@ export default function EnhancedSudokuGrid({
 
   return (
     <div className="flex justify-center w-full">
-      <div className="relative w-full flex items-center justify-center p-1 sm:p-2 md:p-4">
+      <div className="relative w-full flex items-center justify-center p-1 sm:p-2">
         <div 
           className={cn(
             "grid gap-0 border-2 border-gray-800 rounded-sm overflow-hidden bg-white shadow-xl relative",
-            "w-full mx-auto",
+            "mx-auto",
+            gameMode === 'killer' ? "w-[min(90vw,60vh,380px)] h-[min(90vw,60vh,380px)]" : "w-full max-w-[min(95vw,500px)]",
             `grid-cols-${size}`
           )} 
           style={{ 
             aspectRatio: '1/1',
             gridTemplateColumns: `repeat(${size}, 1fr)`,
-            touchAction: 'none',
-            minWidth: 'min(280px, 95vw)',
-            maxWidth: 'min(95vw, 500px)'
+            touchAction: 'none'
           }}
         >
           {Array.from({ length: size }, (_, row) =>
@@ -195,7 +194,15 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
     constraints.killerCages.forEach((cage: any, cageIndex: number) => {
       const topLeftCell = cage.cells.reduce((min: any, cell: any) => (cell.row < min.row || (cell.row === min.row && cell.col < min.col)) ? cell : min, cage.cells[0]);
       markers.push(
-        <div key={`sum-${cageIndex}`} className="absolute text-[0.55rem] sm:text-[0.65rem] font-bold text-gray-700 bg-white/80 px-0.5 rounded pointer-events-none z-[5]" style={{ left: `${(topLeftCell.col * (100 / size)) + 0.5}%`, top: `${(topLeftCell.row * (100 / size)) + 0.5}%` }}>
+        <div 
+          key={`sum-${cageIndex}`} 
+          className="absolute text-[min(2vw,2vh,0.65rem)] font-bold text-gray-700 bg-white/80 px-0.5 rounded pointer-events-none z-[5]" 
+          style={{ 
+            left: `${(topLeftCell.col * (100 / size)) + 0.2}%`, 
+            top: `${(topLeftCell.row * (100 / size)) + 0.2}%`,
+            lineHeight: 1
+          }}
+        >
           {cage.sum}
         </div>
       );
@@ -208,7 +215,18 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
         const hasR = !cageSet.has(`${cell.row},${cell.col + 1}`);
         if (hasT || hasB || hasL || hasR) {
           markers.push(
-            <div key={`brd-${cageIndex}-${cellIndex}`} className="absolute pointer-events-none box-border z-[3]" style={{ left: `${(cell.col * (100 / size))}%`, top: `${(cell.row * (100 / size))}%`, width: `${100 / size}%`, height: `${100 / size}%`, borderTop: hasT ? `2px solid ${cageColor}` : 'none', borderBottom: hasB ? `2px solid ${cageColor}` : 'none', borderLeft: hasL ? `2px solid ${cageColor}` : 'none', borderRight: hasR ? `2px solid ${cageColor}` : 'none', backgroundColor: `${cageColor}08` }} />
+            <div 
+              key={`brd-${cageIndex}-${cellIndex}`} 
+              className="absolute pointer-events-none box-border z-[3]" 
+              style={{ 
+                left: `${(cell.col * (100 / size))}%`, 
+                top: `${(cell.row * (100 / size))}%`, 
+                width: `${100 / size}%`, 
+                height: `${100 / size}%`, 
+                boxShadow: `inset 0 ${hasT ? '2px' : '0'} 0 0 ${cageColor}, inset 0 ${hasB ? '-2px' : '0'} 0 0 ${cageColor}, inset ${hasL ? '2px' : '0'} 0 0 0 ${cageColor}, inset ${hasR ? '-2px' : '0'} 0 0 0 ${cageColor}`,
+                backgroundColor: `${cageColor}08` 
+              }} 
+            />
           );
         }
       });

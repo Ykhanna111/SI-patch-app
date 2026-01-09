@@ -631,8 +631,8 @@ export default function GamePage() {
           </div>
 
           {/* Main Game Panel */}
-          <div className="flex flex-col min-h-0 bg-sudoku-bg w-full overflow-hidden">
-            <div className="bg-white rounded-lg shadow-lg border border-gray-100 flex flex-col mb-4 overflow-hidden w-full max-w-full">
+          <div className="flex flex-col min-h-0 bg-sudoku-bg w-full">
+            <div className="bg-white rounded-lg shadow-lg border border-gray-100 flex flex-col mb-4 w-full max-w-full">
               {/* Compact Header */}
               <div className="flex items-center justify-between px-2 sm:px-3 py-1.5 sm:py-2 border-b shrink-0 bg-white sticky top-0 z-10">
                 <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
