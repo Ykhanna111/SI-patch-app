@@ -162,14 +162,99 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
   if (!constraints) return null;
   const markers: JSX.Element[] = [];
 
+  // Killer Sudoku cages
+  if (constraints.killerCages && gameMode === 'killer') {
+    // 1. Sum labels - Positioned absolutely relative to the grid
+    constraints.killerCages.forEach((cage: any, cageIndex: number) => {
+      const topLeftCell = cage.cells.reduce((min: any, cell: any) => 
+        (cell.row < min.row || (cell.row === min.row && cell.col < min.col)) ? cell : min, 
+        cage.cells[0]
+      );
+      markers.push(
+        <div 
+          key={`sum-${cageIndex}`} 
+          className="absolute text-[0.6rem] sm:text-[0.65rem] font-bold text-gray-700 bg-white/90 px-0.5 rounded-sm pointer-events-none shadow-sm" 
+          style={{ 
+            left: `${(topLeftCell.col * 100) / size}%`, 
+            top: `${(topLeftCell.row * 100) / size}%`, 
+            transform: 'translate(2px, 2px)',
+            zIndex: 30 
+          }}
+        >
+          {cage.sum}
+        </div>
+      );
+    });
+
+    // 2. Single SVG overlay for all cage outlines
+    // The viewBox is set to match the grid dimensions exactly (e.g., 0 0 9 9)
+    // This allows us to use integer coordinates for snapping.
+    markers.push(
+      <svg 
+        key="killer-cages-svg" 
+        className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" 
+        viewBox={`0 0 ${size} ${size}`}
+        preserveAspectRatio="none"
+        style={{ zIndex: 20 }}
+      >
+        {constraints.killerCages.map((cage: any, cageIndex: number) => {
+          const cageColor = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'][cageIndex % 8];
+          const cageSet = new Set(cage.cells.map((c: any) => `${c.row},${c.col}`));
+          const paths: string[] = [];
+
+          cage.cells.forEach((cell: any) => {
+            const r = cell.row;
+            const c = cell.col;
+            
+            // Check neighbors to determine where to draw borders
+            const hasT = !cageSet.has(`${r - 1},${c}`);
+            const hasB = !cageSet.has(`${r + 1},${c}`);
+            const hasL = !cageSet.has(`${r},${c - 1}`);
+            const hasR = !cageSet.has(`${r},${c + 1}`);
+
+            // Draw line segments for each outer edge of the cell within the cage
+            // Using a dashed line style for the cage
+            if (hasT) paths.push(`M ${c} ${r} L ${c + 1} ${r}`);
+            if (hasB) paths.push(`M ${c} ${r + 1} L ${c + 1} ${r + 1}`);
+            if (hasL) paths.push(`M ${c} ${r} L ${c} ${r + 1}`);
+            if (hasR) paths.push(`M ${c + 1} ${r} L ${c + 1} ${r + 1}`);
+          });
+
+          return (
+            <g key={`cage-g-${cageIndex}`}>
+              {/* Cage fill */}
+              <path
+                d={cage.cells.map((cell: any) => `M ${cell.col} ${cell.row} h 1 v 1 h -1 z`).join(' ')}
+                fill={cageColor}
+                fillOpacity="0.05"
+              />
+              {/* Cage dashed outline */}
+              <path
+                d={paths.join(' ')}
+                stroke={cageColor}
+                strokeWidth="0.08"
+                strokeDasharray="0.1, 0.05"
+                strokeLinecap="round"
+                fill="none"
+              />
+            </g>
+          );
+        })}
+      </svg>
+    );
+  }
+
   // Inequality markers
   if (constraints.inequalities && gameMode === 'inequality') {
     constraints.inequalities.forEach((ineq: any, index: number) => {
       const isHorizontal = ineq.cell1.row === ineq.cell2.row;
-      const centerRow = ineq.cell1.row + (isHorizontal ? 0 : 0.5);
-      const centerCol = ineq.cell1.col + (isHorizontal ? 0.5 : 0);
+      const centerRow = ineq.cell1.row + 0.5;
+      const centerCol = ineq.cell1.col + 0.5;
+      const leftPos = isHorizontal ? (ineq.cell1.col + ineq.cell2.col + 1) / 2 : centerCol;
+      const topPos = isHorizontal ? centerRow : (ineq.cell1.row + ineq.cell2.row + 1) / 2;
+
       markers.push(
-        <div key={`ineq-${index}`} className="absolute text-lg font-bold text-purple-600 pointer-events-none" style={{ left: `${(centerCol * (100 / size))}%`, top: `${(centerRow * (100 / size))}%`, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
+        <div key={`ineq-${index}`} className="absolute text-lg font-bold text-purple-600 pointer-events-none" style={{ left: `${(leftPos * 100) / size}%`, top: `${(topPos * 100) / size}%`, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
           {ineq.operator}
         </div>
       );
@@ -180,71 +265,15 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
   if (constraints.consecutiveMarkers && gameMode === 'consecutive') {
     constraints.consecutiveMarkers.forEach((marker: any, index: number) => {
       const isHorizontal = marker.cell1.row === marker.cell2.row;
-      const centerRow = marker.cell1.row + (isHorizontal ? 0 : 0.5);
-      const centerCol = marker.cell1.col + (isHorizontal ? 0.5 : 0);
+      const leftPos = isHorizontal ? (marker.cell1.col + marker.cell2.col + 1) / 2 : marker.cell1.col + 0.5;
+      const topPos = isHorizontal ? marker.cell1.row + 0.5 : (marker.cell1.row + marker.cell2.row + 1) / 2;
+
       markers.push(
-        <div key={`cons-${index}`} className="absolute w-2 h-2 bg-white border-2 border-gray-600 rounded-full pointer-events-none" style={{ left: `${(centerCol * (100 / size))}%`, top: `${(centerRow * (100 / size))}%`, transform: 'translate(-50%, -50%)', zIndex: 10 }} />
+        <div key={`cons-${index}`} className="absolute w-2 h-2 bg-white border-2 border-gray-600 rounded-full pointer-events-none" style={{ left: `${(leftPos * 100) / size}%`, top: `${(topPos * 100) / size}%`, transform: 'translate(-50%, -50%)', zIndex: 10 }} />
       );
     });
   }
 
-  // Killer Sudoku cages
-  if (constraints.killerCages && gameMode === 'killer') {
-    constraints.killerCages.forEach((cage: any, cageIndex: number) => {
-      const topLeftCell = cage.cells.reduce((min: any, cell: any) => (cell.row < min.row || (cell.row === min.row && cell.col < min.col)) ? cell : min, cage.cells[0]);
-      markers.push(
-        <div key={`sum-${cageIndex}`} className="absolute text-[0.65rem] font-bold text-gray-700 bg-white/80 px-0.5 rounded pointer-events-none" style={{ left: `${(topLeftCell.col * (100 / size)) + 0.5}%`, top: `${(topLeftCell.row * (100 / size)) + 0.5}%`, zIndex: 5 }}>
-          {cage.sum}
-        </div>
-      );
-      const cageColor = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'][cageIndex % 8];
-      cage.cells.forEach((cell: any, cellIndex: number) => {
-        const cageSet = new Set(cage.cells.map((c: any) => `${c.row},${c.col}`));
-        const hasT = !cageSet.has(`${cell.row - 1},${cell.col}`);
-        const hasB = !cageSet.has(`${cell.row + 1},${cell.col}`);
-        const hasL = !cageSet.has(`${cell.row},${cell.col - 1}`);
-        const hasR = !cageSet.has(`${cell.row},${cell.col + 1}`);
-        
-        // Use inset box-shadow for cage outlines to stay within grid lines
-        const shadowParts: string[] = [];
-        const shadowWidth = "2.5px"; 
-        const shadowColor = `${cageColor}CC`; 
-        
-        if (hasT) shadowParts.push(`inset 0 ${shadowWidth} 0 0 ${shadowColor}`);
-        if (hasB) shadowParts.push(`inset 0 -${shadowWidth} 0 0 ${shadowColor}`);
-        if (hasL) shadowParts.push(`inset ${shadowWidth} 0 0 0 ${shadowColor}`);
-        if (hasR) shadowParts.push(`inset -${shadowWidth} 0 0 0 ${shadowColor}`);
-
-        if (shadowParts.length > 0) {
-          markers.push(
-            <div 
-              key={`brd-${cageIndex}-${cellIndex}`} 
-              className="absolute pointer-events-none" 
-              style={{ 
-                left: `${(cell.col * 100) / size}%`, 
-                top: `${(cell.row * 100) / size}%`, 
-                width: `${100 / size}%`, 
-                height: `${100 / size}%`, 
-                boxShadow: shadowParts.join(', '),
-                backgroundColor: `${cageColor}08`, 
-                zIndex: 4,
-                boxSizing: 'border-box',
-                // To perfectly overlap with the grid borders (which are 1px-2px thick)
-                // we need to slightly pull the shadow out. 
-                // However, the requirement is to use "visual overlays only".
-                // Let's try using a standard outline with negative offset or 
-                // adjusting the box-shadow to be non-inset but clipped if needed.
-                // Actually, standard borders are centered on the line between cells.
-                // Using 0 offset inset shadow means it starts at the INNER edge of the div.
-                // If we make the div slightly larger and center it, it might work.
-                transform: 'scale(1.02)' 
-              }} 
-            />
-          );
-        }
-      });
-    });
-  }
   return markers;
 }
 
