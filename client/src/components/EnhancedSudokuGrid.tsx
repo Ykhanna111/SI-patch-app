@@ -95,19 +95,19 @@ export default function EnhancedSudokuGrid({
 
   return (
     <div className="flex justify-center w-full">
-      <div className="relative w-full flex items-center justify-center py-2 sm:py-4">
+      <div className="relative w-full flex items-center justify-center p-1 sm:p-2 md:p-4">
         <div 
           className={cn(
             "grid gap-0 border-2 border-gray-800 rounded-sm overflow-hidden bg-white shadow-xl relative",
             "w-full mx-auto",
-            gameMode === 'killer' ? "max-w-[min(95vw,75vh,500px)]" : "max-w-[min(95vw,500px)]",
             `grid-cols-${size}`
           )} 
           style={{ 
             aspectRatio: '1/1',
             gridTemplateColumns: `repeat(${size}, 1fr)`,
             touchAction: 'none',
-            minWidth: '280px'
+            minWidth: 'min(280px, 95vw)',
+            maxWidth: 'min(95vw, 500px)'
           }}
         >
           {Array.from({ length: size }, (_, row) =>
