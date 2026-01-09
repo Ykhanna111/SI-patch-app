@@ -95,19 +95,16 @@ export default function EnhancedSudokuGrid({
 
   return (
     <div className="flex justify-center w-full">
-      <div className="relative w-full flex items-center justify-center py-2 sm:py-4">
+      <div className="relative py-2 sm:py-4 w-full max-w-[min(95vw,500px)]">
         <div 
           className={cn(
-            "grid gap-0 border-2 border-gray-800 rounded-sm overflow-hidden bg-white shadow-xl",
-            "w-full mx-auto",
+            "grid gap-0 border-2 border-gray-800 rounded-sm overflow-hidden bg-white shadow-xl w-full",
             `grid-cols-${size}`
           )} 
           style={{ 
             aspectRatio: '1/1',
             gridTemplateColumns: `repeat(${size}, 1fr)`,
             touchAction: 'none',
-            minWidth: '280px',
-            maxWidth: 'min(95vw, 500px)'
           }}
         >
           {Array.from({ length: size }, (_, row) =>
@@ -150,10 +147,11 @@ export default function EnhancedSudokuGrid({
               );
             })
           )}
-        </div>
-        
-        <div className="absolute inset-0 pointer-events-none">
-          {renderConstraintMarkers(constraints, size, gameMode)}
+          
+          {/* Overlay container inside the grid to ensure alignment with cells */}
+          <div className="absolute inset-0 pointer-events-none z-10">
+            {renderConstraintMarkers(constraints, size, gameMode)}
+          </div>
         </div>
       </div>
     </div>
@@ -225,12 +223,21 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
               style={{ 
                 left: `${(cell.col * 100) / size}%`, 
                 top: `${(cell.row * 100) / size}%`, 
-                width: `calc(${100 / size}% + 0.5px)`, // Handle rounding errors
-                height: `calc(${100 / size}% + 0.5px)`, 
+                width: `${100 / size}%`, 
+                height: `${100 / size}%`, 
                 boxShadow: shadowParts.join(', '),
                 backgroundColor: `${cageColor}08`, 
                 zIndex: 4,
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                // To perfectly overlap with the grid borders (which are 1px-2px thick)
+                // we need to slightly pull the shadow out. 
+                // However, the requirement is to use "visual overlays only".
+                // Let's try using a standard outline with negative offset or 
+                // adjusting the box-shadow to be non-inset but clipped if needed.
+                // Actually, standard borders are centered on the line between cells.
+                // Using 0 offset inset shadow means it starts at the INNER edge of the div.
+                // If we make the div slightly larger and center it, it might work.
+                transform: 'scale(1.02)' 
               }} 
             />
           );
