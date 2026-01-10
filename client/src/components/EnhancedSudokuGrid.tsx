@@ -49,13 +49,21 @@ const SudokuCell = memo(({
     const hasR = !cageSet.has(`${row},${col + 1}`);
 
     const style: any = {
-      backgroundColor: `${cageColor}0D`,
+      backgroundColor: `${cageColor}1A`, // Increased transparency slightly for better look
     };
 
-    if (hasT) { style.borderTopWidth = '2px'; style.borderTopColor = cageColor; style.borderTopStyle = 'dashed'; }
-    if (hasB) { style.borderBottomWidth = '2px'; style.borderBottomColor = cageColor; style.borderBottomStyle = 'dashed'; }
-    if (hasL) { style.borderLeftWidth = '2px'; style.borderLeftColor = cageColor; style.borderLeftStyle = 'dashed'; }
-    if (hasR) { style.borderRightWidth = '2px'; style.borderRightColor = cageColor; style.borderRightStyle = 'dashed'; }
+    const borderStyle = `2px dashed ${cageColor}`;
+    if (hasT) style.borderTop = borderStyle;
+    if (hasB) style.borderBottom = borderStyle;
+    if (hasL) style.borderLeft = borderStyle;
+    if (hasR) style.borderRight = borderStyle;
+
+    // Add rounded corners to the cage edges
+    const cornerRadius = "4px";
+    if (hasT && hasL) style.borderTopLeftRadius = cornerRadius;
+    if (hasT && hasR) style.borderTopRightRadius = cornerRadius;
+    if (hasB && hasL) style.borderBottomLeftRadius = cornerRadius;
+    if (hasB && hasR) style.borderBottomRightRadius = cornerRadius;
 
     return style;
   }, [row, col, gameMode, constraints]);
