@@ -31,6 +31,35 @@ const SudokuCell = memo(({
   constraints,
   onClick,
 }: any) => {
+  const cageStyle = useMemo(() => {
+    if (gameMode !== 'killer' || !constraints?.killerCages) return {};
+    
+    const cage = constraints.killerCages.find((c: any) => 
+      c.cells.some((cell: any) => cell.row === row && cell.col === col)
+    );
+    if (!cage) return {};
+
+    const cageIndex = constraints.killerCages.indexOf(cage);
+    const cageColor = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'][cageIndex % 8];
+    const cageSet = new Set(cage.cells.map((c: any) => `${c.row},${c.col}`));
+    
+    const hasT = !cageSet.has(`${row - 1},${col}`);
+    const hasB = !cageSet.has(`${row + 1},${col}`);
+    const hasL = !cageSet.has(`${row},${col - 1}`);
+    const hasR = !cageSet.has(`${row},${col + 1}`);
+
+    const style: any = {
+      backgroundColor: `${cageColor}0D`,
+    };
+
+    if (hasT) { style.borderTopWidth = '2px'; style.borderTopColor = cageColor; style.borderTopStyle = 'dashed'; }
+    if (hasB) { style.borderBottomWidth = '2px'; style.borderBottomColor = cageColor; style.borderBottomStyle = 'dashed'; }
+    if (hasL) { style.borderLeftWidth = '2px'; style.borderLeftColor = cageColor; style.borderLeftStyle = 'dashed'; }
+    if (hasR) { style.borderRightWidth = '2px'; style.borderRightColor = cageColor; style.borderRightStyle = 'dashed'; }
+
+    return style;
+  }, [row, col, gameMode, constraints]);
+
   const cellClasses = useMemo(() => {
     return cn(
       "aspect-square flex items-center justify-center font-bold cursor-pointer transition-colors border border-gray-300",
@@ -61,7 +90,7 @@ const SudokuCell = memo(({
   }, [value, gameMode]);
 
   return (
-    <div className={cellClasses} onClick={() => onClick(row, col)} data-testid={`cell-${row}-${col}`} style={{ touchAction: 'manipulation' }}>
+    <div className={cellClasses} onClick={() => onClick(row, col)} data-testid={`cell-${row}-${col}`} style={{ touchAction: 'manipulation', ...cageStyle }}>
       <span className={textClasses}>{displayValue}</span>
     </div>
   );
@@ -169,9 +198,8 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
   if (!constraints) return null;
   const markers: JSX.Element[] = [];
 
-  // Killer Sudoku cages
+  // Killer Sudoku sum labels only (cages are now handled in SudokuCell)
   if (constraints.killerCages && gameMode === 'killer') {
-    // 1. Sum labels - Positioned absolutely relative to the grid
     constraints.killerCages.forEach((cage: any, cageIndex: number) => {
       const topLeftCell = cage.cells.reduce((min: any, cell: any) => 
         (cell.row < min.row || (cell.row === min.row && cell.col < min.col)) ? cell : min, 
@@ -192,64 +220,6 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
         </div>
       );
     });
-
-    // 2. Single SVG overlay for all cage outlines
-    // The viewBox is set to match the grid dimensions exactly (e.g., 0 0 9 9)
-    // This allows us to use integer coordinates for snapping.
-    markers.push(
-      <svg 
-        key="killer-cages-svg" 
-        className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" 
-        viewBox={`0 0 ${size} ${size}`}
-        preserveAspectRatio="none"
-        style={{ zIndex: 20 }}
-      >
-        {constraints.killerCages.map((cage: any, cageIndex: number) => {
-          const cageColor = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'][cageIndex % 8];
-          const cageSet = new Set(cage.cells.map((c: any) => `${c.row},${c.col}`));
-          const paths: string[] = [];
-
-          cage.cells.forEach((cell: any) => {
-            const r = cell.row;
-            const c = cell.col;
-            
-            // Check neighbors to determine where to draw borders
-            const hasT = !cageSet.has(`${r - 1},${c}`);
-            const hasB = !cageSet.has(`${r + 1},${c}`);
-            const hasL = !cageSet.has(`${r},${c - 1}`);
-            const hasR = !cageSet.has(`${r},${c + 1}`);
-
-            // Draw line segments for each outer edge of the cell within the cage
-            // Using a dashed line style for the cage
-            if (hasT) paths.push(`M ${c} ${r} L ${c + 1} ${r}`);
-            if (hasB) paths.push(`M ${c} ${r + 1} L ${c + 1} ${r + 1}`);
-            if (hasL) paths.push(`M ${c} ${r} L ${c} ${r + 1}`);
-            if (hasR) paths.push(`M ${c + 1} ${r} L ${c + 1} ${r + 1}`);
-          });
-
-          return (
-            <g key={`cage-g-${cageIndex}`}>
-              {/* Cage fill */}
-              <path
-                d={cage.cells.map((cell: any) => `M ${cell.col} ${cell.row} h 1 v 1 h -1 z`).join(' ')}
-                fill={cageColor}
-                fillOpacity="0.08"
-              />
-              {/* Cage dashed outline */}
-              <path
-                d={paths.join(' ')}
-                stroke={cageColor}
-                strokeWidth="0.1"
-                strokeDasharray="0.1, 0.05"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </g>
-          );
-        })}
-      </svg>
-    );
   }
 
   // Inequality markers
@@ -296,6 +266,28 @@ function getGameSpecificBorders(
   constraints?: GameConstraints
 ): string {
   const classes: string[] = [];
+
+  if ((gameMode as string) === 'killer' && constraints?.killerCages) {
+    const cellKey = `${row},${col}`;
+    const cage = constraints.killerCages.find((c: any) => 
+      c.cells.some((cell: any) => cell.row === row && cell.col === col)
+    );
+
+    if (cage) {
+      const cageSet = new Set(cage.cells.map((c: any) => `${c.row},${c.col}`));
+      const cageColor = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'][constraints.killerCages.indexOf(cage) % 8];
+      
+      const hasT = !cageSet.has(`${row - 1},${col}`);
+      const hasB = !cageSet.has(`${row + 1},${col}`);
+      const hasL = !cageSet.has(`${row},${col - 1}`);
+      const hasR = !cageSet.has(`${row},${col + 1}`);
+
+      // We'll use CSS classes or style objects for these colors later if needed,
+      // but for now let's use standard border colors or inline styles.
+      // Since Tailwind doesn't support dynamic colors well without configuration,
+      // we might need to handle the specific cage borders via style prop or custom utility.
+    }
+  }
 
   if ((gameMode as string) === 'jigsaw') {
     return "border-gray-400";
