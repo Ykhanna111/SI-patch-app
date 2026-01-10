@@ -149,7 +149,7 @@ export default function EnhancedSudokuGrid({
           )}
           
           {/* Overlay container inside the grid to ensure alignment with cells */}
-          <div className="absolute inset-0 pointer-events-none z-10">
+          <div className="absolute inset-0 pointer-events-none z-10 select-none">
             {renderConstraintMarkers(constraints, size, gameMode)}
           </div>
         </div>
@@ -226,15 +226,16 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
               <path
                 d={cage.cells.map((cell: any) => `M ${cell.col} ${cell.row} h 1 v 1 h -1 z`).join(' ')}
                 fill={cageColor}
-                fillOpacity="0.05"
+                fillOpacity="0.08"
               />
               {/* Cage dashed outline */}
               <path
                 d={paths.join(' ')}
                 stroke={cageColor}
-                strokeWidth="0.08"
+                strokeWidth="0.1"
                 strokeDasharray="0.1, 0.05"
                 strokeLinecap="round"
+                strokeLinejoin="round"
                 fill="none"
               />
             </g>
