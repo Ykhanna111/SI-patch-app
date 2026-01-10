@@ -152,6 +152,8 @@ export default function EnhancedSudokuGrid({
           <div 
             className="absolute inset-0 pointer-events-none z-10 select-none"
             style={{ 
+              width: '100%',
+              height: '100%',
               boxSizing: 'border-box'
             }}
           >
