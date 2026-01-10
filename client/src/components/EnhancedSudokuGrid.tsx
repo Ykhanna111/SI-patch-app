@@ -213,7 +213,7 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
             <g key={`cage-${cageIndex}`}>
               {/* Cage background fill */}
               <path 
-                d={cage.cells.map((cell: any) => `M${cell.col + 0.05},${cell.row + 0.05} h0.9 v0.9 h-0.9 z`).join(' ')} 
+                d={cage.cells.map((cell: any) => `M${cell.col},${cell.row} h1 v1 h-1 z`).join(' ')} 
                 fill={cageColor} 
                 fillOpacity="0.05" 
               />
@@ -228,12 +228,12 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
                   const hasR = !cageSet.has(`${r},${c+1}`);
                   
                   const segments = [];
-                  const padding = 0.05; // 5% inset on each side = 10% reduction in dimension
+                  const padding = 0.02; // 2% inset for sub-pixel safety while looking "full size"
                   
-                  if (hasT) segments.push(`M${c + padding},${r + padding} h${1 - 2 * padding}`);
-                  if (hasB) segments.push(`M${c + padding},${r + 1 - padding} h${1 - 2 * padding}`);
-                  if (hasL) segments.push(`M${c + padding},${r + padding} v${1 - 2 * padding}`);
-                  if (hasR) segments.push(`M${c + 1 - padding},${r + padding} v${1 - 2 * padding}`);
+                  if (hasT) segments.push(`M${c},${r} h1`);
+                  if (hasB) segments.push(`M${c},${r+1} h1`);
+                  if (hasL) segments.push(`M${c},${r} v1`);
+                  if (hasR) segments.push(`M${c+1},${r} v1`);
                   
                   return segments.join(' ');
                 }).join(' ')}
