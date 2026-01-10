@@ -213,17 +213,34 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
             <g key={`cage-${cageIndex}`}>
               {/* Cage background fill */}
               <path 
-                d={cage.cells.map((cell: any) => `M${cell.col},${cell.row} h1 v1 h-1 z`).join(' ')} 
+                d={cage.cells.map((cell: any) => `M${cell.col + 0.05},${cell.row + 0.05} h0.9 v0.9 h-0.9 z`).join(' ')} 
                 fill={cageColor} 
                 fillOpacity="0.05" 
               />
-              {/* Cage dashed outline - using integer-snapped SVG paths */}
+              {/* Cage dashed outline - reduced by 10% (0.05 inset on all sides) */}
               <path 
-                d={paths.join(' ')} 
+                d={cage.cells.map((cell: any) => {
+                  const { row: r, col: c } = cell;
+                  const cageSet = new Set(cage.cells.map((cc: any) => `${cc.row},${cc.col}`));
+                  const hasT = !cageSet.has(`${r-1},${c}`);
+                  const hasB = !cageSet.has(`${r+1},${c}`);
+                  const hasL = !cageSet.has(`${r},${c-1}`);
+                  const hasR = !cageSet.has(`${r},${c+1}`);
+                  
+                  const segments = [];
+                  const padding = 0.05; // 5% inset on each side = 10% reduction in dimension
+                  
+                  if (hasT) segments.push(`M${c + padding},${r + padding} h${1 - 2 * padding}`);
+                  if (hasB) segments.push(`M${c + padding},${r + 1 - padding} h${1 - 2 * padding}`);
+                  if (hasL) segments.push(`M${c + padding},${r + padding} v${1 - 2 * padding}`);
+                  if (hasR) segments.push(`M${c + 1 - padding},${r + padding} v${1 - 2 * padding}`);
+                  
+                  return segments.join(' ');
+                }).join(' ')}
                 stroke={cageColor} 
                 strokeWidth="0.08" 
                 strokeDasharray="0.1, 0.05" 
-                strokeLinecap="butt"
+                strokeLinecap="round"
                 fill="none" 
               />
             </g>
