@@ -40,7 +40,13 @@ const SudokuCell = memo(({
     if (!cage) return {};
 
     const cageIndex = constraints.killerCages.indexOf(cage);
-    const cageColor = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'][cageIndex % 8];
+    const cageColors = [
+      '#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16',
+      '#dc2626', '#2563eb', '#059669', '#d97706', '#7c3aed', '#db2777', '#0891b2', '#65a30d',
+      '#991b1b', '#1e40af', '#065f46', '#92400e', '#5b21b6', '#9d174d', '#155e75', '#3f6212'
+    ];
+    // Map cage index to color using a more varied selection to avoid adjacent same colors
+    const cageColor = cageColors[cageIndex % cageColors.length];
     const cageSet = new Set(cage.cells.map((c: any) => `${c.row},${c.col}`));
     
     const hasT = !cageSet.has(`${row - 1},${col}`);
