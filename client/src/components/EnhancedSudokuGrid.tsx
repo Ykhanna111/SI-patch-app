@@ -202,6 +202,7 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
 
           cage.cells.forEach((cell: any) => {
             const { row: r, col: c } = cell;
+            // Draw cage boundaries (dashed lines)
             if (!cageSet.has(`${r-1},${c}`)) paths.push(`M${c},${r} h1`); // Top
             if (!cageSet.has(`${r+1},${c}`)) paths.push(`M${c},${r+1} h1`); // Bottom
             if (!cageSet.has(`${r},${c-1}`)) paths.push(`M${c},${r} v1`); // Left
@@ -210,15 +211,17 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
 
           return (
             <g key={`cage-${cageIndex}`}>
+              {/* Cage background fill */}
               <path 
                 d={cage.cells.map((cell: any) => `M${cell.col},${cell.row} h1 v1 h-1 z`).join(' ')} 
                 fill={cageColor} 
                 fillOpacity="0.05" 
               />
+              {/* Cage dashed outline - using integer-snapped SVG paths */}
               <path 
                 d={paths.join(' ')} 
                 stroke={cageColor} 
-                strokeWidth="0.1" 
+                strokeWidth="0.08" 
                 strokeDasharray="0.1, 0.05" 
                 strokeLinecap="butt"
                 fill="none" 
