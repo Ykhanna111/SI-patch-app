@@ -211,13 +211,7 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
 
           return (
             <g key={`cage-${cageIndex}`}>
-              {/* Cage background fill */}
-              <path 
-                d={cage.cells.map((cell: any) => `M${cell.col},${cell.row} h1 v1 h-1 z`).join(' ')} 
-                fill={cageColor} 
-                fillOpacity="0.05" 
-              />
-              {/* Cage dashed outline - reduced by 10% (0.05 inset on all sides) */}
+              {/* Cage dashed outline - using integer-snapped SVG paths */}
               <path 
                 d={cage.cells.map((cell: any) => {
                   const { row: r, col: c } = cell;
