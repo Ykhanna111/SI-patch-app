@@ -149,7 +149,7 @@ export default function EnhancedSudokuGrid({
           )}
           
           {/* Overlay container inside the grid to ensure alignment with cells */}
-          <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none z-10">
             {renderConstraintMarkers(constraints, size, gameMode)}
           </div>
         </div>
@@ -162,9 +162,9 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
   if (!constraints) return null;
   const markers: JSX.Element[] = [];
 
-  // Killer Sudoku cages - Single SVG overlay for pixel-perfect alignment
+  // Killer Sudoku cages
   if (constraints.killerCages && gameMode === 'killer') {
-    // 1. Sum labels
+    // 1. Sum labels - Positioned absolutely relative to the grid
     constraints.killerCages.forEach((cage: any, cageIndex: number) => {
       const topLeftCell = cage.cells.reduce((min: any, cell: any) => 
         (cell.row < min.row || (cell.row === min.row && cell.col < min.col)) ? cell : min, 
@@ -173,12 +173,12 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
       markers.push(
         <div 
           key={`sum-${cageIndex}`} 
-          className="absolute text-[0.6rem] font-bold text-gray-700 bg-white/90 px-0.5 rounded-sm pointer-events-none z-30" 
+          className="absolute text-[0.6rem] sm:text-[0.65rem] font-bold text-gray-700 bg-white/90 px-0.5 rounded-sm pointer-events-none shadow-sm" 
           style={{ 
             left: `${(topLeftCell.col * 100) / size}%`, 
             top: `${(topLeftCell.row * 100) / size}%`, 
-            padding: '1px 2px',
-            margin: '2px'
+            transform: 'translate(2px, 2px)',
+            zIndex: 30 
           }}
         >
           {cage.sum}
@@ -186,14 +186,16 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
       );
     });
 
-    // 2. SVG Overlay for Cage Boundaries
+    // 2. Single SVG overlay for all cage outlines
+    // The viewBox is set to match the grid dimensions exactly (e.g., 0 0 9 9)
+    // This allows us to use integer coordinates for snapping.
     markers.push(
       <svg 
-        key="killer-svg-overlay"
-        className="absolute inset-0 w-full h-full pointer-events-none z-20"
+        key="killer-cages-svg" 
+        className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" 
         viewBox={`0 0 ${size} ${size}`}
         preserveAspectRatio="none"
-        style={{ shapeRendering: 'crispEdges' }}
+        style={{ zIndex: 20 }}
       >
         {constraints.killerCages.map((cage: any, cageIndex: number) => {
           const cageColor = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'][cageIndex % 8];
@@ -201,41 +203,39 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
           const paths: string[] = [];
 
           cage.cells.forEach((cell: any) => {
-            const { row: r, col: c } = cell;
-            // Draw cage boundaries (dashed lines)
-            if (!cageSet.has(`${r-1},${c}`)) paths.push(`M${c},${r} h1`); // Top
-            if (!cageSet.has(`${r+1},${c}`)) paths.push(`M${c},${r+1} h1`); // Bottom
-            if (!cageSet.has(`${r},${c-1}`)) paths.push(`M${c},${r} v1`); // Left
-            if (!cageSet.has(`${r},${c+1}`)) paths.push(`M${c+1},${r} v1`); // Right
+            const r = cell.row;
+            const c = cell.col;
+            
+            // Check neighbors to determine where to draw borders
+            const hasT = !cageSet.has(`${r - 1},${c}`);
+            const hasB = !cageSet.has(`${r + 1},${c}`);
+            const hasL = !cageSet.has(`${r},${c - 1}`);
+            const hasR = !cageSet.has(`${r},${c + 1}`);
+
+            // Draw line segments for each outer edge of the cell within the cage
+            // Using a dashed line style for the cage
+            if (hasT) paths.push(`M ${c} ${r} L ${c + 1} ${r}`);
+            if (hasB) paths.push(`M ${c} ${r + 1} L ${c + 1} ${r + 1}`);
+            if (hasL) paths.push(`M ${c} ${r} L ${c} ${r + 1}`);
+            if (hasR) paths.push(`M ${c + 1} ${r} L ${c + 1} ${r + 1}`);
           });
 
           return (
-            <g key={`cage-${cageIndex}`}>
-              {/* Cage dashed outline - using integer-snapped SVG paths */}
-              <path 
-                d={cage.cells.map((cell: any) => {
-                  const { row: r, col: c } = cell;
-                  const cageSet = new Set(cage.cells.map((cc: any) => `${cc.row},${cc.col}`));
-                  const hasT = !cageSet.has(`${r-1},${c}`);
-                  const hasB = !cageSet.has(`${r+1},${c}`);
-                  const hasL = !cageSet.has(`${r},${c-1}`);
-                  const hasR = !cageSet.has(`${r},${c+1}`);
-                  
-                  const segments = [];
-                  const padding = 0.02; // 2% inset for sub-pixel safety while looking "full size"
-                  
-                  if (hasT) segments.push(`M${c},${r} h1`);
-                  if (hasB) segments.push(`M${c},${r+1} h1`);
-                  if (hasL) segments.push(`M${c},${r} v1`);
-                  if (hasR) segments.push(`M${c+1},${r} v1`);
-                  
-                  return segments.join(' ');
-                }).join(' ')}
-                stroke={cageColor} 
-                strokeWidth="0.08" 
-                strokeDasharray="0.1, 0.05" 
+            <g key={`cage-g-${cageIndex}`}>
+              {/* Cage fill */}
+              <path
+                d={cage.cells.map((cell: any) => `M ${cell.col} ${cell.row} h 1 v 1 h -1 z`).join(' ')}
+                fill={cageColor}
+                fillOpacity="0.05"
+              />
+              {/* Cage dashed outline */}
+              <path
+                d={paths.join(' ')}
+                stroke={cageColor}
+                strokeWidth="0.08"
+                strokeDasharray="0.1, 0.05"
                 strokeLinecap="round"
-                fill="none" 
+                fill="none"
               />
             </g>
           );
@@ -248,10 +248,13 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
   if (constraints.inequalities && gameMode === 'inequality') {
     constraints.inequalities.forEach((ineq: any, index: number) => {
       const isHorizontal = ineq.cell1.row === ineq.cell2.row;
-      const x = isHorizontal ? (ineq.cell1.col + ineq.cell2.col + 1) / 2 : ineq.cell1.col + 0.5;
-      const y = isHorizontal ? ineq.cell1.row + 0.5 : (ineq.cell1.row + ineq.cell2.row + 1) / 2;
+      const centerRow = ineq.cell1.row + 0.5;
+      const centerCol = ineq.cell1.col + 0.5;
+      const leftPos = isHorizontal ? (ineq.cell1.col + ineq.cell2.col + 1) / 2 : centerCol;
+      const topPos = isHorizontal ? centerRow : (ineq.cell1.row + ineq.cell2.row + 1) / 2;
+
       markers.push(
-        <div key={`ineq-${index}`} className="absolute text-lg font-bold text-purple-600 pointer-events-none z-10" style={{ left: `${(x * 100) / size}%`, top: `${(y * 100) / size}%`, transform: 'translate(-50%, -50%)' }}>
+        <div key={`ineq-${index}`} className="absolute text-lg font-bold text-purple-600 pointer-events-none" style={{ left: `${(leftPos * 100) / size}%`, top: `${(topPos * 100) / size}%`, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
           {ineq.operator}
         </div>
       );
@@ -262,10 +265,11 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
   if (constraints.consecutiveMarkers && gameMode === 'consecutive') {
     constraints.consecutiveMarkers.forEach((marker: any, index: number) => {
       const isHorizontal = marker.cell1.row === marker.cell2.row;
-      const x = isHorizontal ? (marker.cell1.col + marker.cell2.col + 1) / 2 : marker.cell1.col + 0.5;
-      const y = isHorizontal ? marker.cell1.row + 0.5 : (marker.cell1.row + marker.cell2.row + 1) / 2;
+      const leftPos = isHorizontal ? (marker.cell1.col + marker.cell2.col + 1) / 2 : marker.cell1.col + 0.5;
+      const topPos = isHorizontal ? marker.cell1.row + 0.5 : (marker.cell1.row + marker.cell2.row + 1) / 2;
+
       markers.push(
-        <div key={`cons-${index}`} className="absolute w-2 h-2 bg-white border-2 border-gray-600 rounded-full pointer-events-none z-10" style={{ left: `${(x * 100) / size}%`, top: `${(y * 100) / size}%`, transform: 'translate(-50%, -50%)' }} />
+        <div key={`cons-${index}`} className="absolute w-2 h-2 bg-white border-2 border-gray-600 rounded-full pointer-events-none" style={{ left: `${(leftPos * 100) / size}%`, top: `${(topPos * 100) / size}%`, transform: 'translate(-50%, -50%)', zIndex: 10 }} />
       );
     });
   }
