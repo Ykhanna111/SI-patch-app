@@ -49,23 +49,13 @@ const SudokuCell = memo(({
     const hasR = !cageSet.has(`${row},${col + 1}`);
 
     const style: any = {
-      backgroundColor: `${cageColor}12`, // Slightly increased opacity for better grouping
-      transition: 'all 0.2s ease',
+      backgroundColor: `${cageColor}0D`,
     };
 
-    const borderStyle = `1.5px dashed ${cageColor}88`; // Softer dashed border
-
-    if (hasT) style.borderTop = borderStyle;
-    else style.borderTop = '1px solid transparent'; // Prevent layout shifts
-
-    if (hasB) style.borderBottom = borderStyle;
-    else style.borderBottom = '1px solid transparent';
-
-    if (hasL) style.borderLeft = borderStyle;
-    else style.borderLeft = '1px solid transparent';
-
-    if (hasR) style.borderRight = borderStyle;
-    else style.borderRight = '1px solid transparent';
+    if (hasT) { style.borderTopWidth = '2px'; style.borderTopColor = cageColor; style.borderTopStyle = 'dashed'; }
+    if (hasB) { style.borderBottomWidth = '2px'; style.borderBottomColor = cageColor; style.borderBottomStyle = 'dashed'; }
+    if (hasL) { style.borderLeftWidth = '2px'; style.borderLeftColor = cageColor; style.borderLeftStyle = 'dashed'; }
+    if (hasR) { style.borderRightWidth = '2px'; style.borderRightColor = cageColor; style.borderRightStyle = 'dashed'; }
 
     return style;
   }, [row, col, gameMode, constraints]);
@@ -218,10 +208,11 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
       markers.push(
         <div 
           key={`sum-${cageIndex}`} 
-          className="absolute text-[0.55rem] sm:text-[0.6rem] font-bold text-gray-600 bg-white/95 px-1 py-0.5 rounded-br-md pointer-events-none shadow-sm border-b border-r border-gray-100" 
+          className="absolute text-[0.6rem] sm:text-[0.65rem] font-bold text-gray-700 bg-white/90 px-0.5 rounded-sm pointer-events-none shadow-sm" 
           style={{ 
             left: `${(topLeftCell.col * 100) / size}%`, 
             top: `${(topLeftCell.row * 100) / size}%`, 
+            transform: 'translate(2px, 2px)',
             zIndex: 30 
           }}
         >
