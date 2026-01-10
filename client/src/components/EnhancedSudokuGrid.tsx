@@ -149,7 +149,12 @@ export default function EnhancedSudokuGrid({
           )}
           
           {/* Overlay container inside the grid to ensure alignment with cells */}
-          <div className="absolute inset-0 pointer-events-none z-10 select-none">
+          <div 
+            className="absolute inset-0 pointer-events-none z-10 select-none"
+            style={{ 
+              boxSizing: 'border-box'
+            }}
+          >
             {renderConstraintMarkers(constraints, size, gameMode)}
           </div>
         </div>
