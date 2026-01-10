@@ -196,58 +196,62 @@ function renderConstraintMarkers(constraints: any, size: number, gameMode: strin
     // 2. Single SVG overlay for all cage outlines
     // The viewBox is set to match the grid dimensions exactly (e.g., 0 0 9 9)
     // This allows us to use integer coordinates for snapping.
+    const strokeWidth = 0.08;
     markers.push(
       <svg 
         key="killer-cages-svg" 
         className="absolute inset-0 w-full h-full pointer-events-none overflow-visible" 
         viewBox={`0 0 ${size} ${size}`}
         preserveAspectRatio="none"
+        shapeRendering="crispEdges"
         style={{ zIndex: 20 }}
       >
-        {constraints.killerCages.map((cage: any, cageIndex: number) => {
-          const cageColor = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'][cageIndex % 8];
-          const cageSet = new Set(cage.cells.map((c: any) => `${c.row},${c.col}`));
-          const paths: string[] = [];
+        <g transform={`translate(${strokeWidth / 2}, ${strokeWidth / 2})`}>
+          {constraints.killerCages.map((cage: any, cageIndex: number) => {
+            const cageColor = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'][cageIndex % 8];
+            const cageSet = new Set(cage.cells.map((c: any) => `${c.row},${c.col}`));
+            const paths: string[] = [];
 
-          cage.cells.forEach((cell: any) => {
-            const r = cell.row;
-            const c = cell.col;
-            
-            // Check neighbors to determine where to draw borders
-            const hasT = !cageSet.has(`${r - 1},${c}`);
-            const hasB = !cageSet.has(`${r + 1},${c}`);
-            const hasL = !cageSet.has(`${r},${c - 1}`);
-            const hasR = !cageSet.has(`${r},${c + 1}`);
+            cage.cells.forEach((cell: any) => {
+              const r = cell.row;
+              const c = cell.col;
+              
+              // Check neighbors to determine where to draw borders
+              const hasT = !cageSet.has(`${r - 1},${c}`);
+              const hasB = !cageSet.has(`${r + 1},${c}`);
+              const hasL = !cageSet.has(`${r},${c - 1}`);
+              const hasR = !cageSet.has(`${r},${c + 1}`);
 
-            // Draw line segments for each outer edge of the cell within the cage
-            // Using a dashed line style for the cage
-            if (hasT) paths.push(`M ${c} ${r} L ${c + 1} ${r}`);
-            if (hasB) paths.push(`M ${c} ${r + 1} L ${c + 1} ${r + 1}`);
-            if (hasL) paths.push(`M ${c} ${r} L ${c} ${r + 1}`);
-            if (hasR) paths.push(`M ${c + 1} ${r} L ${c + 1} ${r + 1}`);
-          });
+              // Draw line segments for each outer edge of the cell within the cage
+              if (hasT) paths.push(`M ${c} ${r} L ${c + 1} ${r}`);
+              if (hasB) paths.push(`M ${c} ${r + 1} L ${c + 1} ${r + 1}`);
+              if (hasL) paths.push(`M ${c} ${r} L ${c} ${r + 1}`);
+              if (hasR) paths.push(`M ${c + 1} ${r} L ${c + 1} ${r + 1}`);
+            });
 
-          return (
-            <g key={`cage-g-${cageIndex}`}>
-              {/* Cage fill */}
-              <path
-                d={cage.cells.map((cell: any) => `M ${cell.col} ${cell.row} h 1 v 1 h -1 z`).join(' ')}
-                fill={cageColor}
-                fillOpacity="0.08"
-              />
-              {/* Cage dashed outline */}
-              <path
-                d={paths.join(' ')}
-                stroke={cageColor}
-                strokeWidth="0.1"
-                strokeDasharray="0.1, 0.05"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </g>
-          );
-        })}
+            return (
+              <g key={`cage-g-${cageIndex}`}>
+                {/* Cage fill */}
+                <path
+                  d={cage.cells.map((cell: any) => `M ${cell.col} ${cell.row} h 1 v 1 h -1 z`).join(' ')}
+                  fill={cageColor}
+                  fillOpacity="0.08"
+                />
+                {/* Cage dashed outline */}
+                <path
+                  d={paths.join(' ')}
+                  stroke={cageColor}
+                  strokeWidth={strokeWidth}
+                  strokeDasharray="0.1, 0.05"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </g>
+            );
+          })}
+        </g>
       </svg>
     );
   }
