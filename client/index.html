@@ -44,7 +44,9 @@
       sizes="180x180"
       href="/assets/apple-touch-icon.png?v=1"
     />
-    <link rel="manifest" href="/assets/site.webmanifest?v=1" />
+
+    <!-- ✅ PWA Manifest (UPDATED ✅) -->
+    <link rel="manifest" href="/manifest.json" />
 
     <!-- ✅ Open Graph -->
     <meta property="og:title" content="Sudoku Infinium | Smart Puzzle Platform" />
@@ -75,8 +77,12 @@
       content="https://sudokuinfinium.xyz/assets/logo_si.png"
     />
 
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6830190597730768"
-     crossorigin="anonymous"></script>
+    <!-- ✅ Google Ads -->
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6830190597730768"
+      crossorigin="anonymous"
+    ></script>
   </head>
 
   <body>
@@ -99,5 +105,14 @@
     <div id="root"></div>
 
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- ✅ Service Worker Registration (ADDED ✅) -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/service-worker.js");
+        });
+      }
+    </script>
   </body>
 </html>
